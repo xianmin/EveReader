@@ -1,18 +1,30 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <eve-viewer v-if='isReady'></eve-viewer>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import Epub from 'epubjs'
+import EveViewer from '@/components/EveViewer';
+
+global.epub = Epub
 
 export default {
-  name: 'Home',
+  name: 'home',
+
   components: {
-    HelloWorld
+    EveViewer,
+  },
+
+  data() {
+    return {
+      isReady: true,
+    }
+  },
+
+  mounted() {
   }
 }
 </script>
