@@ -2,13 +2,11 @@
   <div class="home">
     <el-container>
 
-      <el-aside>
-        <div id="activitybar">
-          <div class="activitybar-icon" @click="openFile">
-            <img svg-inline src="@/assets/svg/openfile.svg"/>
-          </div>
-        </div>
-      </el-aside>
+      <eve-sidebar
+        :toc = "toc"
+        @openFile = "openFile"
+        @handleNodeClick = "handleNodeClick"
+      />
 
       <el-container>
         <el-main>
@@ -23,6 +21,7 @@
 <script>
 // @ is an alias to /src
 import Epub from 'epubjs'
+import EveSidebar from '@/components/EveSidebar';
 
 global.epub = Epub
 
@@ -30,11 +29,13 @@ export default {
   name: 'home',
 
   components: {
+    EveSidebar,
   },
 
   data() {
     return {
       isReady: true,
+      toc: [],
     }
   },
 
@@ -81,42 +82,20 @@ export default {
         fullsize: true,
       });
       this.rendition.display();
+
+      // Pick up Toc
+      this.book.loaded.navigation.then((nav) => {
+        // change "subitems" to "children", because element-ui Tree
+        this.toc = JSON.parse((JSON.stringify(nav.toc)).replace(/"subitems"/g, '"children"'));
+      });
+    },
+
+    handleNodeClick(item) {
+      this.rendition.display(item.href);
     },
   },
 }
 </script>
 
 <style lang="scss" scoped>
-#activitybar {
-  width: 60px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background-color: #2c2c2c;
-  top: 0px;
-  bottom: 0px;
-  left: 0px;
-  position: fixed;
-
-  .activitybar-icon {
-    width: 40px;
-    height: 40px;
-    padding: 10px;
-    fill: #AAAAAA;
-    cursor: pointer;
-
-    &:hover {
-      fill: #FFFFFF;
-    }
-
-    &.active {
-      fill: #FFFFFF;
-    }
-
-    svg {
-      width: 100%;
-      height: 100%;
-    }
-  }
-}
 </style>
