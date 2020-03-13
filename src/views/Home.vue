@@ -39,11 +39,11 @@ export default {
   },
 
   mounted() {
-    this.initViewer();
+    this.initBook();
   },
 
   methods: {
-    initViewer() {
+    initBook() {
       this.book = new Epub();
     },
     
@@ -55,11 +55,12 @@ export default {
       fi.onchange = () => {
         var reader = new FileReader();
         reader.onload = () => {
-          console.log(this.book);
           this.openEpub(reader.result);
         }
         if (fi.files[0]) {
-            reader.readAsArrayBuffer(fi.files[0]);
+          reader.readAsArrayBuffer(fi.files[0]);
+          let fileName = fi.files[0].name;
+          this.$router.push(fileName)
         }
       };
       document.body.appendChild(fi);
@@ -67,6 +68,8 @@ export default {
     },
 
     openEpub(data) {
+      this.book.destroy();
+      this.initBook();
       this.book.open(data, "binary");
       this.rendition = this.book.renderTo("eve-reader-view", {
         manager: "continuous",
@@ -77,7 +80,7 @@ export default {
         // snap: true,
         fullsize: true,
       });
-      this.rendition.display("epubcfi(/6/14[id122]!/4/20/1:145)");
+      this.rendition.display();
     },
   },
 }
