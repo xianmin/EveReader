@@ -24,6 +24,7 @@
     "babel-eslint": "^10.0.3",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.1.2",
+    "vue-svg-inline-loader": "^1.4.6",
     "vue-template-compiler": "^2.6.11"
   }
 }

@@ -5,7 +5,7 @@
       <el-aside>
         <div id="activitybar">
           <div class="sidebar-icon" @click="openFile">
-            open
+            <img svg-inline src="../assets/svg/openfile.svg"/>
           </div>
         </div>
       </el-aside>
