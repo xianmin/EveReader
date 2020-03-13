@@ -4,8 +4,8 @@
 
       <el-aside>
         <div id="activitybar">
-          <div class="sidebar-icon" @click="openFile">
-            <img svg-inline src="../assets/svg/openfile.svg"/>
+          <div class="activitybar-icon" @click="openFile">
+            <img svg-inline src="@/assets/svg/openfile.svg"/>
           </div>
         </div>
       </el-aside>
@@ -83,16 +83,37 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 #activitybar {
   width: 60px;
   height: 100%;
   display: flex;
   flex-direction: column;
-  /* background-color: #2c2c2c; */
+  background-color: #2c2c2c;
   top: 0px;
   bottom: 0px;
   left: 0px;
   position: fixed;
+
+  .activitybar-icon {
+    width: 40px;
+    height: 40px;
+    padding: 10px;
+    fill: #AAAAAA;
+    cursor: pointer;
+
+    &:hover {
+      fill: #FFFFFF;
+    }
+
+    &.active {
+      fill: #FFFFFF;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
 }
 </style>
