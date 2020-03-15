@@ -1,7 +1,7 @@
 <template>
   <el-aside>
     <div id="activitybar">
-      <div class="activitybar-icon" @click="$emit('openFile')">
+      <div class="activitybar-icon" @click="openFile">
         <img svg-inline src="@/assets/svg/openfile.svg"/>
       </div>
       <div class="activitybar-icon" 
@@ -12,9 +12,9 @@
     </div>
 
     <div id="sidebar" v-show="sidebarVisible">
-      <div id="sidebar-toc" v-show="sidebarVisible === 'toc'">
+      <div id="sidebar-toc" v-if="sidebarVisible === 'toc'">
         <el-tree
-          :data="toc"
+          :data="this.$store.state.ebook.toc"
           empty-text="No Content"
           node-key="id"
           expand-on-click-node
@@ -29,9 +29,6 @@
 <script>
 export default {
   name: "EveSidebar",
-  props: {
-    toc: Array,
-  },
 
   data() {
     return {
@@ -48,9 +45,13 @@ export default {
       }
     },
 
-    handleNodeClick(data) {
-      this.$emit("handleNodeClick", data);
+    handleNodeClick(item) {
+      this.$store.state.ebook.rendition.display(item.href);
     },
+
+    openFile() {
+      this.$store.state.ebook.openFile()
+    }
   },
 }
 </script>
