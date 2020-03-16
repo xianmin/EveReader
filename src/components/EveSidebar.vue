@@ -1,5 +1,5 @@
 <template>
-  <el-aside>
+  <el-aside :width="sidebarVisible ? 5 + sidebarWidth + 'vw' : 5 +'vw'">
     <div id="activitybar">
       <div class="activitybar-icon" @click="openFile">
         <img svg-inline src="@/assets/svg/openfile.svg"/>
@@ -11,7 +11,7 @@
       </div>
     </div>
 
-    <div id="sidebar" v-show="sidebarVisible">
+    <div id="sidebar" v-show="sidebarVisible" :style="{ width: sidebarWidth + 'vw' }">
       <div id="sidebar-toc" v-if="sidebarVisible === 'toc'">
         <el-tree
           :data="this.$store.state.ebook.toc"
@@ -21,7 +21,7 @@
           @node-click="handleNodeClick">
         </el-tree>
       </div>
-      <div class="sidebar-resizer"></div>
+      <div class="sidebar-resizer" @mousedown="resizerMouseDown"></div>
     </div>
   </el-aside>
 </template>
@@ -33,6 +33,7 @@ export default {
   data() {
     return {
       sidebarVisible: '',
+      sidebarWidth: 25,
     }
   },
 
@@ -51,14 +52,43 @@ export default {
 
     openFile() {
       this.$store.state.ebook.openFile()
-    }
+    },
+
+    // resize sidebar width
+    resizerMouseDown(e) {
+      if (e.target.className && e.target.className.match('sidebar-resizer')) {
+        let screenWidth = document.documentElement.clientWidth;
+        let oldWidth = this.sidebarWidth / 100 * screenWidth;  // vw to px
+        let oldX = e.pageX;
+        let offset = 0;
+        let newWidth;
+
+        document.onmousemove = (e) => {
+          e.preventDefault(); // prevent sometimes mouseup, this event still active
+          offset = e.pageX - oldX;
+          newWidth = 100 / screenWidth * (oldWidth + offset);  // px to vw
+
+          // width range is (200px ~ 500px)
+          if (newWidth >= 20 && newWidth <= 40) {
+            this.sidebarWidth = newWidth;
+          }
+        };
+
+        document.onmouseup = () => {
+          document.onmousemove = document.onmouseup = null;
+        };
+      }
+      e.stopPropagation();
+    },
+    // End resizerMouseDown
+
   },
 }
 </script>
 
 <style lang="scss" scoped>
 #activitybar {
-  width: 60px;
+  width: 5vw;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -69,9 +99,9 @@ export default {
   position: fixed;
 
   .activitybar-icon {
-    width: 40px;
-    height: 40px;
-    padding: 10px;
+    width: 3.5vw;
+    height: 3.5vw;
+    padding: 0.75vw 0.75vw 0 0.75vw;
     fill: #AAAAAA;
     cursor: pointer;
 
@@ -95,7 +125,7 @@ export default {
   background-color: darkgray;
   top: 0px;
   bottom: 0px;
-  left: 60px;
+  left: 5vw;
   position: fixed;
 
   .el-tree {
@@ -114,7 +144,7 @@ export default {
     width: 10px;
     height: 100%;
     top: 0;
-    right: 0;
+    right: -10px;
     cursor: col-resize;
   }
 }

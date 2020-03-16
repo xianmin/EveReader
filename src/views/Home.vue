@@ -37,4 +37,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#eve-reader-view {
+  max-width: 800px;
+  margin: auto;
+}
 </style>
