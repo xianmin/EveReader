@@ -9,6 +9,12 @@
         @click="toogleSidebar('toc')">
         <img svg-inline src="@/assets/svg/toc.svg"/>
       </div>
+      <div class="activitybar-icon" @click="increaseFontSize">
+        <img svg-inline src="@/assets/svg/font-size-up.svg"/>
+      </div>
+      <div class="activitybar-icon" @click="decreaseFontSize">
+        <img svg-inline src="@/assets/svg/font-size-down.svg"/>
+      </div>
     </div>
 
     <div id="sidebar" v-show="sidebarVisible" :style="{ width: sidebarWidth + 'vw' }">
@@ -52,6 +58,16 @@ export default {
 
     openFile() {
       this.$store.state.ebook.openFile()
+    },
+
+    increaseFontSize() {
+      const fontsize = this.$store.state.ebook.defaultFontsize + 2;
+      this.$store.state.ebook.setFontSize(fontsize);
+    },
+
+    decreaseFontSize() {
+      const fontsize = this.$store.state.ebook.defaultFontsize - 2;
+      this.$store.state.ebook.setFontSize(fontsize);
     },
 
     // resize sidebar width

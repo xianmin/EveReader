@@ -4,7 +4,9 @@ class Ebook {
   constructor(element) {
     this.element = element;
     this.epub = null;
+    this.rendition = null;
     this.toc = [];
+    this.defaultFontsize = 16;
 
     this.init();
   }
@@ -22,6 +24,12 @@ class Ebook {
   reset() {
     this.epub.destroy();
     this.init();
+  }
+
+  // set fontsize
+  setFontSize(fontsize) {
+    this.defaultFontsize = fontsize;
+    this.rendition.themes.fontSize(`${fontsize}px`);
   }
 
   openFile() {
@@ -59,6 +67,8 @@ class Ebook {
       // snap: true,
       fullsize: true,
     });
+
+    this.rendition.themes.fontSize(`${this.defaultFontsize}px`);
     this.rendition.display();
   }
 }
