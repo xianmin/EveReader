@@ -4,11 +4,9 @@
 
       <eve-sidebar/>
 
-      <el-container>
-        <el-main>
-          <div id="eve-reader-view"></div>
-        </el-main>
-      </el-container>
+      <router-view v-if='this.ebook.epub.isOpen'>
+        <eve-viewer></eve-viewer>
+      </router-view>
 
     </el-container>
   </div>
@@ -18,16 +16,18 @@
 // @ is an alias to /src
 import Ebook from '@/ebook'
 import EveSidebar from '@/components/EveSidebar';
+import EveViewer from '@/components/EveViewer';
 
 export default {
   name: 'home',
 
   components: {
     EveSidebar,
+    EveViewer,
   },
 
-  mounted() {
-    this.ebook = new Ebook("eve-reader-view");
+  created() {
+    this.ebook = new Ebook();
     this.$store.dispatch("setEbook", this.ebook);
   },
 
@@ -37,8 +37,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#eve-reader-view {
-  max-width: 800px;
-  margin: auto;
-}
 </style>

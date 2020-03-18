@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
+import EveViewer from '../components/EveViewer';
 
 Vue.use(VueRouter)
 
@@ -11,7 +12,8 @@ const routes = [
     component: Home,
     children: [
       {
-        path: ':fileName',
+        path: '/read/:fileName',
+        component: EveViewer,
       }
     ]
   },

@@ -32,19 +32,20 @@ class Ebook {
     this.rendition.themes.fontSize(`${fontsize}px`);
   }
 
-  openFile() {
-      var fi = document.createElement("input");
+  openFile(callback) {
+      let fi = document.createElement("input");
       fi.setAttribute("accept", "application/epub+zip");
       fi.style.display = "none";
       fi.type = "file";
       fi.onchange = () => {
-        var reader = new FileReader();
+        let reader = new FileReader();
         reader.onload = () => {
           this.openEpub(reader.result);
         }
         if (fi.files[0]) {
           reader.readAsArrayBuffer(fi.files[0]);
-          // let fileName = fi.files[0].name;
+          let fileName = fi.files[0].name;
+          return callback(fileName);
         }
       };
       document.body.appendChild(fi);
@@ -54,22 +55,6 @@ class Ebook {
   openEpub(data) {
     if (this.epub.isOpen) this.reset();
     this.epub.open(data, "binary");
-    this.renderTo(this.element);
-  }
-
-  renderTo(element) {
-    this.rendition = this.epub.renderTo(element, {
-      manager: "continuous",
-      flow: "scrolled",
-      axis: "vertical",
-      width: "100%",
-      height: "100%",
-      // snap: true,
-      fullsize: true,
-    });
-
-    this.rendition.themes.fontSize(`${this.defaultFontsize}px`);
-    this.rendition.display();
   }
 }
 

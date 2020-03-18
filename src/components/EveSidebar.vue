@@ -33,8 +33,16 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   name: "EveSidebar",
+
+  computed: {
+    ...mapGetters([
+      'ebook',
+    ]),
+  },
 
   data() {
     return {
@@ -53,21 +61,24 @@ export default {
     },
 
     handleNodeClick(item) {
-      this.$store.state.ebook.rendition.display(item.href);
+      this.ebook.rendition.display(item.href);
     },
 
     openFile() {
-      this.$store.state.ebook.openFile()
+      this.ebook.openFile( fileName => {
+        const path = `/read/${fileName}`
+        if (this.$route.path !== path) this.$router.push(path);
+      })
     },
 
     increaseFontSize() {
-      const fontsize = this.$store.state.ebook.defaultFontsize + 2;
-      this.$store.state.ebook.setFontSize(fontsize);
+      const fontsize = this.ebook.defaultFontsize + 2;
+      this.ebook.setFontSize(fontsize);
     },
 
     decreaseFontSize() {
-      const fontsize = this.$store.state.ebook.defaultFontsize - 2;
-      this.$store.state.ebook.setFontSize(fontsize);
+      const fontsize = this.ebook.defaultFontsize - 2;
+      this.ebook.setFontSize(fontsize);
     },
 
     // resize sidebar width
