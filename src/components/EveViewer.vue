@@ -65,6 +65,36 @@ export default {
         this.nextNav = "";
       }
     });
+
+    // when scrollbar at top or bottom, click up or down, do next or prev
+    window.onscroll = () => {
+      let scrollHeight = document.body.scrollHeight;
+      let totalHeight = window.scrollY + window.innerHeight;
+
+      const bottomDoNext = (e) => {
+        const kc = e.keyCode || e.which;
+        if (kc === 34 || kc === 40) {
+          this.doNext()
+        }
+      }
+
+      const topDoPrev = (e) => {
+        const kc = e.keyCode || e.which;
+        if (kc === 33 || kc === 38) {
+          this.doPrev()
+        }
+      }
+
+      if (window.scrollY === 0) {
+        // console.log("at top")
+        document.body.addEventListener("keydown", topDoPrev, { once: true })
+      }
+
+      if (totalHeight >= scrollHeight) {
+        // console.log("at bottom")
+        document.body.addEventListener("keydown", bottomDoNext, { once: true })
+      }
+    }
   },
 
   methods: {
