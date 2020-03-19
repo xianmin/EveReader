@@ -65,8 +65,8 @@ export default {
     },
 
     openFile() {
-      this.ebook.openFile( fileName => {
-        const path = `/read/${fileName}`
+      this.ebook.openFile().then(() => {
+        const path = `/read/${this.ebook.fileName}`;
         if (this.$route.path !== path) this.$router.push(path);
       })
     },

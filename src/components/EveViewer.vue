@@ -36,17 +36,22 @@ export default {
 
   mounted() {
     this.rendition = this.ebook.rendition = this.ebook.epub.renderTo("eve-reader-view", {
-      // manager: "continuous",
       flow: "scrolled-doc",
       axis: "vertical",
       width: "100%",
       height: "100%",
-      // snap: true,
       fullsize: true,
     });
 
-    this.rendition.themes.fontSize(`${this.ebook.defaultFontsize}px`);
-    this.rendition.display();
+    this.ebook.epub.ready.then(() => {
+      this.ebook.setEbook()
+    }).then(() =>{
+      this.rendition.themes.fontSize(`${this.ebook.defaultFontsize}px`);
+    }).then(() => {
+      let lastCfi = this.ebook.storage.getEbookData("lastCfi")
+      this.rendition.display(lastCfi || 0);
+    })
+
 
     this.rendition.on("rendered", (section) => {
       let prevSection = section.prev();
@@ -64,6 +69,11 @@ export default {
       } else {
         this.nextNav = "";
       }
+    });
+
+    this.rendition.on("relocated", (location) => {
+      let cfi = location.start.cfi;
+      this.ebook.storage.setEbookData('lastCfi', cfi)
     });
 
     // when scrollbar at top or bottom, click up or down, do next or prev

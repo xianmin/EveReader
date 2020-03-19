@@ -1,10 +1,12 @@
-import Epub from 'epubjs'
+import Epub from 'epubjs';
+import Storage from './storage';
 
 class Ebook {
-  constructor(element) {
-    this.element = element;
+  constructor() {
     this.epub = null;
     this.rendition = null;
+    this.storage = null;
+    this.fileName = "";
     this.toc = [];
     this.defaultFontsize = 16;
 
@@ -32,7 +34,8 @@ class Ebook {
     this.rendition.themes.fontSize(`${fontsize}px`);
   }
 
-  openFile(callback) {
+  openFile() {
+    return new Promise((resolve) => {
       let fi = document.createElement("input");
       fi.setAttribute("accept", "application/epub+zip");
       fi.style.display = "none";
@@ -40,21 +43,30 @@ class Ebook {
       fi.onchange = () => {
         let reader = new FileReader();
         reader.onload = () => {
-          this.openEpub(reader.result);
+          resolve(reader.result);
         }
         if (fi.files[0]) {
           reader.readAsArrayBuffer(fi.files[0]);
           let fileName = fi.files[0].name;
-          return callback(fileName);
+          this.fileName = fileName
         }
       };
       document.body.appendChild(fi);
       fi.click();
+    }).then((result) => {
+      this.openEpub(result);
+    })
   }
 
   openEpub(data) {
     if (this.epub.isOpen) this.reset();
     this.epub.open(data, "binary");
+  }
+
+  setEbook() {
+    // get epub.key(), remove pre-identifier
+    let id = this.epub.key().slice(11);
+    this.storage = new Storage(id);
   }
 }
 
