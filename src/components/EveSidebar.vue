@@ -1,20 +1,32 @@
 <template>
   <el-aside :width="sidebarVisible ? 5 + sidebarWidth + 'vw' : 5 +'vw'">
     <div id="activitybar">
-      <div class="activitybar-icon" @click="openFile">
-        <img svg-inline src="@/assets/svg/openfile.svg"/>
-      </div>
-      <div class="activitybar-icon" 
-        :class="{'active': sidebarVisible === 'toc'}" 
-        @click="toogleSidebar('toc')">
-        <img svg-inline src="@/assets/svg/toc.svg"/>
-      </div>
-      <div class="activitybar-icon" @click="increaseFontSize">
-        <img svg-inline src="@/assets/svg/font-size-up.svg"/>
-      </div>
-      <div class="activitybar-icon" @click="decreaseFontSize">
-        <img svg-inline src="@/assets/svg/font-size-down.svg"/>
-      </div>
+      <!-- OPEN FILE -->
+      <el-tooltip class="tooltip" effect="dark" content="Open File" placement="right">
+        <div class="activitybar-icon" @click="openFile">
+          <img svg-inline src="@/assets/svg/openfile.svg"/>
+        </div>
+      </el-tooltip>
+      <!-- Table Of Content -->
+      <el-tooltip class="tooltip" effect="dark" content="Table Of Content" placement="right">
+        <div class="activitybar-icon" 
+          :class="{'active': sidebarVisible === 'toc'}" 
+          @click="toogleSidebar('toc')">
+          <img svg-inline src="@/assets/svg/toc.svg"/>
+        </div>
+      </el-tooltip>
+      <!-- Increase Font Size -->
+      <el-tooltip class="tooltip" effect="dark" content="Increase Font Size" placement="right">
+        <div class="activitybar-icon" @click="increaseFontSize">
+          <img svg-inline src="@/assets/svg/font-size-up.svg"/>
+        </div>
+      </el-tooltip>
+      <!-- Decrease Font Size -->
+      <el-tooltip class="tooltip" effect="dark" content="Decrease Font Size" placement="right">
+        <div class="activitybar-icon" @click="decreaseFontSize">
+          <img svg-inline src="@/assets/svg/font-size-down.svg"/>
+        </div>
+      </el-tooltip>
     </div>
 
     <div id="sidebar" v-show="sidebarVisible" :style="{ width: sidebarWidth + 'vw' }">
