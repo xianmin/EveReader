@@ -4,7 +4,7 @@
   "author": "Chen Xianmin <xianmin12@gmail.com>",
   "description": "Reader for epub E-books",
   "license": "AGPL-3.0",
-  "homepage": "https://github.com/xianmin/eve-reader",
+  "homepage": "https://xianmin.github.io/EveReader/",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
