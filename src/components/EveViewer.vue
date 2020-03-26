@@ -18,6 +18,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import EveAnnotator from '../eveAnnotator.js';
 
 export default {
   computed: {
@@ -75,6 +76,36 @@ export default {
       let cfi = location.start.cfi;
       this.ebook.storage.setEbookData('lastCfi', cfi)
     });
+
+    // Apply a class to selected text
+    this.rendition.on("selected", cfi.bind(this));
+
+    function cfi(cfiRange, iframe) {
+      // console.log(iframe)
+      // show evePopverWrapper
+
+      iframe.window.annotator.doClick = () => {
+        this.rendition.annotations.highlight(cfiRange, {}, (e) => {
+            console.log("highlight clicked", e.target);
+        });
+      }
+    }
+
+    // this.rendition.themes.default({
+    //   '::selection': {
+    //     'background': 'rgba(255,255,0, 0.3)'
+    //   },
+    //   '.epubjs-hl' : {
+    //     'fill': 'yellow', 'fill-opacity': '0.3', 'mix-blend-mode': 'multiply'
+    //   }
+    // });
+
+    // hook
+    this.rendition.hooks.content.register((iframe) => {
+      let annotator = new EveAnnotator(iframe);
+      iframe.window.annotator = annotator;
+    })
+
 
     // when scrollbar at top or bottom, click up or down, do next or prev
     window.onscroll = () => {
