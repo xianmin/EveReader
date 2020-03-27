@@ -2,7 +2,7 @@
   <div class="home">
     <el-container>
 
-      <eve-sidebar @openFile="openFile" />
+      <eve-sidebar @open-file="openFile" />
 
       <router-view v-if='this.ebook.epub.isOpen'>
         <eve-viewer></eve-viewer>

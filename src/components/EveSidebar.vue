@@ -77,7 +77,7 @@ export default {
     },
 
     openFile() {
-      this.$emit('openFile');
+      this.$emit('open-file');
     },
 
     increaseFontSize() {

@@ -9,6 +9,7 @@ class Ebook {
     this.fileName = "";
     this.toc = [];
     this.defaultFontsize = 16;
+    this.annotationColorList = ['#FFCAD7', '#FFDE70', '#FFFB78', '#D1FF61', '#B4FFEB',];
 
     this.init();
   }

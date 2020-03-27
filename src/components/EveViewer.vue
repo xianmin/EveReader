@@ -6,7 +6,14 @@
       </div>
     </el-header>
     <el-main>
-      <div id="eve-reader-view"></div>
+      <div class="eve-reader-container">
+        <eve-annotator-popover 
+          v-show='showAnnotator'
+          :annotatorPosition = "annotator.position"
+          @do-annotator-highlight = "doAnnotatorHighlight"
+        />
+        <div id="eve-reader-view"></div>
+      </div>
     </el-main>
     <el-footer height="10vh" v-show="this.nextNav">
       <div class="view-next" @click="doNext">
@@ -18,7 +25,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import EveAnnotator from '../eveAnnotator.js';
+import EveAnnotatorPopover from './EveAnnotatorPopover';
 
 export default {
   computed: {
@@ -27,11 +34,23 @@ export default {
     ]),
   },
 
+  components: {
+    EveAnnotatorPopover,
+  },
+
   data() {
     return {
       rendition: null,
       prevNav: "",
       nextNav: "",
+      showAnnotator: false,
+      annotator: {
+        position: {
+          top: 0, 
+          left: 0,
+        },
+        cfiRange: "",
+      },
     }
   },
 
@@ -45,10 +64,30 @@ export default {
     });
 
     this.ebook.epub.ready.then(() => {
+      // 0. get local storage etc.
       this.ebook.setEbook()
     }).then(() =>{
+      // 1. set theme
       this.rendition.themes.fontSize(`${this.ebook.defaultFontsize}px`);
     }).then(() => {
+      // 2. add hook
+      // --- get selection info
+      this.rendition.hooks.content.register((iframe) => {
+        iframe.document.onmouseup = isSelected.bind(this);
+
+        function isSelected(e) {
+          e.preventDefault();
+          const selection = iframe.window.getSelection();
+          this.showAnnotator = !selection.isCollapsed ;
+
+          const firstRange = selection.getRangeAt(0);
+          const rect = firstRange.getBoundingClientRect();
+          this.annotator.position.top = rect.bottom + 5;
+          this.annotator.position.left = rect.left + rect.width / 2 - 65
+        }
+      })
+    }).then(() => {
+      // 3. display
       let lastCfi = this.ebook.storage.getEbookData("lastCfi")
       this.rendition.display(lastCfi || 0);
     })
@@ -77,35 +116,10 @@ export default {
       this.ebook.storage.setEbookData('lastCfi', cfi)
     });
 
-    // Apply a class to selected text
-    this.rendition.on("selected", cfi.bind(this));
-
-    function cfi(cfiRange, iframe) {
-      // console.log(iframe)
-      // show evePopverWrapper
-
-      iframe.window.annotator.doClick = () => {
-        this.rendition.annotations.highlight(cfiRange, {}, (e) => {
-            console.log("highlight clicked", e.target);
-        });
-      }
-    }
-
-    // this.rendition.themes.default({
-    //   '::selection': {
-    //     'background': 'rgba(255,255,0, 0.3)'
-    //   },
-    //   '.epubjs-hl' : {
-    //     'fill': 'yellow', 'fill-opacity': '0.3', 'mix-blend-mode': 'multiply'
-    //   }
-    // });
-
-    // hook
-    this.rendition.hooks.content.register((iframe) => {
-      let annotator = new EveAnnotator(iframe);
-      iframe.window.annotator = annotator;
-    })
-
+    // save selected cfiRange
+    this.rendition.on("selected", (cfiRange) => {
+      this.annotator.cfiRange = cfiRange;
+    });
 
     // when scrollbar at top or bottom, click up or down, do next or prev
     window.onscroll = () => {
@@ -146,15 +160,29 @@ export default {
     doNext() {
       this.rendition.next();
     },
+
+    doAnnotatorHighlight(color) {
+      this.showAnnotator = false;
+      // highlight(cfiRange: EpubCFI, data: object, cb: function, className: string, styles: object)
+      this.rendition.annotations.highlight(this.annotator.cfiRange, {}, (e) => {
+          console.log("highlight clicked", e.target);
+      }, "", { fill:color });
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-#eve-reader-view {
+.eve-reader-container {
+  position: relative;
   max-width: 800px;
   margin: auto;
 }
+
+// #eve-reader-view {
+//   max-width: 800px;
+//   margin: auto;
+// }
 
 .el-main {
   min-height: 90vh;
