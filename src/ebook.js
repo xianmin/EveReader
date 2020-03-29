@@ -1,8 +1,11 @@
 import Epub from 'epubjs';
+import { openDB } from 'idb';
+
 import Storage from './storage';
 
 class Ebook {
   constructor() {
+    this.ebookID = "";
     this.epub = null;
     this.rendition = null;
     this.storage = null;
@@ -10,6 +13,8 @@ class Ebook {
     this.toc = [];
     this.defaultFontsize = 16;
     this.annotationColorList = ['#FFCAD7', '#FFDE70', '#FFFB78', '#D1FF61', '#B4FFEB',];
+    this.annotationDB = null;
+    this.allAnnotation = null;
 
     this.init();
   }
@@ -77,10 +82,43 @@ class Ebook {
     this.epub.open(data, "binary");
   }
 
-  setEbook() {
+  getEbookID() {
+    return this.ebookID = this.epub.key().slice(11);
+  }
+
+  async setEbook() {
     // get epub.key(), remove pre-identifier
-    let id = this.epub.key().slice(11);
-    this.storage = new Storage(id);
+    this.ebookID = this.epub.key().slice(11);
+    this.storage = new Storage(this.ebookID);
+
+    await this.initAnnotationDB(this.ebookID);
+  }
+
+  async initAnnotationDB(ebookId) {
+    this.annotationDB = await openDB('Annotation', 1, {
+      upgrade(db) {
+        // Create a store of objects
+        const store = db.createObjectStore(ebookId, {
+          // The 'id' property of the object will be the key.
+          keyPath: 'id',
+          // If it isn't explicitly set, create a value by auto incrementing.
+          autoIncrement: true,
+        });
+        // Create an index on the 'date' property of the objects.
+        store.createIndex('date', 'date');
+      },
+    });
+
+    await this.updateAllAnnotation();
+  }
+
+  async updateAllAnnotation() {
+    this.allAnnotation = await this.annotationDB.getAll(this.ebookID)
+  }
+
+  saveAnnotationToDB(data) {
+    data.date = new Date();
+    this.annotationDB.add(this.ebookID, data);
   }
 }
 

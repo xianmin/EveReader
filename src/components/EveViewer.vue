@@ -50,7 +50,9 @@ export default {
           left: 0,
         },
         cfiRange: "",
+        text: "",
       },
+      eveAnnotation: {},
     }
   },
 
@@ -65,31 +67,47 @@ export default {
 
     this.ebook.epub.ready.then(() => {
       // 0. get local storage etc.
-      this.ebook.setEbook()
-    }).then(() =>{
-      // 1. set theme
-      this.rendition.themes.fontSize(`${this.ebook.defaultFontsize}px`);
-    }).then(() => {
-      // 2. add hook
-      // --- get selection info
-      this.rendition.hooks.content.register((iframe) => {
-        iframe.document.onmouseup = isSelected.bind(this);
+      this.ebook.setEbook()      
+      .then(() =>{
+        // 1. set theme
+        this.rendition.themes.fontSize(`${this.ebook.defaultFontsize}px`);
+      })
+      .then(() => {
+        // 2. add hook
+        // --- get selection info
+        this.rendition.hooks.content.register((iframe) => {
+          iframe.document.onmouseup = isSelected.bind(this);
 
-        function isSelected(e) {
-          e.preventDefault();
-          const selection = iframe.window.getSelection();
-          this.showAnnotator = !selection.isCollapsed ;
+          function isSelected(e) {
+            e.preventDefault();
+            const selection = iframe.window.getSelection();
+            this.showAnnotator = !selection.isCollapsed ;
+            // temporary store text to annotator
+            this.annotator.text = selection.toString();
 
-          const firstRange = selection.getRangeAt(0);
-          const rect = firstRange.getBoundingClientRect();
-          this.annotator.position.top = rect.bottom + 5;
-          this.annotator.position.left = rect.left + rect.width / 2 - 65
+            const firstRange = selection.getRangeAt(0);
+            const rect = firstRange.getBoundingClientRect();
+            this.annotator.position.top = rect.bottom + 5;
+            this.annotator.position.left = rect.left + rect.width / 2 - 65
+          }
+        })
+      })
+      .then(() => {
+        // load annotation from db to rendition
+        let allAnnotations = this.ebook.allAnnotation;
+
+        for(let i = 0; i < allAnnotations.length; i++) {
+          let type = allAnnotations[i].type;
+          let cfiRange = allAnnotations[i].cfiRange;
+          let styles = { 'fill': allAnnotations[i].color }
+          this.rendition.annotations.add(type, cfiRange, {}, null, '', styles);
         }
       })
-    }).then(() => {
-      // 3. display
-      let lastCfi = this.ebook.storage.getEbookData("lastCfi")
-      this.rendition.display(lastCfi || 0);
+      .then(() => {
+        // 3. display
+        let lastCfi = this.ebook.storage.getEbookData("lastCfi")
+        this.rendition.display(lastCfi || 0);
+      })
     })
 
 
@@ -116,7 +134,7 @@ export default {
       this.ebook.storage.setEbookData('lastCfi', cfi)
     });
 
-    // save selected cfiRange
+    // temporary store cfiRange to annotator
     this.rendition.on("selected", (cfiRange) => {
       this.annotator.cfiRange = cfiRange;
     });
@@ -163,10 +181,21 @@ export default {
 
     doAnnotatorHighlight(color) {
       this.showAnnotator = false;
+
+      let cfiRange = this.annotator.cfiRange;
       // highlight(cfiRange: EpubCFI, data: object, cb: function, className: string, styles: object)
-      this.rendition.annotations.highlight(this.annotator.cfiRange, {}, (e) => {
+      let annotation = this.rendition.annotations.highlight(cfiRange, {}, (e) => {
           console.log("highlight clicked", e.target);
-      }, "", { fill:color });
+      }, "", { 'fill': color });
+
+      let data = {};
+      data.hash = encodeURI(cfiRange + annotation.type);
+      data.sectionIndex = annotation.sectionIndex;
+      data.type = annotation.type;
+      data.color = color;
+      data.cfiRange = cfiRange;
+      data.text = this.annotator.text;
+      this.ebook.saveAnnotationToDB(data);
     },
   },
 };
