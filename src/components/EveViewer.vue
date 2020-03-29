@@ -65,9 +65,9 @@ export default {
       fullsize: true,
     });
 
-    this.ebook.epub.ready.then(() => {
-      // 0. get local storage etc.
-      this.ebook.setEbook()      
+    // ----------------------------------------------
+    // Ready for rendition display
+    this.ebook.ready()
       .then(() =>{
         // 1. set theme
         this.rendition.themes.fontSize(`${this.ebook.defaultFontsize}px`);
@@ -108,7 +108,8 @@ export default {
         let lastCfi = this.ebook.storage.getEbookData("lastCfi")
         this.rendition.display(lastCfi || 0);
       })
-    })
+      // End Rendition display
+      //--------------------------
 
 
     this.rendition.on("rendered", (section) => {

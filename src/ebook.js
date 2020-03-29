@@ -14,7 +14,7 @@ class Ebook {
     this.defaultFontsize = 16;
     this.annotationColorList = ['#FFCAD7', '#FFDE70', '#FFFB78', '#D1FF61', '#B4FFEB',];
     this.annotationDB = null;
-    this.allAnnotation = null;
+    this.allAnnotation = {};
 
     this.init();
   }
@@ -32,6 +32,16 @@ class Ebook {
   reset() {
     this.epub.destroy();
     this.init();
+  }
+
+  async ready() {
+    await this.epub.ready.then(() => {
+        // get epub.key(), remove pre-identifier
+        this.ebookID = this.epub.key().slice(11);
+        this.storage = new Storage(this.ebookID);
+    })
+    
+    await this.initAnnotationDB(this.ebookID);
   }
 
   // set fontsize
@@ -87,11 +97,6 @@ class Ebook {
   }
 
   async setEbook() {
-    // get epub.key(), remove pre-identifier
-    this.ebookID = this.epub.key().slice(11);
-    this.storage = new Storage(this.ebookID);
-
-    await this.initAnnotationDB(this.ebookID);
   }
 
   async initAnnotationDB(ebookId) {
@@ -108,12 +113,17 @@ class Ebook {
         store.createIndex('date', 'date');
       },
     });
+    
+    await this.updateAllAnnotation()
 
-    await this.updateAllAnnotation();
   }
 
   async updateAllAnnotation() {
-    this.allAnnotation = await this.annotationDB.getAll(this.ebookID)
+    try {
+      this.allAnnotation = await this.annotationDB.getAll(this.ebookID);
+    } catch {
+      return;
+    }
   }
 
   saveAnnotationToDB(data) {
