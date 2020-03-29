@@ -50,6 +50,7 @@ export default {
           left: 0,
         },
         cfiRange: "",
+        type: "",
         text: "",
       },
       eveAnnotation: {},
@@ -80,15 +81,17 @@ export default {
 
           function isSelected(e) {
             e.preventDefault();
-            const selection = iframe.window.getSelection();
-            this.showAnnotator = !selection.isCollapsed ;
-            // temporary store text to annotator
-            this.annotator.text = selection.toString();
 
+            const selection = iframe.window.getSelection();
             const firstRange = selection.getRangeAt(0);
             const rect = firstRange.getBoundingClientRect();
-            this.annotator.position.top = rect.bottom + 5;
-            this.annotator.position.left = rect.left + rect.width / 2 - 65
+            this.setAnnotatorPosition(rect);
+
+            // if select, show EveAnnotatorPopover.vue
+            this.showAnnotator = !selection.isCollapsed ;
+
+            // temporary store text to annotator
+            this.annotator.text = selection.toString();
           }
         })
       })
@@ -100,7 +103,14 @@ export default {
           let type = allAnnotations[i].type;
           let cfiRange = allAnnotations[i].cfiRange;
           let styles = { 'fill': allAnnotations[i].color }
-          this.rendition.annotations.add(type, cfiRange, {}, null, '', styles);
+          this.rendition.annotations.add(
+            type,
+            cfiRange,
+            {'type': 'highlight'},
+            this.onClickShowAnnotator,
+            '',
+            styles
+          );
         }
       })
       .then(() => {
@@ -135,7 +145,7 @@ export default {
       this.ebook.storage.setEbookData('lastCfi', cfi)
     });
 
-    // temporary store cfiRange to annotator
+    // When selected, temporary store cfiRange to annotator
     this.rendition.on("selected", (cfiRange) => {
       this.annotator.cfiRange = cfiRange;
     });
@@ -180,15 +190,43 @@ export default {
       this.rendition.next();
     },
 
+    // rect is getBoundingClientRect()
+    // annotator position at bottom and center of selection
+    // position relative to the parent container eve-reader-container
+    setAnnotatorPosition(rect, offsetTop = 0, offsetLeft = 0) {
+      this.annotator.position.top = rect.bottom + 5 - offsetTop;  // 5 is distance
+      this.annotator.position.left = rect.left + rect.width / 2 - 65 - offsetLeft; // 65 is half width of annotator
+    },
+
+    onClickShowAnnotator(e) {
+      let rect = e.target.getBoundingClientRect();
+      // because rect is relative to the parent window, we need offset iframe
+      let iframeElement = document.getElementById('eve-reader-view');
+      let iframeRect = iframeElement.getBoundingClientRect();
+      let iframeTop = iframeRect.top;
+      let iframeLeft = iframeRect.left;
+      this.setAnnotatorPosition(rect, iframeTop, iframeLeft);
+
+      // console.log(e.target.getAttribute('data-epubcfi'))
+      this.annotator.cfiRange = e.target.getAttribute('data-epubcfi');
+      this.annotator.type = e.target.getAttribute('data-type');
+      this.showAnnotator = true;
+    },
+
     doAnnotatorHighlight(color) {
       this.showAnnotator = false;
 
       let cfiRange = this.annotator.cfiRange;
       // highlight(cfiRange: EpubCFI, data: object, cb: function, className: string, styles: object)
-      let annotation = this.rendition.annotations.highlight(cfiRange, {}, (e) => {
-          console.log("highlight clicked", e.target);
-      }, "", { 'fill': color });
+      let annotation = this.rendition.annotations.highlight(
+        cfiRange, 
+        {'type': 'highlight'}, 
+        this.onClickShowAnnotator, 
+        "", 
+        { 'fill': color }
+      );
 
+      // save to indexDB
       let data = {};
       data.hash = encodeURI(cfiRange + annotation.type);
       data.sectionIndex = annotation.sectionIndex;
