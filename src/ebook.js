@@ -99,15 +99,12 @@ class Ebook {
   async setEbook() {
   }
 
-  async initAnnotationDB(ebookId) {
-    this.annotationDB = await openDB('Annotation', 1, {
+  async initAnnotationDB(ebookID) {
+    this.annotationDB = await openDB(ebookID, 1, {
       upgrade(db) {
-        // Create a store of objects
-        const store = db.createObjectStore(ebookId, {
-          // The 'id' property of the object will be the key.
-          keyPath: 'id',
-          // If it isn't explicitly set, create a value by auto incrementing.
-          autoIncrement: true,
+        const store = db.createObjectStore('annotation', {
+          // The 'hash' property of the object will be the key.
+          keyPath: 'hash',
         });
         // Create an index on the 'date' property of the objects.
         store.createIndex('date', 'date');
@@ -120,7 +117,7 @@ class Ebook {
 
   async updateAllAnnotation() {
     try {
-      this.allAnnotation = await this.annotationDB.getAll(this.ebookID);
+      this.allAnnotation = await this.annotationDB.getAll('annotation');
     } catch {
       return;
     }
@@ -128,7 +125,11 @@ class Ebook {
 
   saveAnnotationToDB(data) {
     data.date = new Date();
-    this.annotationDB.add(this.ebookID, data);
+    this.annotationDB.add('annotation', data);
+  }
+
+  deleteAnnotationFromDB(hash) {
+    this.annotationDB.delete('annotation', hash);
   }
 }
 

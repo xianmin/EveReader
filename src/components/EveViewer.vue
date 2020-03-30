@@ -8,9 +8,11 @@
     <el-main>
       <div class="eve-reader-container">
         <eve-annotator-popover 
-          v-show='showAnnotator'
+          v-show = 'showAnnotator'
+          :showAnnotatorFromClick = 'showAnnotatorFromClick'
           :annotatorPosition = "annotator.position"
           @do-annotator-highlight = "doAnnotatorHighlight"
+          @do-annotator-delete = "doAnnotatorDelete"
         />
         <div id="eve-reader-view"></div>
       </div>
@@ -44,6 +46,7 @@ export default {
       prevNav: "",
       nextNav: "",
       showAnnotator: false,
+      showAnnotatorFromClick: false,
       annotator: {
         position: {
           top: 0, 
@@ -72,6 +75,11 @@ export default {
       .then(() =>{
         // 1. set theme
         this.rendition.themes.fontSize(`${this.ebook.defaultFontsize}px`);
+        this.rendition.themes.default({
+          '::selection': {
+            'background': 'rgba(255,255,0, 0.3)'
+          },
+        });
       })
       .then(() => {
         // 2. add hook
@@ -89,6 +97,7 @@ export default {
 
             // if select, show EveAnnotatorPopover.vue
             this.showAnnotator = !selection.isCollapsed ;
+            this.showAnnotatorFromClick = false;
 
             // temporary store text to annotator
             this.annotator.text = selection.toString();
@@ -199,6 +208,8 @@ export default {
     },
 
     onClickShowAnnotator(e) {
+      this.showAnnotatorFromClick = true;
+
       let rect = e.target.getBoundingClientRect();
       // because rect is relative to the parent window, we need offset iframe
       let iframeElement = document.getElementById('eve-reader-view');
@@ -236,6 +247,16 @@ export default {
       data.text = this.annotator.text;
       this.ebook.saveAnnotationToDB(data);
     },
+
+    doAnnotatorDelete() {
+      let cfiRange = this.annotator.cfiRange;
+      let type =  this.annotator.type;
+      this.rendition.annotations.remove(cfiRange, type);
+      this.showAnnotator = false;
+
+      let hash = encodeURI(cfiRange + type);
+      this.ebook.deleteAnnotationFromDB(hash);
+    }
   },
 };
 </script>
