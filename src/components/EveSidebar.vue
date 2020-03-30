@@ -39,6 +39,7 @@
 
     <div id="sidebar" v-show="sidebarVisible" :style="{ width: sidebarWidth + 'vw' }">
       <div id="sidebar-toc" v-if="sidebarVisible === 'toc'">
+        <div class="sidebar-header">Table Of Content</div>
         <el-tree
           :data="this.$store.state.ebook.toc"
           empty-text="No Content"
@@ -48,6 +49,7 @@
         </el-tree>
       </div>
       <div id="sidebar-annotation" v-if="sidebarVisible === 'annotation'">
+        <div class="sidebar-header">Annotation</div>
         <div class="eve-annotation-card"
           v-for="item in allAnnotations" :key="item.hash"
           @click = "displayFromAnnotation(item.cfiRange)">
@@ -87,7 +89,6 @@ export default {
 
   methods: {
     showSidebarAnnotation() {
-      console.log(this.ebook.allAnnotation)
       this.allAnnotations = this.ebook.allAnnotation;
       this.toogleSidebar('annotation');
     },
@@ -148,6 +149,10 @@ export default {
           // width range is (200px ~ 500px)
           if (newWidth >= 20 && newWidth <= 40) {
             this.sidebarWidth = newWidth;
+          } else {
+            document.onmouseup = () => {
+              document.onmousemove = document.onmouseup = null;
+            };
           }
         };
 
@@ -224,6 +229,11 @@ export default {
     right: -10px;
     cursor: col-resize;
   }
+}
+
+.sidebar-header {
+  font-size: 1.6rem;
+  padding: 5px 10px;
 }
 
 #sidebar-annotation {
