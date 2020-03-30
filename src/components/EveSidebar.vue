@@ -15,6 +15,14 @@
           <img svg-inline src="@/assets/svg/toc.svg"/>
         </div>
       </el-tooltip>
+      <!-- Annotation -->
+      <el-tooltip class="tooltip" effect="dark" content="Annotation" placement="right">
+        <div class="activitybar-icon" 
+          :class="{'active': sidebarVisible === 'annotation'}" 
+          @click="showSidebarAnnotation">
+          <img svg-inline src="@/assets/svg/annotation.svg"/>
+        </div>
+      </el-tooltip>
       <!-- Increase Font Size -->
       <el-tooltip class="tooltip" effect="dark" content="Increase Font Size" placement="right">
         <div class="activitybar-icon" @click="increaseFontSize">
@@ -39,6 +47,19 @@
           @node-click="handleNodeClick">
         </el-tree>
       </div>
+      <div id="sidebar-annotation" v-if="sidebarVisible === 'annotation'">
+        <div class="eve-annotation-card"
+          v-for="item in allAnnotations" :key="item.hash"
+          @click = "displayFromAnnotation(item.cfiRange)">
+          <div class="eve-annotation-header">
+            <div class="eve-annotation-date"> {{ formatDate(item.date) }} </div>
+            <div class="eve-annotation-more">
+              <i class="el-icon-more"></i>
+            </div>
+          </div>
+          <div class="eve-annotation-text"> {{ item.text }}</div>
+        </div>
+      </div>
       <div class="sidebar-resizer" @mousedown="resizerMouseDown"></div>
     </div>
   </el-aside>
@@ -60,10 +81,30 @@ export default {
     return {
       sidebarVisible: '',
       sidebarWidth: 25,
+      allAnnotations: {},
     }
   },
 
   methods: {
+    showSidebarAnnotation() {
+      console.log(this.ebook.allAnnotation)
+      this.allAnnotations = this.ebook.allAnnotation;
+      this.toogleSidebar('annotation');
+    },
+
+    displayFromAnnotation(cfiRange) {
+      this.ebook.rendition.display(cfiRange);
+    },
+
+    formatDate(date) {
+      let y = date.getFullYear();
+      let m = date.getMonth() + 1;
+      m = m < 10 ? '0' + m : m;
+      let d = date.getDate();
+      d = d < 10 ? ('0' + d) : d;
+      return y + '-' + m + '-' + d;
+    },
+
     toogleSidebar(key) {
       if (this.sidebarVisible === '') {
         this.sidebarVisible = key;
@@ -182,6 +223,31 @@ export default {
     top: 0;
     right: -10px;
     cursor: col-resize;
+  }
+}
+
+#sidebar-annotation {
+  overflow: auto;
+  height: 100%;
+}
+
+.eve-annotation-card {
+  background: white;
+  margin: 5px;
+  padding: 5px;
+  font-size: 14px;
+  cursor: pointer;
+
+  .eve-annotation-header {
+    border-bottom: 1px solid #ebeef5;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 5px;
+
+    .el-icon-more {
+      font-size: 18px;
+      cursor: pointer;
+    }
   }
 }
 </style>
