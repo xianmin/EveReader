@@ -28,6 +28,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import EveAnnotatorPopover from './EveAnnotatorPopover';
+import { Event } from '../event.js';
 
 export default {
   computed: {
@@ -132,6 +133,11 @@ export default {
 
 
     this.rendition.on("rendered", (section) => {
+      // when rendered, tell EveSidebar highlight current toc item
+      let id = this.findCurrentTocItemID(section);
+      Event.highlightCurrentTocItem(id);
+
+      // create Prev and Next section href
       let prevSection = section.prev();
       let nextSection = section.next();
 
@@ -197,6 +203,34 @@ export default {
     
     doNext() {
       this.rendition.next();
+    },
+
+    findCurrentTocItemID(section) {
+      let href = section.href;
+      let currentItem = this.ebook.epub.navigation.get(href);
+
+      // here maybe need optimizes.
+      // if a section is not in toc, currentItem will be undefined.
+      if (currentItem === undefined) {
+        let currentSpineIndex = this.ebook.epub.spine.spineByHref[href];
+        // some toc has children items, we need flattened toc first
+        let flattenedToc = (function flatten(items) {
+          return [].concat(...items.map(item => [item].concat(...flatten(item.children))));
+        })(this.ebook.toc);
+
+        // assume that all the toc items are in order
+        for (let i = 0; i < flattenedToc.length; i++) {
+          if (currentSpineIndex < flattenedToc[i].spineIndex) {
+            if (i === 0) {
+              return '';
+            } else {
+              return flattenedToc[i - 1].id;
+            }
+          }
+        }
+      } else {
+        return currentItem.id;
+      }
     },
 
     // rect is getBoundingClientRect()

@@ -1,6 +1,7 @@
-import Epub from 'epubjs';
 import { openDB } from 'idb';
 
+// because npm epubjs is not updatest, use epub.min.js instead.
+import Epub from './assets/js/epub.min.js';
 import Storage from './storage';
 
 class Ebook {
@@ -24,8 +25,7 @@ class Ebook {
 
     // get toc
     this.epub.loaded.navigation.then((nav) => {
-      // change "subitems" to "children", because element-ui Tree
-      this.toc = JSON.parse((JSON.stringify(nav.toc)).replace(/"subitems"/g, '"children"'));
+      this.toc = this.generateToc(nav.toc, []);
     });
   }
 
@@ -96,9 +96,6 @@ class Ebook {
     return this.ebookID = this.epub.key().slice(11);
   }
 
-  async setEbook() {
-  }
-
   async initAnnotationDB(ebookID) {
     this.annotationDB = await openDB(ebookID, 1, {
       upgrade(db) {
@@ -130,6 +127,31 @@ class Ebook {
 
   deleteAnnotationFromDB(hash) {
     this.annotationDB.delete('annotation', hash);
+  }
+
+  generateToc(toc, parrent) {
+    for (let i = 0; i < toc.length; i++) {
+      let id = toc[i].id;
+      let label = toc[i].label.trim();
+      let href = toc[i].href;
+      let spineIndex = this.epub.spine.spineByHref[href];
+
+      parrent[i] = {
+        id: id,
+        label: label,
+        children: [],
+        href: href,
+        spineIndex: spineIndex,
+      };
+
+      // if toc has subitems recursively
+      // change "subitems" to "children", because element-ui Tree need it
+      if (toc[i].subitems) {
+        this.generateToc(toc[i].subitems, parrent[i].children);
+      }
+    }
+
+    return parrent;
   }
 }
 

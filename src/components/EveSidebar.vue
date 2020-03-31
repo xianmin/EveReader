@@ -38,13 +38,15 @@
     </div>
 
     <div id="sidebar" v-show="sidebarVisible" :style="{ width: sidebarWidth + 'vw' }">
-      <div id="sidebar-toc" v-if="sidebarVisible === 'toc'">
+      <div id="sidebar-toc" v-show="sidebarVisible === 'toc'">
         <div class="sidebar-header">Table Of Content</div>
         <el-tree
           :data="this.$store.state.ebook.toc"
           empty-text="No Content"
           node-key="id"
           expand-on-click-node
+          highlight-current
+          ref = "tocTree"
           @node-click="handleNodeClick">
         </el-tree>
       </div>
@@ -69,6 +71,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import { EventListener } from '../event.js';
 
 export default {
   name: "EveSidebar",
@@ -85,6 +88,19 @@ export default {
       sidebarWidth: 25,
       allAnnotations: {},
     }
+  },
+
+  mounted() {
+    // event from EveViewer
+    // TODO: auto scroll to highlight item at sidebar
+    // TODO: better toc sidebar style
+    EventListener.highlightCurrentTocItem((id) => {
+      if (id) {
+        this.$refs.tocTree.setCurrentKey(id);
+      } else {
+        this.$refs.tocTree.setCurrentKey(null);
+      }
+    })
   },
 
   methods: {
