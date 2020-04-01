@@ -48,8 +48,17 @@ export default {
   },
 
   methods: {
-    setAllAnnotations(newVal) {
-      this.allAnnotations = newVal;
+    setAllAnnotations(arrData) {
+      this.allAnnotations = [...arrData]; // clone array
+      this.sortAnnotations();
+    },
+
+    sortAnnotations(sortMethod = 'sortByDate') {
+      switch(sortMethod) {
+        case 'sortByDate':
+          this.allAnnotations.sort((a,b) => b.date - a.date);
+          break;
+      }
     },
 
     displayFromAnnotation(cfiRange) {
