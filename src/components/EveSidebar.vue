@@ -19,7 +19,7 @@
       <el-tooltip class="tooltip" effect="dark" content="Annotation" placement="right">
         <div class="activitybar-icon" 
           :class="{'active': sidebarVisible === 'annotation'}" 
-          @click="showSidebarAnnotation">
+          @click="toogleSidebar('annotation')">
           <img svg-inline src="@/assets/svg/annotation.svg"/>
         </div>
       </el-tooltip>
@@ -39,31 +39,27 @@
 
     <div id="sidebar" v-show="sidebarVisible" :style="{ width: sidebarWidth + 'vw' }">
       <div id="sidebar-toc" v-show="sidebarVisible === 'toc'">
-        <div class="sidebar-header">Table Of Content</div>
-        <el-tree
-          :data="this.$store.state.ebook.toc"
-          empty-text="No Content"
-          node-key="id"
-          expand-on-click-node
-          highlight-current
-          ref = "tocTree"
-          @node-click="handleNodeClick">
-        </el-tree>
-      </div>
-      <div id="sidebar-annotation" v-if="sidebarVisible === 'annotation'">
-        <div class="sidebar-header">Annotation</div>
-        <div class="eve-annotation-card"
-          v-for="item in allAnnotations" :key="item.hash"
-          @click = "displayFromAnnotation(item.cfiRange)">
-          <div class="eve-annotation-header">
-            <div class="eve-annotation-date"> {{ formatDate(item.date) }} </div>
-            <div class="eve-annotation-more">
-              <i class="el-icon-more"></i>
-            </div>
-          </div>
-          <div class="eve-annotation-text"> {{ item.text }}</div>
+        <div class="sidebar-header">
+          <div class="sidebar-header-text">Table Of Content</div>
+        </div>
+        <div class="sidebar-main">
+          <el-tree
+            :data="this.$store.state.ebook.toc"
+            empty-text="No Content"
+            node-key="id"
+            expand-on-click-node
+            highlight-current
+            ref = "tocTree"
+            @node-click="handleNodeClick">
+          </el-tree>
         </div>
       </div>
+
+      <eve-sidebar-annotation
+        v-show="sidebarVisible === 'annotation'"
+        :data="this.$store.state.ebook.allAnnotation">
+      </eve-sidebar-annotation>
+
       <div class="sidebar-resizer" @mousedown="resizerMouseDown"></div>
     </div>
   </el-aside>
@@ -72,9 +68,14 @@
 <script>
 import { mapGetters } from 'vuex';
 import { EventListener } from '../event.js';
+import EveSidebarAnnotation from './EveSidebarAnnotation.vue'
 
 export default {
   name: "EveSidebar",
+
+  components: {
+    EveSidebarAnnotation,
+  },
 
   computed: {
     ...mapGetters([
@@ -86,7 +87,6 @@ export default {
     return {
       sidebarVisible: '',
       sidebarWidth: 25,
-      allAnnotations: {},
     }
   },
 
@@ -105,28 +105,16 @@ export default {
 
   methods: {
     showSidebarAnnotation() {
-      this.allAnnotations = this.ebook.allAnnotation;
       this.toogleSidebar('annotation');
-    },
-
-    displayFromAnnotation(cfiRange) {
-      this.ebook.rendition.display(cfiRange);
-    },
-
-    formatDate(date) {
-      let y = date.getFullYear();
-      let m = date.getMonth() + 1;
-      m = m < 10 ? '0' + m : m;
-      let d = date.getDate();
-      d = d < 10 ? ('0' + d) : d;
-      return y + '-' + m + '-' + d;
     },
 
     toogleSidebar(key) {
       if (this.sidebarVisible === '') {
-        this.sidebarVisible = key;
+        this.sidebarVisible = key;  // open
+      } else if (this.sidebarVisible === key) {
+        this.sidebarVisible = '';  // close
       } else {
-        this.sidebarVisible = '';
+        this.sidebarVisible = key;  // switch
       }
     },
 
@@ -184,7 +172,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 #activitybar {
   width: 5vw;
   height: 100%;
@@ -219,21 +207,14 @@ export default {
 }
 
 #sidebar {
-  // width: 300px;
-  background-color: darkgray;
   top: 0px;
   bottom: 0px;
   left: 5vw;
   position: fixed;
 
   .el-tree {
-    height: 100vh;
-    overflow: hidden;
     background: #F3F3F3;
-  }
-
-  .el-tree:hover {
-    overflow-y: auto;
+    margin-bottom: 15px;
   }
 
   .sidebar-resizer {
@@ -248,32 +229,20 @@ export default {
 }
 
 .sidebar-header {
-  font-size: 1.6rem;
-  padding: 5px 10px;
-}
+  height: 5vh;
+  background-color: #DCDCDC;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
 
-#sidebar-annotation {
-  overflow: auto;
-  height: 100%;
-}
-
-.eve-annotation-card {
-  background: white;
-  margin: 5px;
-  padding: 5px;
-  font-size: 14px;
-  cursor: pointer;
-
-  .eve-annotation-header {
-    border-bottom: 1px solid #ebeef5;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 5px;
-
-    .el-icon-more {
-      font-size: 18px;
-      cursor: pointer;
-    }
+  .sidebar-header-text {
+    font-size: 1.6rem;
   }
+}
+
+.sidebar-main {
+  overflow: auto;
+  height: 95vh;
+  background: #F3F3F3;
 }
 </style>

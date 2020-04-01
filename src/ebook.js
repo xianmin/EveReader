@@ -15,7 +15,7 @@ class Ebook {
     this.defaultFontsize = 16;
     this.annotationColorList = ['#FFCAD7', '#FFDE70', '#FFFB78', '#D1FF61', '#B4FFEB',];
     this.annotationDB = null;
-    this.allAnnotation = {};
+    this.allAnnotation = [];
 
     this.init();
   }
@@ -114,7 +114,8 @@ class Ebook {
 
   async updateAllAnnotation() {
     try {
-      this.allAnnotation = await this.annotationDB.getAll('annotation');
+      let tempAnnotation = await this.annotationDB.getAll('annotation');
+      this.allAnnotation = Object.values(tempAnnotation); // convert to array
     } catch {
       return;
     }
@@ -123,10 +124,14 @@ class Ebook {
   saveAnnotationToDB(data) {
     data.date = new Date();
     this.annotationDB.add('annotation', data);
+
+    this.updateAllAnnotation()
   }
 
   deleteAnnotationFromDB(hash) {
     this.annotationDB.delete('annotation', hash);
+
+    this.updateAllAnnotation()
   }
 
   generateToc(toc, parrent) {
