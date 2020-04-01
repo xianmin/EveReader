@@ -252,14 +252,19 @@ export default {
       let iframeLeft = iframeRect.left;
       this.setAnnotatorPosition(rect, iframeTop, iframeLeft);
 
-      // console.log(e.target.getAttribute('data-epubcfi'))
       this.annotator.cfiRange = e.target.getAttribute('data-epubcfi');
       this.annotator.type = e.target.getAttribute('data-type');
+      let hash = encodeURI( this.annotator.cfiRange + this.annotator.type );
+      this.annotator.text = this.ebook.allAnnotation.find(e => e.hash === hash).text;
+
       this.showAnnotator = true;
     },
 
     doAnnotatorHighlight(color) {
       this.showAnnotator = false;
+
+      // delete first, then change color
+      if (this.showAnnotatorFromClick) this.doAnnotatorDelete();
 
       let cfiRange = this.annotator.cfiRange;
       // highlight(cfiRange: EpubCFI, data: object, cb: function, className: string, styles: object)
@@ -284,7 +289,7 @@ export default {
 
     doAnnotatorDelete() {
       let cfiRange = this.annotator.cfiRange;
-      let type =  this.annotator.type;
+      let type = this.annotator.type;
       this.rendition.annotations.remove(cfiRange, type);
       this.showAnnotator = false;
 
