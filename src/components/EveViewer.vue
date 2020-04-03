@@ -263,7 +263,7 @@ export default {
     doAnnotatorHighlight(color) {
       this.showAnnotator = false;
 
-      // delete first, then change color
+      // if frome click, delete first, then change color
       if (this.showAnnotatorFromClick) this.doAnnotatorDelete();
 
       let cfiRange = this.annotator.cfiRange;
@@ -285,6 +285,11 @@ export default {
       data.cfiRange = cfiRange;
       data.text = this.annotator.text;
       this.ebook.saveAnnotationToDB(data);
+
+      // remove iframe selection ranges
+      let iframe = this.rendition.getContents()[0];
+      let selection = iframe.window.getSelection();
+      if (selection) selection.removeAllRanges();
     },
 
     doAnnotatorDelete() {
