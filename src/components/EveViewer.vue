@@ -87,6 +87,12 @@ export default {
         // --- get selection info
         this.rendition.hooks.content.register((iframe) => {
           iframe.document.onmouseup = isSelected.bind(this);
+          iframe.document.onmousedown = removeRange.bind(this);
+
+          function removeRange() {
+            const selection = iframe.window.getSelection();
+            selection.removeAllRanges();
+          }
 
           function isSelected(e) {
             e.preventDefault();
