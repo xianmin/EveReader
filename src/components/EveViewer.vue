@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-header height="10vh" v-show="this.prevNav">
-      <div class="view-prev" @click="doPrev">
+      <div id="view-prev" @click="doPrev">
         ▲ Prev Section
       </div>
     </el-header>
@@ -18,7 +18,7 @@
       </div>
     </el-main>
     <el-footer height="10vh" v-show="this.nextNav">
-      <div class="view-next" @click="doNext">
+      <div id="view-next" @click="doNext">
         ▼ Next Section
       </div>
     </el-footer>
@@ -242,9 +242,32 @@ export default {
     // rect is getBoundingClientRect()
     // annotator position at bottom and center of selection
     // position relative to the parent container eve-reader-container
+    // annotator width = 130, height =65
     setAnnotatorPosition(rect, offsetTop = 0, offsetLeft = 0) {
-      this.annotator.position.top = rect.bottom + 5 - offsetTop;  // 5 is distance
-      this.annotator.position.left = rect.left + rect.width / 2 - 65 - offsetLeft; // 65 is half width of annotator
+      let tempTop = rect.bottom + 5 - offsetTop;
+      let tempLeft = rect.left + rect.width / 2 - 65 - offsetLeft; // 65 is half width of annotator
+      let iframe = document.getElementById('eve-reader-view');
+      let viewPrevHeight = document.getElementById('view-prev').clientHeight;
+
+      // fix annotator left position
+      if (tempLeft < 0) {
+        tempLeft = 10; 
+      }
+
+      // fix annotator right position
+      if ((iframe.clientWidth + offsetLeft) - (tempLeft + 130) < 0) {
+        tempLeft = iframe.clientWidth + offsetLeft - 140;
+      }
+
+      // fix annotator top position
+      let screenBottom = window.scrollY + window.innerHeight;
+      let selectionBottom = rect.bottom - offsetTop + viewPrevHeight;
+      if (screenBottom - selectionBottom < 70 || (tempTop + 70) > iframe.clientHeight ) {
+        tempTop = rect.top - offsetTop - 70;
+      }
+
+      this.annotator.position.top = tempTop;
+      this.annotator.position.left = tempLeft;
     },
 
     onClickShowAnnotator(e) {
@@ -254,9 +277,7 @@ export default {
       // because rect is relative to the parent window, we need offset iframe
       let iframeElement = document.getElementById('eve-reader-view');
       let iframeRect = iframeElement.getBoundingClientRect();
-      let iframeTop = iframeRect.top;
-      let iframeLeft = iframeRect.left;
-      this.setAnnotatorPosition(rect, iframeTop, iframeLeft);
+      this.setAnnotatorPosition(rect, iframeRect.top, iframeRect.left);
 
       this.annotator.cfiRange = e.target.getAttribute('data-epubcfi');
       this.annotator.type = e.target.getAttribute('data-type');
@@ -332,7 +353,7 @@ export default {
   padding: 0;
   // line-height: 60px;
 
-  .view-prev, .view-next {
+  #view-prev, #view-next {
     cursor: pointer;
     // background-color: #B3C0D1;
     font-size: 20px;
@@ -343,11 +364,11 @@ export default {
     line-height: 10vh;
   }
 
-  .view-prev {
+  #view-prev {
     border-bottom: 1px solid #ececec;
   }
 
-  .view-next {
+  #view-next {
     border-top: 1px solid #ececec;
   }
 }
