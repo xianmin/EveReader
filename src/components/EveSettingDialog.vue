@@ -4,9 +4,9 @@
     :visible.sync="settingVisible"
     width="35%">
 
-    <el-form :model="setting">
-      <el-form-item label="FontSize">
-        <el-input v-model="setting.fontSize"></el-input>
+    <el-form :model="setting" :rules="rules" ref="settingForm" label-position="right">
+      <el-form-item label="FontSize" prop="fontSize" label-width="25%" >
+        <el-input v-model.number="setting.fontSize"></el-input>
       </el-form-item>
     </el-form>
 
@@ -32,6 +32,11 @@ export default {
     return {
       settingVisible: false,
       setting: {},
+      rules: {
+        fontSize: [
+          { type: 'number', message: 'FontSize must be number!', trigger: 'blur'},
+        ]
+      },
     }
   },
 
@@ -47,10 +52,25 @@ export default {
     },
 
     saveSetting() {
-      // send to EveViewer.vue
-      Event.updateSetting(this.setting);
-      this.ebook.updateGeneralSetting(this.setting);
-      this.settingVisible = false;
+      // validate setting value first
+      this.$refs.settingForm.validate((valid) => {
+        if (valid) {
+          // send to EveViewer.vue
+          Event.updateSetting(this.setting);
+          this.ebook.updateGeneralSetting(this.setting);
+          this.settingVisible = false;
+          this.$message({
+            message: 'Setting Save Success!',
+            type: 'success'
+          });
+        } else {
+          this.$message({
+            message: 'Setting Save Failed!',
+            type: 'error'
+          });
+          return false;
+        }
+      })
     },
   },
 }
