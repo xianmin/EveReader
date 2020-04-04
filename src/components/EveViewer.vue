@@ -29,6 +29,7 @@
 import { mapGetters } from 'vuex';
 import EveAnnotatorPopover from './EveAnnotatorPopover';
 import { Event, EventListener } from '../event.js';
+import Theme from '../theme.js';
 
 export default {
   computed: {
@@ -58,6 +59,7 @@ export default {
         text: "",
       },
       eveAnnotation: {},
+      theme: {},
     }
   },
 
@@ -75,17 +77,14 @@ export default {
       fullsize: true,
     });
 
+    this.theme = new Theme(this.rendition)
+
     // ----------------------------------------------
     // Ready for rendition display
     this.ebook.loaded()
       .then(() =>{
         // 1. set theme
         this.setRenditionFromSetting(this.ebook.generalSetting);
-        this.rendition.themes.default({
-          '::selection': {
-            'background': 'rgba(255,255,0, 0.3)'
-          },
-        });
       })
       .then(() => {
         // 2. add hook
@@ -336,6 +335,7 @@ export default {
 
     setRenditionFromSetting(setting) {
       this.rendition.themes.fontSize(`${setting.fontSize}px`);
+      this.theme.updateDefault(setting);
     }
   },
 };

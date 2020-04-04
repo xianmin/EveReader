@@ -18,6 +18,7 @@ class Ebook {
     this.allAnnotation = [];
     this.defaultSetting = {
       fontSize: 16,
+      lineHeight: 1.6,
     };
     this.generalSetting = {};
 
@@ -115,15 +116,25 @@ class Ebook {
   async getSettingFromDB() {
     try {
       let general = await this.eveReaderDB.get('setting', 'general');
+      let generalSetting = general.value;
 
       if (!general) {
         this.initGeneralSetting();
-      } else {
-        this.generalSetting = general.value;
+      }
+      // when defaultSetting add a new item, add it to generalSetting
+      else if (Object.keys(generalSetting).length !== Object.keys(this.defaultSetting).length) {
+        for (let v in this.defaultSetting) {
+          if (generalSetting[v] === undefined) generalSetting[v] = this.defaultSetting[v];
+        }
+        this.updateGeneralSetting(generalSetting)
+      }
+      else {
+        this.generalSetting = generalSetting;
       }
 
       this.currentFontsize = parseInt(this.generalSetting.fontSize);
     } catch {
+      this.updateGeneralSetting(this.defaultSetting);
       return;
     }
   }

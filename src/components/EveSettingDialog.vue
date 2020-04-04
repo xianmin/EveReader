@@ -8,6 +8,9 @@
       <el-form-item label="FontSize" prop="fontSize" label-width="25%" >
         <el-input v-model.number="setting.fontSize"></el-input>
       </el-form-item>
+      <el-form-item label="Line Height" prop="lineHeight" label-width="25%" >
+        <el-input v-model="setting.lineHeight"></el-input>
+      </el-form-item>
     </el-form>
 
     <div slot="footer" class="dialog-footer">
