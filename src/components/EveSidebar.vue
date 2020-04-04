@@ -35,6 +35,17 @@
           <img svg-inline src="@/assets/svg/font-size-down.svg"/>
         </div>
       </el-tooltip>
+
+      <!-- empty -->
+      <div class="activitybar-empty-fix" style="flex-grow: 1"></div>
+
+      <!-- Setting -->
+      <el-tooltip class="tooltip" effect="dark" content="Setting" placement="right">
+        <div class="activitybar-icon activitybar-setting"
+          @click="$refs.settingDialog.openSettingDialog()">
+          <img svg-inline src="@/assets/svg/setting.svg"/>
+        </div>
+      </el-tooltip>
     </div>
 
     <div id="sidebar" v-show="sidebarVisible" :style="{ width: sidebarWidth + 'vw' }">
@@ -62,19 +73,23 @@
 
       <div class="sidebar-resizer" @mousedown="resizerMouseDown"></div>
     </div>
+
+    <eve-setting-dialog ref="settingDialog"/>
   </el-aside>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
 import { EventListener } from '../event.js';
-import EveSidebarAnnotation from './EveSidebarAnnotation.vue'
+import EveSidebarAnnotation from './EveSidebarAnnotation.vue';
+import EveSettingDialog from './EveSettingDialog.vue';
 
 export default {
   name: "EveSidebar",
 
   components: {
     EveSidebarAnnotation,
+    EveSettingDialog,
   },
 
   computed: {
@@ -126,13 +141,14 @@ export default {
       this.$emit('open-file');
     },
 
+    // Temporary change current fontSize, do not save to DB.
     increaseFontSize() {
-      const fontsize = this.ebook.defaultFontsize + 2;
+      const fontsize = this.ebook.currentFontsize + 2;
       this.ebook.setFontSize(fontsize);
     },
 
     decreaseFontSize() {
-      const fontsize = this.ebook.defaultFontsize - 2;
+      const fontsize = this.ebook.currentFontsize - 2;
       this.ebook.setFontSize(fontsize);
     },
 
@@ -203,6 +219,10 @@ export default {
       width: 100%;
       height: 100%;
     }
+  }
+
+  .activitybar-setting {
+    padding: 0.75vw;
   }
 }
 

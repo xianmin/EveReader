@@ -8,11 +8,19 @@ class Event {
   static highlightCurrentTocItem(id) {
     EventBus.$emit('highlight-current-toc-item', id);
   }
+
+  static updateSetting(setting) {
+    EventBus.$emit('update-setting', setting);
+  }
 }
 
 class EventListener {
   static highlightCurrentTocItem(callback) {
     EventBus.$on('highlight-current-toc-item', callback);
+  }
+
+  static updateSetting(callback) {
+    EventBus.$on('update-setting', callback);
   }
 }
 

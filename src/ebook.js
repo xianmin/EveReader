@@ -12,12 +12,17 @@ class Ebook {
     this.storage = null;
     this.fileName = "";
     this.toc = [];
-    this.defaultFontsize = 16;
+    this.currentFontsize;
     this.annotationColorList = ['#FFCAD7', '#FFDE70', '#FFFB78', '#D1FF61', '#B4FFEB',];
     this.annotationDB = null;
     this.allAnnotation = [];
+    this.defaultSetting = {
+      fontSize: 16,
+    };
+    this.generalSetting = {};
 
     this.init();
+    this.ready = this.initEveReaderDB();
   }
 
   init() {
@@ -34,19 +39,18 @@ class Ebook {
     this.init();
   }
 
-  async ready() {
+  async loaded() {
     await this.epub.ready.then(() => {
         // get epub.key(), remove pre-identifier
         this.ebookID = this.epub.key().slice(11);
         this.storage = new Storage(this.ebookID);
     })
-    
+
     await this.initAnnotationDB(this.ebookID);
   }
 
-  // set fontsize
   setFontSize(fontsize) {
-    this.defaultFontsize = fontsize;
+    this.currentFontsize = fontsize;
     this.rendition.themes.fontSize(`${fontsize}px`);
   }
 
@@ -96,6 +100,48 @@ class Ebook {
     return this.ebookID = this.epub.key().slice(11);
   }
 
+  async initEveReaderDB() {
+    this.eveReaderDB = await openDB('EveReader', 1, {
+      upgrade(db) {
+        db.createObjectStore('setting', {
+          keyPath: 'name',
+        })
+      }
+    })
+
+    await this.getSettingFromDB()
+  }
+
+  async getSettingFromDB() {
+    try {
+      let general = await this.eveReaderDB.get('setting', 'general');
+
+      if (!general) {
+        this.initGeneralSetting();
+      } else {
+        this.generalSetting = general.value;
+      }
+
+      this.currentFontsize = parseInt(this.generalSetting.fontSize);
+    } catch {
+      return;
+    }
+  }
+
+  initGeneralSetting() {
+    let generalSetting = this.defaultSetting;
+    this.eveReaderDB.put('setting', { name: 'general', value: generalSetting });
+    this.generalSetting = generalSetting;
+  }
+
+  updateGeneralSetting(newVal) {
+    this.eveReaderDB.put('setting', { name: 'general', value: newVal });
+    this.generalSetting = newVal;
+    this.currentFontsize = newVal.fontSize;
+  }
+
+  // Annotation ---------------------------
+
   async initAnnotationDB(ebookID) {
     this.annotationDB = await openDB(ebookID, 1, {
       upgrade(db) {
@@ -109,7 +155,6 @@ class Ebook {
     });
     
     await this.updateAllAnnotation()
-
   }
 
   async updateAllAnnotation() {
@@ -133,6 +178,8 @@ class Ebook {
 
     this.updateAllAnnotation()
   }
+
+  // End Annotation --------------------------------------------
 
   generateToc(toc, parrent) {
     for (let i = 0; i < toc.length; i++) {

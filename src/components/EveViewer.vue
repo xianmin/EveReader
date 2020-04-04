@@ -28,7 +28,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import EveAnnotatorPopover from './EveAnnotatorPopover';
-import { Event } from '../event.js';
+import { Event, EventListener } from '../event.js';
 
 export default {
   computed: {
@@ -62,6 +62,11 @@ export default {
   },
 
   mounted() {
+    // listen for setting change
+    EventListener.updateSetting((setting) => {
+      this.setRenditionFromSetting(setting);
+    })
+
     this.rendition = this.ebook.rendition = this.ebook.epub.renderTo("eve-reader-view", {
       flow: "scrolled-doc",
       axis: "vertical",
@@ -72,10 +77,10 @@ export default {
 
     // ----------------------------------------------
     // Ready for rendition display
-    this.ebook.ready()
+    this.ebook.loaded()
       .then(() =>{
         // 1. set theme
-        this.rendition.themes.fontSize(`${this.ebook.defaultFontsize}px`);
+        this.setRenditionFromSetting(this.ebook.generalSetting);
         this.rendition.themes.default({
           '::selection': {
             'background': 'rgba(255,255,0, 0.3)'
@@ -327,6 +332,10 @@ export default {
 
       let hash = encodeURI(cfiRange + type);
       this.ebook.deleteAnnotationFromDB(hash);
+    },
+
+    setRenditionFromSetting(setting) {
+      this.rendition.themes.fontSize(`${setting.fontSize}px`);
     }
   },
 };
