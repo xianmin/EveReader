@@ -239,7 +239,7 @@ export default {
 
   .sidebar-resizer {
     position: absolute;
-    // background: black;
+    z-index: -1;
     width: 10px;
     height: 100%;
     top: 0;
@@ -254,9 +254,10 @@ export default {
   display: flex;
   align-items: center;
   padding: 0 10px;
+  font-size: 18px;
 
-  .sidebar-header-text {
-    font-size: 1.6rem;
+  .sidebar-header-icon {
+    cursor: pointer;
   }
 }
 

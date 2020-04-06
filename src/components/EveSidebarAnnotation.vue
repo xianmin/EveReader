@@ -2,6 +2,16 @@
   <div id="sidebar-annotation">
     <div class="sidebar-header">
       <div class="sidebar-header-text"> Annotation</div>
+      <div class="sidebar-empty-fix" style="flex-grow: 1"></div>
+      <div class="sidebar-header-icon annotation-header-more" 
+        @click="showAnnotationMore = !showAnnotationMore"
+        v-clickoutside="hideAnnotationMore">
+        <i class="el-icon-more"></i>
+        <div class="annotation-header-more-items" v-show="showAnnotationMore">
+          <div class="annotation-header-more-item" @click="importAnnotation">Import</div>
+          <div class="annotation-header-more-item" @click="exportAnnotation">Export</div>
+        </div>
+      </div>
     </div>
     <div class="sidebar-main">
       <div class="eve-annotation-card"
@@ -21,6 +31,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import Clickoutside from 'element-ui/src/utils/clickoutside';
 
 export default {
   computed: {
@@ -29,9 +40,12 @@ export default {
     ]),
   },
 
+  directives: { Clickoutside },
+
   data() {
     return {
       allAnnotations: null,
+      showAnnotationMore: false,
     }
   },
 
@@ -48,6 +62,14 @@ export default {
   },
 
   methods: {
+    hideAnnotationMore() {
+      this.showAnnotationMore = false;
+    },
+
+    importAnnotation() {},
+
+    exportAnnotation() {},
+
     setAllAnnotations(arrData) {
       this.allAnnotations = [...arrData]; // clone array
       this.sortAnnotations();
@@ -98,6 +120,25 @@ export default {
     .el-icon-more {
       font-size: 18px;
       cursor: pointer;
+    }
+  }
+}
+
+.annotation-header-more {
+  position: relative;
+
+  .annotation-header-more-items {
+    position: absolute;
+    border: 1px solid #ebeef5;
+
+    .annotation-header-more-item {
+      background-color: white;
+      padding: 5px 10px;
+    }
+
+    .annotation-header-more-item:hover {
+      background-color: #ecf5ff;
+      color: #66b1ff;
     }
   }
 }
