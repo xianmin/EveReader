@@ -8,7 +8,12 @@
         v-clickoutside="hideAnnotationMore">
         <i class="el-icon-more"></i>
         <div class="annotation-header-more-items" v-show="showAnnotationMore">
-          <div class="annotation-header-more-item" @click="importAnnotation">Import</div>
+          <div class="annotation-header-more-item">
+            <label>
+              Import
+              <input type="file" @change="importAnnotation">
+            </label>
+          </div>
           <div class="annotation-header-more-item" @click="exportAnnotation">Export</div>
         </div>
       </div>
@@ -66,9 +71,34 @@ export default {
       this.showAnnotationMore = false;
     },
 
-    importAnnotation() {},
+    importAnnotation(ev) {
+      const file = ev.target.files[0];
+      const reader = new FileReader();
 
-    exportAnnotation() {},
+      reader.onload = e => {
+        this.ebook.importAnnotationFromJson(e.target.result).then((result) => {
+          switch(result) {
+            case 'success':
+              this.$message({
+                message: 'Import Success!',
+                type: 'success'
+              });
+              break;
+            case 'error':
+              this.$message({
+                message: 'Import Failed!',
+                type: 'error'
+              });
+          }
+        })
+      };
+      reader.readAsText(file);
+      this.hideAnnotationMore();
+    },
+
+    exportAnnotation() {
+      this.ebook.exportAnnotationToJson();
+    },
 
     setAllAnnotations(arrData) {
       this.allAnnotations = [...arrData]; // clone array
@@ -78,7 +108,7 @@ export default {
     sortAnnotations(sortMethod = 'sortByDate') {
       switch(sortMethod) {
         case 'sortByDate':
-          this.allAnnotations.sort((a,b) => b.date - a.date);
+          this.allAnnotations.sort((a,b) => new Date(b.date) - new Date(a.date));
           break;
       }
     },
@@ -87,7 +117,8 @@ export default {
       this.ebook.rendition.display(cfiRange);
     },
 
-    formatDate(date) {
+    formatDate(dateString) {
+      let date = new Date(dateString);
       let y = date.getFullYear();
       let m = date.getMonth() + 1;
       m = m < 10 ? '0' + m : m;
@@ -134,6 +165,14 @@ export default {
     .annotation-header-more-item {
       background-color: white;
       padding: 5px 10px;
+
+      label {
+        cursor: pointer;
+
+        input {
+          display: none;
+        }
+      }
     }
 
     .annotation-header-more-item:hover {

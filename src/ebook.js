@@ -2,7 +2,8 @@ import { openDB } from 'idb';
 
 // because npm epubjs is not updatest, use epub.min.js instead.
 import Epub from './assets/js/epub.min.js';
-import Storage from './storage';
+import Storage from './storage.js';
+
 
 class Ebook {
   constructor() {
@@ -68,6 +69,7 @@ class Ebook {
       }
       document.body.appendChild(fi);
       fi.click();
+      document.body.removeChild(fi);
     }).then((result) => {
       this.openEpub(result);
     })
@@ -101,6 +103,8 @@ class Ebook {
     return this.ebookID = this.epub.key().slice(11);
   }
 
+
+  // EveReaderDB ----------------------------
   async initEveReaderDB() {
     this.eveReaderDB = await openDB('EveReader', 1, {
       upgrade(db) {
@@ -150,6 +154,7 @@ class Ebook {
     this.generalSetting = newVal;
     this.currentFontsize = newVal.fontSize;
   }
+  // End EveReaderDB ---------------------------
 
   // Annotation ---------------------------
 
@@ -178,7 +183,7 @@ class Ebook {
   }
 
   saveAnnotationToDB(data) {
-    data.date = new Date();
+    data.date = new Date().toISOString();
     this.annotationDB.add('annotation', data);
 
     this.updateAllAnnotation()
@@ -188,6 +193,39 @@ class Ebook {
     this.annotationDB.delete('annotation', hash);
 
     this.updateAllAnnotation()
+  }
+
+  exportAnnotationToJson() {
+    let json = {};
+    json.fileName = this.fileName;
+    json.annotation = this.allAnnotation;
+    json.ebookID = this.ebookID;
+
+    const blob = new Blob([JSON.stringify(json)], { type: 'application/json' });
+    const uri = URL.createObjectURL(blob);
+
+    const element = document.createElement('a');
+    element.href = uri;
+    element.download = `${this.fileName} - annotation.json`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  }
+
+  async importAnnotationFromJson(data) {
+    const json = JSON.parse(data);
+    const ebookID = json.ebookID;
+    const annotation = json.annotation;
+
+    if (this.ebookID === ebookID) {
+      for (let i = 0; i < annotation.length; i++) {
+        await this.annotationDB.put('annotation', annotation[i]);
+      }
+      await this.updateAllAnnotation();
+      return "success"
+    } else {
+      return "error"
+    }
   }
 
   // End Annotation --------------------------------------------
