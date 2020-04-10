@@ -186,9 +186,7 @@ export default {
           if (newWidth >= 20 && newWidth <= 40) {
             this.sidebarWidth = newWidth;
           } else {
-            document.onmouseup = () => {
-              document.onmousemove = document.onmouseup = null;
-            };
+            document.onmousemove = document.onmouseup = null;
           }
         };
 
