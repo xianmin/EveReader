@@ -11,6 +11,9 @@
       <el-form-item label="Line Height" prop="lineHeight" label-width="25%" >
         <el-input v-model="setting.lineHeight"></el-input>
       </el-form-item>
+      <el-form-item label="Page Width" prop="pageWidth" label-width="25%" >
+        <el-input v-model="setting.pageWidth"></el-input>
+      </el-form-item>
     </el-form>
 
     <div slot="footer" class="dialog-footer">

@@ -341,17 +341,14 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .eve-reader-container {
   position: relative;
-  max-width: 800px;
-  margin: auto;
 }
 
-// #eve-reader-view {
-//   max-width: 800px;
-//   margin: auto;
-// }
+iframe {
+  display: block;
+}
 
 .el-main {
   min-height: 90vh;

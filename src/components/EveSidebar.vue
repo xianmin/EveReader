@@ -105,6 +105,22 @@ export default {
     }
   },
 
+  watch: {
+    // watch sidebar change, than refresh rendition
+    // maybe there is a better solution
+    sidebarVisible(newVal, oldVal) {
+      if (newVal === '' || oldVal === ''){
+        setTimeout(() => {
+          this.ebook.rendition.resize();
+        }, 1)
+      }
+    },
+
+    sidebarWidth() {
+      this.ebook.rendition.resize();
+    }
+  },
+
   mounted() {
     // event from EveViewer
     // TODO: auto scroll to highlight item at sidebar

@@ -18,8 +18,9 @@ class Ebook {
     this.annotationDB = null;
     this.allAnnotation = [];
     this.defaultSetting = {
-      fontSize: 16,
-      lineHeight: 1.6,
+      fontSize: 18,
+      lineHeight: 1.8,
+      pageWidth: '900px',
     };
     this.generalSetting = {};
 
