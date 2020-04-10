@@ -269,8 +269,11 @@ export default {
   background-color: #DCDCDC;
   display: flex;
   align-items: center;
-  padding: 0 10px;
   font-size: 18px;
+
+  .sidebar-header-text{
+    padding-left: 10px;
+  }
 
   .sidebar-header-icon {
     cursor: pointer;

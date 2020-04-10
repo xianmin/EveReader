@@ -157,9 +157,11 @@ export default {
 
 .annotation-header-more {
   position: relative;
+  padding-right: 10px;
 
   .annotation-header-more-items {
     position: absolute;
+    right: 0;
     border: 1px solid #ebeef5;
 
     .annotation-header-more-item {
