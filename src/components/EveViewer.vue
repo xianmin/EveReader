@@ -60,6 +60,7 @@ export default {
       },
       eveAnnotation: {},
       theme: {},
+      lastCfi: "",
     }
   },
 
@@ -169,9 +170,14 @@ export default {
     });
 
     this.rendition.on("relocated", (location) => {
-      let cfi = location.start.cfi;
-      this.ebook.storage.setEbookData('lastCfi', cfi)
+      this.lastCfi = location.start.cfi;
+      this.ebook.storage.setEbookData('lastCfi', this.lastCfi);
     });
+
+    this.rendition.on("resized", () => {
+      // fix display incorrect when resized
+      this.rendition.display(this.lastCfi);
+    })
 
     // When selected, temporary store cfiRange to annotator
     this.rendition.on("selected", (cfiRange) => {
