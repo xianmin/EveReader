@@ -66,7 +66,10 @@ export default {
   mounted() {
     // listen for setting change
     EventListener.updateSetting((setting) => {
+      // when change setting, location will change, we need remember the location
+      let location = this.rendition.currentLocation();
       this.setRenditionFromSetting(setting);
+      this.ebook.updateRenditionLayout(location.start.cfi);
     })
 
     this.rendition = this.ebook.rendition = this.ebook.epub.renderTo("eve-reader-view", {
@@ -135,8 +138,8 @@ export default {
       })
       .then(() => {
         // 3. display
-        let lastCfi = this.ebook.storage.getEbookData("lastCfi")
-        this.rendition.display(lastCfi || 0);
+        let lastCfi = this.ebook.storage.getEbookData("lastCfi");
+        this.ebook.display(lastCfi || 0);
       })
       // End Rendition display
       //--------------------------

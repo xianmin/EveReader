@@ -52,9 +52,29 @@ class Ebook {
     await this.initAnnotationDB(this.ebookID);
   }
 
+  display(target) {
+    this.rendition.display(target).then(() => {
+      // when we set theme, the display location maybe not correct, fix it.
+      if (typeof target === "string" &&
+        target.indexOf("epubcfi(") === 0 &&
+        target[target.length - 1] === ")") {
+        let location = this.rendition.currentLocation();
+        if (location.start.cfi !== target) this.rendition.display(target);
+      }
+    })
+  }
+
+  updateRenditionLayout(cfi) {
+    this.rendition.manager.updateLayout();
+    this.rendition.display(cfi);
+  }
+
   setFontSize(fontsize) {
+    // when change fontsize, location will change, we need remember the location
+    let location = this.rendition.currentLocation();
     this.currentFontsize = fontsize;
     this.rendition.themes.fontSize(`${fontsize}px`);
+    this.updateRenditionLayout(location.start.cfi);
   }
 
   openFile() {

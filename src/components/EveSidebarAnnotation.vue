@@ -114,7 +114,7 @@ export default {
     },
 
     displayFromAnnotation(cfiRange) {
-      this.ebook.rendition.display(cfiRange);
+      this.ebook.display(cfiRange);
     },
 
     formatDate(dateString) {
