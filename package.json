@@ -8,6 +8,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "build:calibre": "vue-cli-service build --mode calibre",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
