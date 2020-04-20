@@ -6,6 +6,7 @@ module.exports = {
   
   // different outputDir is for eve-calibre-web project
   outputDir: process.env.NODE_ENV === 'calibre' ? '../dist' : 'dist',
+  assetsDir: 'static',
 
   chainWebpack: config => {
     config.module
