@@ -39,7 +39,7 @@ import EveSidebar from '@/components/EveSidebar';
 import EveViewer from '@/components/EveViewer';
 
 export default {
-  name: 'home',
+  name: 'reader',
 
   components: {
     EveSidebar,
@@ -49,6 +49,13 @@ export default {
   created() {
     this.ebook = new Ebook();
     this.$store.dispatch("setEbook", this.ebook);
+
+    if (this.$route.name === "view") {
+      let book_id = this.$route.params.book_id;
+      let api = process.env.VUE_APP_API;
+      let url = `${api}/show/${book_id}/epub/file.epub`
+      this.ebook.openEpubFromUrl(url)
+    }
   },
 
   methods: {

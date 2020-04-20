@@ -120,6 +120,10 @@ class Ebook {
     this.epub.open(data, "binary");
   }
 
+  openEpubFromUrl(url) {
+    this.epub.open(url, "epub")
+  }
+
   getEbookID() {
     return this.ebookID = this.epub.key().slice(11);
   }
