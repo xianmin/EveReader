@@ -1,7 +1,7 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import EveViewer from '../components/EveViewer';
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import Home from '../views/Home.vue';
+import EveViewer from '../components/EveViewer.vue';
 
 Vue.use(VueRouter)
 
@@ -10,9 +10,24 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home,
+    redirect: () => {
+      // at github page, jump to 'reader' directly.
+      if (process.env.NODE_ENV === 'production') return '/reader/'
+    },
+  },
+  {
+    path: '/reader/',
+    name: 'Reader',
+    component: () => import('../views/Reader.vue'),
     children: [
       {
-        path: '/read/:fileName',
+        path: '/reader/open/:fileName',
+        name: 'open',
+        component: EveViewer,
+      },
+      {
+        path: '/reader/view/:book_id',
+        name: 'view',
         component: EveViewer,
       }
     ]
