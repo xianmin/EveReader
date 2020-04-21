@@ -10,10 +10,6 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home,
-    redirect: () => {
-      // at github page, jump to 'reader' directly.
-      if (process.env.NODE_ENV === 'production') return '/reader/'
-    },
   },
   {
     path: '/reader/',
