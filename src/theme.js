@@ -3,7 +3,8 @@ class Theme{
     this.rendition = rendition;
     this.default = {
       body: {
-        margin: '0 auto !important;'
+        margin: '0 auto !important;',
+        padding: '0 !important;',
       },
       '::selection': {
         'background': 'rgba(255,255,0, 0.3)'
