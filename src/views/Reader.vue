@@ -2,7 +2,7 @@
   <div class="home">
     <el-container>
 
-      <eve-sidebar @open-file="openFile" />
+      <eve-sidebar class="eve-sidebar" @open-file="openFile" />
 
       <router-view v-if='this.ebook.epub.isOpen'>
         <eve-viewer></eve-viewer>
@@ -197,5 +197,9 @@ export default {
       }
     }
   }
+}
+
+.eve-sidebar {
+  z-index: 9999;
 }
 </style>
