@@ -21,6 +21,7 @@ class Ebook {
       fontSize: 18,
       lineHeight: 1.8,
       pageWidth: '900px',
+      backgroundColor: '#FFFFFF',
     };
     this.generalSetting = {};
 

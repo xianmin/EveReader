@@ -360,8 +360,9 @@ iframe {
 }
 
 .el-main {
-  min-height: 90vh;
-  padding: 0 0 10vh 0;
+  // min-height: 90vh;
+  padding: 0 !important;
+  overflow: hidden !important;
 }
 
 .el-header, .el-footer {
