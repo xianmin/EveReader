@@ -294,7 +294,7 @@ export default {
 
       this.annotator.cfiRange = e.target.getAttribute('data-epubcfi');
       this.annotator.type = e.target.getAttribute('data-type');
-      let hash = encodeURI( this.annotator.cfiRange + this.annotator.type );
+      let hash = encodeURI(this.annotator.type + '-' + this.annotator.cfiRange);
       this.annotator.text = this.ebook.allAnnotation.find(e => e.hash === hash).text;
 
       this.showAnnotator = true;
@@ -318,7 +318,7 @@ export default {
 
       // save to indexDB
       let data = {};
-      data.hash = encodeURI(cfiRange + annotation.type);
+      data.hash = encodeURI(annotation.type + '-' + cfiRange);
       data.sectionIndex = annotation.sectionIndex;
       data.type = annotation.type;
       data.color = color;
@@ -338,7 +338,7 @@ export default {
       this.rendition.annotations.remove(cfiRange, type);
       this.showAnnotator = false;
 
-      let hash = encodeURI(cfiRange + type);
+      let hash = encodeURI(type + '-' + cfiRange);
       this.ebook.deleteAnnotationFromDB(hash);
     },
 
