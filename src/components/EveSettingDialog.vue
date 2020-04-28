@@ -2,6 +2,7 @@
   <el-dialog
     title="Setting"
     :visible.sync="settingVisible"
+    :modal-append-to-body=false
     width="35%">
 
     <el-form :model="setting" :rules="rules" ref="settingForm" label-position="right">

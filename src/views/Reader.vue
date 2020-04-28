@@ -200,6 +200,6 @@ export default {
 }
 
 .eve-sidebar {
-  z-index: 9999;
+  z-index: 1;
 }
 </style>
