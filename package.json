@@ -1,16 +1,19 @@
 {
   "name": "eve-reader",
   "version": "0.1.0",
-  "author": "Chen Xianmin <xianmin12@gmail.com>",
   "description": "Reader for epub E-books",
-  "license": "AGPL-3.0",
-  "homepage": "https://xianmin.github.io/EveReader/",
+  "author": "Chen Xianmin <xianmin12@gmail.com>",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
     "build:calibre": "vue-cli-service build --mode calibre",
-    "lint": "vue-cli-service lint"
+    "electron:build": "vue-cli-service electron:build",
+    "electron:serve": "vue-cli-service electron:serve",
+    "postinstall": "electron-builder install-app-deps",
+    "postuninstall": "electron-builder install-app-deps"
   },
+  "main": "background.js",
   "dependencies": {
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
@@ -28,11 +31,16 @@
     "@vue/cli-plugin-vuex": "~4.2.0",
     "@vue/cli-service": "~4.2.0",
     "babel-eslint": "^10.0.3",
+    "electron": "^9.0.0",
+    "electron-devtools-installer": "^3.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.1.2",
     "node-sass": "^4.13.1",
     "sass-loader": "^8.0.2",
+    "vue-cli-plugin-electron-builder": "~2.0.0-rc.5",
     "vue-svg-inline-loader": "^1.4.6",
     "vue-template-compiler": "^2.6.11"
-  }
+  },
+  "homepage": "https://xianmin.github.io/EveReader/",
+  "license": "AGPL-3.0"
 }
