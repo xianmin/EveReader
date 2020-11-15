@@ -50,10 +50,6 @@ export default {
   },
 
   beforeCreate() {
-    // at github page, jump to reader directly
-    if (process.env.NODE_ENV === "production"){
-      this.$router.push("/reader/");
-    }
   },
 
   created() {

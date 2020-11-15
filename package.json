@@ -17,6 +17,7 @@
   "dependencies": {
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
+    "electron-window-state": "^5.0.3",
     "element-ui": "^2.13.0",
     "epubjs": "^0.3.85",
     "idb": "^5.0.1",

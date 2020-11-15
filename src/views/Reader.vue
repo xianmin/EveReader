@@ -56,6 +56,10 @@ export default {
       let url = `${api}/show/${book_id}/epub/file.epub`
       this.ebook.openEpubFromUrl(url)
     }
+
+    if (window.ipcRenderer) {
+      this.initElectron();
+    }
   },
 
   methods: {
@@ -71,6 +75,16 @@ export default {
         const path = `/reader/open/${this.ebook.fileName}`;
         if (this.$route.path !== path) this.$router.push(path);
       })
+    },
+
+    initElectron() {
+      window.ipcRenderer.once('IPC::file-opened', (event, data, fileName) => {
+        this.ebook.openEpub(data).then(() => {
+          this.ebook.fileName = fileName;
+          const path = `/reader/open/${fileName}`;
+          if (this.$route.path !== path) this.$router.push(path);
+        });
+      });
     }
   },
 

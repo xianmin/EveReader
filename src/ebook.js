@@ -117,8 +117,11 @@ class Ebook {
   }
 
   openEpub(data) {
-    if (this.epub.isOpen) this.reset();
-    this.epub.open(data, "binary");
+    return new Promise((resolve) => {
+      if (this.epub.isOpen) this.reset();
+      this.epub.open(data, "binary");
+      resolve();
+    })
   }
 
   openEpubFromUrl(url) {

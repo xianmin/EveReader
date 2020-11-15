@@ -10,6 +10,10 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home,
+    beforeEnter: (to, from, next) => {
+      // if (!process.env.IS_ELECTRON) next('/reader/');
+      next('/reader/');
+    }
   },
   {
     path: '/reader/',

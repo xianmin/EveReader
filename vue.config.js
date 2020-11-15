@@ -15,4 +15,10 @@ module.exports = {
       .loader("vue-svg-inline-loader")
       .options({ /* ... */ });
   },
+
+  pluginOptions: {
+    electronBuilder: {
+      preload: 'src/preload.js',
+    }
+  }
 }
