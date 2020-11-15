@@ -19,6 +19,39 @@ module.exports = {
   pluginOptions: {
     electronBuilder: {
       preload: 'src/preload.js',
+      builderOptions: {
+        "productName": "Eve Reader",
+        "appId": "com.example.yourapp",
+        "fileAssociations": [{
+          "ext": "epub",
+          "name": "Epub",
+          "description": "Epub Open eBook",
+          "role": "Viewer"
+        }],
+        "linux": {
+          "category": "Viewer",
+          "mimeTypes": [
+            "application/epub+zip"
+          ],
+          "target": [{
+              "target": "Appimage"
+            },
+            {
+              "target": "deb"
+            }
+          ],
+          "maintainer": "Chen Xianmin",
+          "artifactName": "${productName}-${version}.${ext}",
+          "executableName": "eve-reader",
+          "executableArgs": ["%f"],
+          "desktop": {
+            "Name": "Eve Reader",
+            "Terminal": "false",
+            "Comment": "Reader for epub E-books",
+            "Categories": "Viewer"
+          }
+        }
+      },
     }
   }
 }

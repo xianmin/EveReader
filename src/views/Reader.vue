@@ -8,7 +8,7 @@
         <eve-viewer></eve-viewer>
       </router-view>
 
-      <div class="home-container" v-if="this.$route.path === '/reader/'">
+      <div class="home-container" v-if="this.$route.path === '/reader/' && !isElectron">
         <div class="home-wrapper">
           <div class="home-title">
               EvE Reader
@@ -46,7 +46,13 @@ export default {
     EveViewer,
   },
 
-  created() {
+  data() {
+    return {
+      isElectron: true,
+    }
+  },
+
+  beforeCreate() {
     this.ebook = new Ebook();
     this.$store.dispatch("setEbook", this.ebook);
 
@@ -57,9 +63,21 @@ export default {
       this.ebook.openEpubFromUrl(url)
     }
 
+    // electron environment, listen for file open from argv
     if (window.ipcRenderer) {
-      this.initElectron();
+      window.ipcRenderer.on('IPC::FILE-OPEN', (event, data, fileName) => {
+        this.ebook.openEpub(data).then(() => {
+          this.ebook.fileName = fileName;
+          const path = `/reader/open/${fileName}`;
+          if (this.$route.path !== path) this.$router.push(path);
+        });
+      });
+    } else {
+      this.isElectron = false;
     }
+  },
+
+  created() {
   },
 
   methods: {
@@ -76,16 +94,6 @@ export default {
         if (this.$route.path !== path) this.$router.push(path);
       })
     },
-
-    initElectron() {
-      window.ipcRenderer.once('IPC::file-opened', (event, data, fileName) => {
-        this.ebook.openEpub(data).then(() => {
-          this.ebook.fileName = fileName;
-          const path = `/reader/open/${fileName}`;
-          if (this.$route.path !== path) this.$router.push(path);
-        });
-      });
-    }
   },
 
   mounted() {

@@ -7,6 +7,7 @@ import fs from 'fs';
 import windowStateKeeper from 'electron-window-state';
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
+
 // a set of windows
 const windowSet = new Set();
 
@@ -15,7 +16,8 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
 
-async function createWindow(filePath = null) {
+
+async function createWindow() {
   // Load the previous state with fallback to defaults
   const mainWindowState = windowStateKeeper({
     width: 800,
@@ -50,20 +52,8 @@ async function createWindow(filePath = null) {
   } else {
     createProtocol('app')
     // Load the index.html when not in development
-    newWindow.loadURL('app://./index.html')
+    await newWindow.loadURL('app://./index.html')
   }
-
-    // await newWindow.webContents.on('did-finish-load', () => {
-  if (filePath) {
-    let fileName = path.basename(filePath);
-    fs.readFile(filePath, (err, data) => {
-      if (err) {
-        console.log(err);
-      }
-      newWindow.webContents.send('IPC::file-opened', data, fileName);
-    });
-  }
-    // });
 
   // newWindow.once('ready-to-show', () => {
   //   newWindow.show();
@@ -75,24 +65,24 @@ async function createWindow(filePath = null) {
     windowSet.delete(newWindow);
     newWindow = null;
   });
-}
 
-// Open epub in argv if exist, otherwise open a new blank window
-function appReadyToRun() {
-  // console.log(process.argv);
   const argvPath = process.argv.filter((element) => {
     return element.substring(element.length - 5) === '.epub';
   });
+  // const argvPath = ["/home/xm20/test.epub"];
 
   if (argvPath.length > 0) {
-    // Who can help me?
-    // It works on the Terminal. OS: Deepin Linux.
-    // But on my Appimage Build, it can't open the epub from the File Manager.
-    createWindow(argvPath[0]);
-  } else {
-    createWindow();
+    let filePath = argvPath[0];
+    let fileName = path.basename(filePath);
+    fs.readFile(filePath, (err, data) => {
+      if (err) {
+        console.log(err);
+      }
+      newWindow.webContents.send('IPC::FILE-OPEN', data, fileName);
+    });
   }
 }
+
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -122,7 +112,8 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
-  appReadyToRun()
+
+  createWindow()
 })
 
 // Exit cleanly on request from parent process in development mode.
