@@ -18,7 +18,7 @@ module.exports = {
 
   pluginOptions: {
     electronBuilder: {
-      preload: 'src/preload.js',
+      preload: 'src/electron/preload.js',
       builderOptions: {
         "productName": "Eve Reader",
         "appId": "com.example.yourapp",
@@ -28,12 +28,14 @@ module.exports = {
           "description": "Epub Open eBook",
           "role": "Viewer"
         }],
+        // build linux
         "linux": {
           "category": "Viewer",
           "mimeTypes": [
             "application/epub+zip"
           ],
-          "target": [{
+          "target": [
+            {
               "target": "Appimage"
             },
             {
@@ -50,7 +52,29 @@ module.exports = {
             "Comment": "Reader for epub E-books",
             "Categories": "Viewer"
           }
-        }
+        },
+        // // TODO: build mac
+        // "dmg": {
+        //   "artifactName": "${productName}-${version}.${ext}",
+        // },
+        // "mac": {
+        //   "artifactName": "mac-${productName}-${version}.${ext}",
+        //   "darkModeSupport": "true",
+        // },
+        // // TODO: build win
+        // "win": {
+        //   "artifactName": "win-${productName}-${version}.${ext}",
+        //   "target": [{
+        //     "target": "nsis",
+        //     "arch": ["ia32", "x64"],
+        //   }],
+        //   "nsis": {
+        //     "artifactName": "win-${productName}-${version}.${ext}",
+        //     "perMachine": "false",
+        //     "oneClick": "false",
+        //     "allowToChangeInstallationDirectory": "true"
+        //   },
+        // },
       },
     }
   }
