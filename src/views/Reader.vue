@@ -52,7 +52,7 @@ export default {
     }
   },
 
-  beforeCreate() {
+  created() {
     this.ebook = new Ebook();
     this.$store.dispatch("setEbook", this.ebook);
 
@@ -75,9 +75,6 @@ export default {
     } else {
       this.isElectron = false;
     }
-  },
-
-  created() {
   },
 
   methods: {
