@@ -4,7 +4,7 @@
 
       <eve-sidebar class="eve-sidebar" @open-file="openFile" />
 
-      <router-view v-if='this.ebook.epub.isOpen'>
+      <router-view v-if='this.isLoad'>
         <eve-viewer></eve-viewer>
       </router-view>
 
@@ -49,6 +49,7 @@ export default {
   data() {
     return {
       isElectron: true,
+      isLoad: false,
     }
   },
 
@@ -69,12 +70,18 @@ export default {
         this.ebook.openEpub(data).then(() => {
           this.ebook.fileName = fileName;
           const path = `/reader/open/${fileName}`;
-          if (this.$route.path !== path) this.$router.push(path);
+          this.ebook.loaded().then(() => {
+            if (this.$route.path !== path) this.$router.push(path);
+          })
         });
       });
     } else {
       this.isElectron = false;
     }
+
+    this.ebook.loaded().then(() => {
+      this.isLoad = true;
+    })
   },
 
   methods: {

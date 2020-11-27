@@ -91,22 +91,14 @@ class Section {
 
 		this.load(_request).
 			then(function(contents){
-				var userAgent = (typeof navigator !== 'undefined' && navigator.userAgent) || '';
-				var isIE = userAgent.indexOf('Trident') >= 0;
-				var Serializer;
-				if (typeof XMLSerializer === "undefined" || isIE) {
-					// Serializer = require("xmldom/dom-parser").XMLSerializer;
-				} else {
-					Serializer = XMLSerializer;
-				}
-				var serializer = new Serializer();
+				var serializer = new XMLSerializer();
 				this.output = serializer.serializeToString(contents);
 				return this.output;
 			}.bind(this)).
-			then(function(){
+			then(function () {
 				return this.hooks.serialize.trigger(this.output, this);
 			}.bind(this)).
-			then(function(){
+			then(function () {
 				rendering.resolve(this.output);
 			}.bind(this))
 			.catch(function(error){
