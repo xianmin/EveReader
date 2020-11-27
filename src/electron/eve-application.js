@@ -19,7 +19,6 @@ class eveApplication {
     const argvPath = argv.filter((element) => {
       return element.substring(element.length - 5) === '.epub';
     });
-    // const argvPath = ["/home/xm20/test.epub"];
 
     if (argvPath.length > 0) {
       new eveWindow(this, argvPath[0]);

@@ -41,7 +41,7 @@ class eveWindow {
   }
 
   // Open a new window
-  async open() {
+  open() {
     // Create and open window
     const mainWindowState = windowStateKeeper({
         // path: constants.path.userData,
@@ -112,23 +112,30 @@ class eveWindow {
     // Load window
     if (process.env.WEBPACK_DEV_SERVER_URL) {
       // Load the url of the dev server if in development mode
-      await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
+      win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
       if (!process.env.IS_TEST) win.webContents.openDevTools()
     } else {
       createProtocol('app')
       // Load the index.html when not in development
-      await win.loadURL('app://./index.html')
+      win.loadURL('app://./index.html')
     }
 
-    if (this.epubPath) {
-      let fileName = path.basename(this.epubPath);
-      fs.readFile(this.epubPath, (err, data) => {
-        if (err) {
-          console.log(err);
-        }
-        win.webContents.send('IPC::FILE-OPEN', data, fileName);
-      });
+    /* global __static */
+    if (process.env.NODE_ENV !== 'production') {
+      this.epubPath = path.join(__static, 'test.epub')
     }
+
+    win.webContents.on("did-finish-load", () => {
+      if (this.epubPath) {
+        let fileName = path.basename(this.epubPath);
+        fs.readFile(this.epubPath, (err, data) => {
+          if (err) {
+            console.log(err);
+          }
+          win.webContents.send('IPC::FILE-OPEN', data, fileName);
+        });
+      }
+    })
 
     // Open devtools on startup when --debug flag is used
     // if (this.config.get("debug")) {

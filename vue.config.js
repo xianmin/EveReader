@@ -16,6 +16,10 @@ module.exports = {
       .options({ /* ... */ });
   },
 
+  configureWebpack: {
+    devtool: 'source-map',
+  },
+
   pluginOptions: {
     electronBuilder: {
       preload: 'src/electron/preload.js',
