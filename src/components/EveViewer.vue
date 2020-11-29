@@ -37,15 +37,16 @@ export default {
       section: null,
       sectionContent: null,
       contents: null,
+      lastCfi: "",
     }
   },
 
   mounted() {
     this.spineItems = this.ebook.epub.spine.spineItems;
-    this.display(0);
+    let lastCfi = this.ebook.storage.getEbookData("lastCfi");
+    this.display(lastCfi || 0);
 
     document.body.addEventListener("keydown", (e) => {
-      this.currentLocation();
       const kc = e.keyCode || e.which;
       if (window.scrollY === 0) {
         if (kc === 33 || kc === 38) {
@@ -70,14 +71,22 @@ export default {
           this.doNext()
       }
     })
+
+    // when scroll finish, remember cfi
+    let timer = null;
+    window.addEventListener('scroll', () => {
+      if(timer !== null) {
+          clearTimeout(timer);
+      }
+      timer = setTimeout(() => {
+        let location = this.currentLocation();
+        this.lastCfi = location.start;
+        this.ebook.storage.setEbookData('lastCfi', this.lastCfi);
+      }, 150);
+    }, false);
   },
 
   methods: {
-    doDisplay() {
-      // this.display(this.spineItems[this.currentSectionIndex])
-      this.display("epubcfi(/6/6[chapter02]!/4/48/1:117)")
-    },
-
     async display(target) {
       this.section = this.ebook.epub.spine.get(target);
       let request = this.ebook.epub.load.bind(this.ebook.epub);
@@ -123,34 +132,25 @@ export default {
       // let endPos = startPos + window.innerHeight;
       let mapping = new epubMapping();
       let location = mapping.page(this.$refs.viewSection, this.section.cfiBase, 0, window.innerHeight);
-      console.log(location);
+      return location;
     },
 
     doPrev() {
       if (this.section.index > 0) {
-        // this.sectionIndex = this.sectionIndex - 1;
         this.display(this.section.index - 1);
-        setTimeout(() => {
+        this.$nextTick(() => {
           window.scroll(0, document.body.clientHeight);
-        }, 20)
+        })
       }
     },
 
     doNext() {
       if (this.section.index < this.spineItems.length - 1) {
-        // this.sectionIndex = this.sectionIndex + 1;
         this.display(this.section.index + 1);
-        setTimeout(() => {
+        this.$nextTick(() => {
           window.scroll(0, 0);
-        }, 20)
+        })
       }
-    },
-
-    getContent(section) {
-      let request = this.ebook.epub.load.bind(this.ebook.epub);
-      section.render(request).then((result) => {
-        return result;
-      })
     },
   },
 };
