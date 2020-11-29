@@ -11,8 +11,10 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import epubContents from "../epubjs/contents";
+// import epubContents from "../epubjs/contents";
 import epubMapping from "../epubjs/mapping";
+import epubCfi from "../epubjs/epubcfi";
+import { isNumber } from "../epubjs/utils/core";
 
 // import EveAnnotatorPopover from './EveAnnotatorPopover';
 // import { Event, EventListener } from '../event.js';
@@ -32,14 +34,15 @@ export default {
   data() {
     return {
       spineItems: null,
+      section: null,
       sectionContent: null,
       contents: null,
     }
   },
 
-  created() {
+  mounted() {
     this.spineItems = this.ebook.epub.spine.spineItems;
-    this.doDisplay();
+    this.display(0);
 
     document.body.addEventListener("keydown", (e) => {
       this.currentLocation();
@@ -71,46 +74,75 @@ export default {
 
   methods: {
     doDisplay() {
-      this.display(this.spineItems[this.currentSectionIndex])
+      // this.display(this.spineItems[this.currentSectionIndex])
+      this.display("epubcfi(/6/6[chapter02]!/4/48/1:117)")
     },
 
-    async display(section) {
+    async display(target) {
+      this.section = this.ebook.epub.spine.get(target);
       let request = this.ebook.epub.load.bind(this.ebook.epub);
-      let result = await section.render(request);
+      let result = await this.section.render(request);
       this.sectionContent = result.replace(/(<\s*\/?\s*)html(\s*([^>]*)?\s*>)/gi ,'$1eve-view-html$2')
                                   .replace(/(<\s*\/?\s*)head(\s*([^>]*)?\s*>)/gi ,'$1eve-view-head$2')
                                   .replace(/(<\s*\/?\s*)body(\s*([^>]*)?\s*>)/gi ,'$1eve-view-body$2')
-      this.contents = new epubContents(section.document, section.contents,
-                                       section.cfiBase, section.index);
+      // this.contents = new epubContents(section.document, section.contents,
+      //                                  section.cfiBase, section.index);
+
+      // Check if moving to target is needed
+      if (target !== this.section.href && !isNumber(target)) {
+        this.moveToTarget(target);
+      }
+    },
+
+    moveToTarget(target) {
+      setTimeout(()=>{
+        let rootNode = this.$refs.viewSection.childNodes[0]
+        let range = new epubCfi(target).toRange(rootNode);
+        let container = range.startContainer;
+        let newRange = new Range();
+        let position;
+
+        if (range.startOffset + 2 < container.length) {
+          newRange.setStart(container, range.startOffset);
+          newRange.setEnd(container, range.startOffset + 2);
+          position = newRange.getBoundingClientRect();
+        } else if (range.startOffset - 2 > 0) {
+          newRange.setStart(container, range.startOffset - 2);
+          newRange.setEnd(container, range.startOffset);
+          position = newRange.getBoundingClientRect();
+        } else { // empty, return the parent element
+          position = container.parentNode.getBoundingClientRect();
+        }
+        // console.log(position);
+        window.scrollTo(0, position.top);
+      }, 20)
     },
 
     currentLocation() {
       // let startPos = window.scrollY;
       // let endPos = startPos + window.innerHeight;
       let mapping = new epubMapping();
-      let location = mapping.page(this.$refs.viewSection, this.contents.cfiBase, 0, window.innerHeight);
+      let location = mapping.page(this.$refs.viewSection, this.section.cfiBase, 0, window.innerHeight);
       console.log(location);
     },
 
     doPrev() {
-      if (this.currentSectionIndex > 0) {
-        let index = this.currentSectionIndex - 1;
-        this.display(this.spineItems[index]);
-        this.$store.dispatch("setCurrentSectionIndex", index);
+      if (this.section.index > 0) {
+        // this.sectionIndex = this.sectionIndex - 1;
+        this.display(this.section.index - 1);
         setTimeout(() => {
           window.scroll(0, document.body.clientHeight);
-        }, 0)
+        }, 20)
       }
     },
 
     doNext() {
-      if (this.currentSectionIndex < this.spineItems.length - 1) {
-        let index = this.currentSectionIndex + 1;
-        this.display(this.spineItems[index]);
-        this.$store.dispatch("setCurrentSectionIndex", index);
+      if (this.section.index < this.spineItems.length - 1) {
+        // this.sectionIndex = this.sectionIndex + 1;
+        this.display(this.section.index + 1);
         setTimeout(() => {
           window.scroll(0, 0);
-        }, 0)
+        }, 20)
       }
     },
 
