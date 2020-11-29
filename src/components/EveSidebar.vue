@@ -150,7 +150,7 @@ export default {
     },
 
     handleNodeClick(item) {
-      this.ebook.rendition.display(item.href);
+      this.$bus.emit('event-view-display', item.href);
     },
 
     openFile() {

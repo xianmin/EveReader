@@ -36,7 +36,6 @@ export default {
       spineItems: null,
       section: null,
       sectionContent: null,
-      contents: null,
       lastCfi: "",
     }
   },
@@ -45,6 +44,8 @@ export default {
     this.spineItems = this.ebook.epub.spine.spineItems;
     let lastCfi = this.ebook.storage.getEbookData("lastCfi");
     this.display(lastCfi || 0);
+
+    this.$bus.on('event-view-display', this.display);
 
     document.body.addEventListener("keydown", (e) => {
       const kc = e.keyCode || e.which;
@@ -72,18 +73,22 @@ export default {
       }
     })
 
-    // when scroll finish, remember cfi
+    // when scroll finish, store cfi
     let timer = null;
     window.addEventListener('scroll', () => {
       if(timer !== null) {
           clearTimeout(timer);
       }
       timer = setTimeout(() => {
-        let location = this.currentLocation();
-        this.lastCfi = location.start;
-        this.ebook.storage.setEbookData('lastCfi', this.lastCfi);
+        this.storeLocation();
       }, 150);
     }, false);
+  },
+
+  watch: {
+    section() {
+      this.storeLocation();
+    },
   },
 
   methods: {
@@ -97,8 +102,10 @@ export default {
       // this.contents = new epubContents(section.document, section.contents,
       //                                  section.cfiBase, section.index);
 
-      // Check if moving to target is needed
-      if (target !== this.section.href && !isNumber(target)) {
+      // if target is epubCfi, moving to
+      if (target === this.section.href || isNumber(target)) {
+        window.scroll(0, 0);
+      } else {
         this.moveToTarget(target);
       }
     },
@@ -151,6 +158,12 @@ export default {
           window.scroll(0, 0);
         })
       }
+    },
+
+    storeLocation() {
+      let location = this.currentLocation();
+      this.lastCfi = location.start;
+      this.ebook.storage.setEbookData('lastCfi', this.lastCfi);
     },
   },
 };
