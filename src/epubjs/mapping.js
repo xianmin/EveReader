@@ -35,7 +35,7 @@ class Mapping {
 	 * @param {number} end position to end at
 	 */
 	page(contents, cfiBase, start, end) {
-		var root = contents && contents.document ? contents.document.body : false;
+		var root = contents;
 		var result;
 
 		if (!root) {
@@ -74,9 +74,9 @@ class Mapping {
 		// IE11 has strange issue, if root is text node IE throws exception on
 		// calling treeWalker.nextNode(), saying
 		// Unexpected call to method or property access instead of returing null value
-		if(root && root.nodeType === Node.TEXT_NODE) {
-			return;
-		}
+		// if(root && root.nodeType === Node.TEXT_NODE) {
+		// 	return;
+		// }
 		// safeFilter is required so that it can work in IE as filter is a function for IE
 		// and for other browser filter is an object.
 		var filter = {
@@ -102,7 +102,7 @@ class Mapping {
 		return result;
 	}
 
-	findRanges(view){
+	findRanges(view) {
 		var columns = [];
 		var scrollWidth = view.contents.scrollWidth();
 		var spreads = Math.ceil( scrollWidth / this.layout.spreadWidth);
@@ -182,7 +182,7 @@ class Mapping {
 					top = elPos.top;
 					bottom = elPos.bottom;
 
-					if( top >= start && top <= end ) {
+					if (top > start && top < end) {
 						return node;
 					} else if (bottom > start) {
 						return node;
@@ -325,7 +325,7 @@ class Mapping {
 			} else {
 
 				top = pos.top;
-				if( top >= start ) {
+				if( top > start ) {
 					return range;
 				}
 

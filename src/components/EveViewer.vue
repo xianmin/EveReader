@@ -1,18 +1,19 @@
 <template>
   <div id="eve-reader-view">
-    <view-section 
-      v-for="item in viewItems"
-      :key="item.index"
-      :section="item.section"
-      :sectionIndex="item.index"
-      v-show="item.seen"
+
+    <div id="viewSection"
+      v-html="sectionContent"
+      ref="viewSection"
       />
+
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
-import ViewSection from './ViewSection.vue';
+import epubContents from "../epubjs/contents";
+import epubMapping from "../epubjs/mapping";
+
 // import EveAnnotatorPopover from './EveAnnotatorPopover';
 // import { Event, EventListener } from '../event.js';
 // import Theme from '../theme.js';
@@ -26,17 +27,13 @@ export default {
   },
 
   components: {
-    ViewSection,
   },
 
   data() {
     return {
-      html: "",
-      prevSection: null,
-      currentSection: null,
-      nextSection: null,
       spineItems: null,
-      viewItems: [],
+      sectionContent: null,
+      contents: null,
     }
   },
 
@@ -45,6 +42,7 @@ export default {
     this.doDisplay();
 
     document.body.addEventListener("keydown", (e) => {
+      this.currentLocation();
       const kc = e.keyCode || e.which;
       if (window.scrollY === 0) {
         if (kc === 33 || kc === 38) {
@@ -73,26 +71,31 @@ export default {
 
   methods: {
     doDisplay() {
-      for (let i = 0, len = this.spineItems.length; i < len; i++) {
-        this.viewItems.push(this.createView(i));
-      }
-
-      this.viewItems[this.currentSectionIndex].seen = true;
+      this.display(this.spineItems[this.currentSectionIndex])
     },
 
-    createView(index) {
-      let view = {};
-      view.index = index;
-      view.section = this.spineItems[index];
-      view.seen = false;
-      return view;
+    async display(section) {
+      let request = this.ebook.epub.load.bind(this.ebook.epub);
+      let result = await section.render(request);
+      this.sectionContent = result.replace(/(<\s*\/?\s*)html(\s*([^>]*)?\s*>)/gi ,'$1eve-view-html$2')
+                                  .replace(/(<\s*\/?\s*)head(\s*([^>]*)?\s*>)/gi ,'$1eve-view-head$2')
+                                  .replace(/(<\s*\/?\s*)body(\s*([^>]*)?\s*>)/gi ,'$1eve-view-body$2')
+      this.contents = new epubContents(section.document, section.contents,
+                                       section.cfiBase, section.index);
+    },
+
+    currentLocation() {
+      // let startPos = window.scrollY;
+      // let endPos = startPos + window.innerHeight;
+      let mapping = new epubMapping();
+      let location = mapping.page(this.$refs.viewSection, this.contents.cfiBase, 0, window.innerHeight);
+      console.log(location);
     },
 
     doPrev() {
       if (this.currentSectionIndex > 0) {
         let index = this.currentSectionIndex - 1;
-        this.viewItems[this.currentSectionIndex].seen = false;
-        this.viewItems[index].seen = true;
+        this.display(this.spineItems[index]);
         this.$store.dispatch("setCurrentSectionIndex", index);
         setTimeout(() => {
           window.scroll(0, document.body.clientHeight);
@@ -103,8 +106,7 @@ export default {
     doNext() {
       if (this.currentSectionIndex < this.spineItems.length - 1) {
         let index = this.currentSectionIndex + 1;
-        this.viewItems[this.currentSectionIndex].seen = false;
-        this.viewItems[index].seen = true;
+        this.display(this.spineItems[index]);
         this.$store.dispatch("setCurrentSectionIndex", index);
         setTimeout(() => {
           window.scroll(0, 0);
@@ -123,4 +125,7 @@ export default {
 </script>
 
 <style lang="scss">
+#viewSection {
+  font-size: 30px;
+}
 </style>

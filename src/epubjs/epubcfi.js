@@ -450,7 +450,8 @@ class EpubCFI {
 		var step;
 
 		while(currentNode && currentNode.parentNode &&
-					currentNode.parentNode.nodeType != DOCUMENT_NODE) {
+					currentNode.parentNode.id != DOCUMENT_NODE &&
+					currentNode.tagName != "EVE-VIEW-HTML") {
 
 			if (ignoreClass) {
 				step = this.filteredStep(currentNode, ignoreClass);
