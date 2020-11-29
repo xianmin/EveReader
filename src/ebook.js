@@ -2,7 +2,7 @@ import { openDB } from 'idb';
 
 // because npm epubjs is not updatest, use epub.min.js instead.
 // import Epub from './assets/js/epub.min.js';
-import Epub from './epubjs';
+import Epub from './epubjs/book';
 import Storage from './storage.js';
 
 

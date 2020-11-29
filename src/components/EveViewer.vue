@@ -41,21 +41,26 @@ export default {
   },
 
   mounted() {
-    this.spineItems = this.ebook.epub.spine.spineItems;
-    let lastCfi = this.ebook.storage.getEbookData("lastCfi");
-    this.display(lastCfi || 0);
+    this.ebook.loaded().then(() => {
+      // this.isLoad = true;
+      this.spineItems = this.ebook.epub.spine.spineItems;
+      let lastCfi = this.ebook.storage.getEbookData("lastCfi");
+      this.display(lastCfi || 0);
+    })
 
     this.$bus.on('event-view-display', this.display);
 
     document.body.addEventListener("keydown", (e) => {
       const kc = e.keyCode || e.which;
       if (window.scrollY === 0) {
+        // UP, PageUP, display prev section; here is a bug.
         if (kc === 33 || kc === 38) {
           this.doPrev()
         }
       }
 
       if (window.scrollY + window.innerHeight === document.body.clientHeight) {
+        // DOWN, PageDOWN, display next section;
         if (kc === 34 || kc === 40) {
           this.doNext()
         }
@@ -103,8 +108,10 @@ export default {
       //                                  section.cfiBase, section.index);
 
       // if target is epubCfi, moving to
-      if (target === this.section.href || isNumber(target)) {
+      if (target === this.section.href) {
         window.scroll(0, 0);
+      } else if (isNumber(target)) {
+        return;
       } else {
         this.moveToTarget(target);
       }

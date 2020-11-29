@@ -4,7 +4,7 @@
 
       <eve-sidebar class="eve-sidebar" @open-file="openFile" />
 
-      <router-view v-if='this.isLoad'>
+      <router-view v-if='this.ebook.epub.isOpen'>
         <eve-viewer></eve-viewer>
       </router-view>
 
@@ -33,7 +33,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
 import Ebook from '@/ebook'
 import EveSidebar from '@/components/EveSidebar';
 import EveViewer from '@/components/EveViewer';
@@ -49,7 +48,6 @@ export default {
   data() {
     return {
       isElectron: true,
-      isLoad: false,
     }
   },
 
@@ -69,35 +67,32 @@ export default {
       window.ipcRenderer.on('IPC::FILE-OPEN', (event, data, fileName) => {
         this.ebook.openEpub(data).then(() => {
           this.ebook.fileName = fileName;
-          const path = `/reader/open/${fileName}`;
           this.ebook.loaded().then(() => {
-            if (this.$route.path !== path) this.$router.push(path);
+            this.redirectRouter();
           })
         });
       });
     } else {
       this.isElectron = false;
     }
-
-    this.ebook.loaded().then(() => {
-      this.isLoad = true;
-    })
   },
 
   methods: {
     openFile() {
       this.ebook.openFile().then(() => {
-        const path = `/reader/open/${this.ebook.fileName}`;
-        if (this.$route.path !== path) this.$router.push(path);
+        this.redirectRouter();
       })
     },
 
     openFileFromDrop(file) {
       this.ebook.openFileFromDrop(file).then(() => {
-        const path = `/reader/open/${this.ebook.fileName}`;
-        if (this.$route.path !== path) this.$router.push(path);
+        this.redirectRouter();
       })
     },
+
+    redirectRouter() {
+      this.$router.push(`/reader/open/${Math.random()}`);
+    }
   },
 
   mounted() {
