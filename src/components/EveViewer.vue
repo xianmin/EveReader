@@ -37,6 +37,7 @@ export default {
       section: null,
       sectionContent: null,
       lastCfi: "",
+      scrollTimer: null,
     }
   },
 
@@ -50,50 +51,22 @@ export default {
 
     this.$bus.on('event-view-display', this.display);
 
-    document.body.addEventListener("keydown", (e) => {
-      const kc = e.keyCode || e.which;
-      if (window.scrollY === 0) {
-        // UP, PageUP, display prev section; here is a bug.
-        if (kc === 33 || kc === 38) {
-          this.doPrev()
-        }
-      }
-
-      if (window.scrollY + window.innerHeight === document.body.clientHeight) {
-        // DOWN, PageDOWN, display next section;
-        if (kc === 34 || kc === 40) {
-          this.doNext()
-        }
-      }
-    })
-
-    document.body.addEventListener("wheel", (e) => {
-      if (window.scrollY === 0 && e.wheelDelta > 0) {
-          this.doPrev()
-      }
-
-      if (window.scrollY + window.innerHeight === document.body.clientHeight
-        && e.wheelDelta < 0) {
-          this.doNext()
-      }
-    })
-
+    window.addEventListener('keydown', this.eventKeyDown);
+    window.addEventListener('wheel', this.eventWheel);
     // when scroll finish, store cfi
-    let timer = null;
-    window.addEventListener('scroll', () => {
-      if(timer !== null) {
-          clearTimeout(timer);
-      }
-      timer = setTimeout(() => {
-        this.storeLocation();
-      }, 150);
-    }, false);
+    window.addEventListener('scroll', this.eventScroll);
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('keydown', this.eventKeyDown);
+    window.removeEventListener('wheel', this.eventWheel);
+    window.removeEventListener('scroll', this.eventScroll);
   },
 
   watch: {
-    section() {
-      this.storeLocation();
-    },
+    // sectionContent() {
+    //   this.storeLocation();
+    // },
   },
 
   methods: {
@@ -146,6 +119,7 @@ export default {
       // let endPos = startPos + window.innerHeight;
       let mapping = new epubMapping();
       let location = mapping.page(this.$refs.viewSection, this.section.cfiBase, 0, window.innerHeight);
+      console.log(location);
       return location;
     },
 
@@ -154,6 +128,7 @@ export default {
         this.display(this.section.index - 1);
         this.$nextTick(() => {
           window.scroll(0, document.body.clientHeight);
+          this.storeLocation();
         })
       }
     },
@@ -163,14 +138,53 @@ export default {
         this.display(this.section.index + 1);
         this.$nextTick(() => {
           window.scroll(0, 0);
+          this.storeLocation();
         })
       }
     },
 
     storeLocation() {
       let location = this.currentLocation();
+      console.log(location);
       this.lastCfi = location.start;
       this.ebook.storage.setEbookData('lastCfi', this.lastCfi);
+    },
+
+    eventScroll() {
+      if(this.scrollTimer !== null) {
+          clearTimeout(this.scrollTimer);
+      }
+      this.scrollTimer = setTimeout(() => {
+        this.storeLocation();
+      }, 150);
+    },
+
+    eventKeyDown(e) {
+      const kc = e.keyCode || e.which;
+      if (window.scrollY === 0) {
+        // UP, PageUP, display prev section; here is a bug.
+        if (kc === 33 || kc === 38) {
+          this.doPrev()
+        }
+      }
+
+      if (window.scrollY + window.innerHeight === document.body.clientHeight) {
+        // DOWN, PageDOWN, display next section;
+        if (kc === 34 || kc === 40) {
+          this.doNext()
+        }
+      }
+    },
+
+    eventWheel(e) {
+      if (window.scrollY === 0 && e.wheelDelta > 0) {
+          this.doPrev()
+      }
+
+      if (window.scrollY + window.innerHeight === document.body.clientHeight
+        && e.wheelDelta < 0) {
+          this.doNext()
+      }
     },
   },
 };
