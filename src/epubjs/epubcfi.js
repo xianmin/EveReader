@@ -450,7 +450,7 @@ class EpubCFI {
 		var step;
 
 		while(currentNode && currentNode.parentNode &&
-					currentNode.parentNode.id != DOCUMENT_NODE &&
+					// currentNode.parentNode.id != DOCUMENT_NODE &&
 					currentNode.tagName != "EVE-VIEW-HTML") {
 
 			if (ignoreClass) {
@@ -835,9 +835,9 @@ class EpubCFI {
 			});
 	}
 
-	walkToNode(steps, _doc, ignoreClass) {
-		var doc = _doc || document;
-		var container = doc.documentElement || _doc;
+	walkToNode(steps, node, ignoreClass) {
+		var doc = document;
+		var container = node;
 		var children;
 		var step;
 		var len = steps.length;

@@ -98,13 +98,11 @@ export default {
         let newRange = new Range();
         let position;
 
-        if (range.startOffset + 2 < container.length) {
+        console.log(position)
+
+        if (range.startOffset < container.length) {
           newRange.setStart(container, range.startOffset);
           newRange.setEnd(container, range.startOffset + 2);
-          position = newRange.getBoundingClientRect();
-        } else if (range.startOffset - 2 > 0) {
-          newRange.setStart(container, range.startOffset - 2);
-          newRange.setEnd(container, range.startOffset);
           position = newRange.getBoundingClientRect();
         } else { // empty, return the parent element
           position = container.parentNode.getBoundingClientRect();

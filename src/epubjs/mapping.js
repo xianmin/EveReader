@@ -416,41 +416,45 @@ class Mapping {
 		var text = textContent.trim();
 		var range;
 		var doc = node.ownerDocument;
-		var splitter = _splitter || " ";
+		// var splitter = _splitter || " ";
 
-		var pos = text.indexOf(splitter);
+		// var pos = text.indexOf(splitter);
 
-		if(pos === -1 || node.nodeType != Node.TEXT_NODE) {
+		// if(pos === -1 || node.nodeType != Node.TEXT_NODE) {
+		// 	range = doc.createRange();
+		// 	range.selectNodeContents(node);
+		// 	return [range];
+		// }
+
+		// TODO: this maybe need optimize
+		for (let i = 0; i < text.length; i++) {
 			range = doc.createRange();
-			range.selectNodeContents(node);
-			return [range];
-		}
-
-		range = doc.createRange();
-		range.setStart(node, 0);
-		range.setEnd(node, pos);
-		ranges.push(range);
-		range = false;
-
-		while ( pos != -1 ) {
-
-			pos = text.indexOf(splitter, pos + 1);
-			if(pos > 0) {
-
-				if(range) {
-					range.setEnd(node, pos);
-					ranges.push(range);
-				}
-
-				range = doc.createRange();
-				range.setStart(node, pos+1);
-			}
-		}
-
-		if(range) {
-			range.setEnd(node, text.length);
+			range.setStart(node, i);
+			range.setEnd(node, i+1);
 			ranges.push(range);
+			range = false;
 		}
+
+
+		// while ( pos != -1 ) {
+
+		// 	pos = text.indexOf(splitter, pos + 1);
+		// 	if(pos > 0) {
+
+		// 		if(range) {
+		// 			range.setEnd(node, pos);
+		// 			ranges.push(range);
+		// 		}
+
+		// 		range = doc.createRange();
+		// 		range.setStart(node, pos+1);
+		// 	}
+		// }
+
+		// if(range) {
+		// 	range.setEnd(node, text.length);
+		// 	ranges.push(range);
+		// }
 
 		return ranges;
 	}
