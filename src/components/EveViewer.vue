@@ -119,27 +119,26 @@ export default {
       // let endPos = startPos + window.innerHeight;
       let mapping = new epubMapping();
       let location = mapping.page(this.$refs.viewSection, this.section.cfiBase, 0, window.innerHeight);
-      console.log(location);
       return location;
     },
 
     doPrev() {
       if (this.section.index > 0) {
         this.display(this.section.index - 1);
-        this.$nextTick(() => {
+        setTimeout(() => {
           window.scroll(0, document.body.clientHeight);
           this.storeLocation();
-        })
+        }, 20)
       }
     },
 
     doNext() {
       if (this.section.index < this.spineItems.length - 1) {
         this.display(this.section.index + 1);
-        this.$nextTick(() => {
+        setTimeout(() => {
           window.scroll(0, 0);
           this.storeLocation();
-        })
+        }, 20)
       }
     },
 
@@ -156,7 +155,7 @@ export default {
       }
       this.scrollTimer = setTimeout(() => {
         this.storeLocation();
-      }, 150);
+      }, 20);
     },
 
     eventKeyDown(e) {
@@ -165,6 +164,7 @@ export default {
         // UP, PageUP, display prev section; here is a bug.
         if (kc === 33 || kc === 38) {
           this.doPrev()
+          e.preventDefault();
         }
       }
 
@@ -172,6 +172,7 @@ export default {
         // DOWN, PageDOWN, display next section;
         if (kc === 34 || kc === 40) {
           this.doNext()
+          e.preventDefault();
         }
       }
     },
