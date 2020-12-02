@@ -67,9 +67,7 @@ export default {
       window.ipcRenderer.on('IPC::FILE-OPEN', (event, data, fileName) => {
         this.ebook.openEpub(data).then(() => {
           this.ebook.fileName = fileName;
-          this.ebook.loaded().then(() => {
             this.redirectRouter();
-          })
         });
       });
     } else {

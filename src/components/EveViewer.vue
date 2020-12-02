@@ -142,7 +142,6 @@ export default {
 
     storeLocation() {
       let location = this.currentLocation();
-      console.log(location);
       this.lastCfi = location.start;
       this.ebook.storage.setEbookData('lastCfi', this.lastCfi);
     },
@@ -153,7 +152,7 @@ export default {
       }
       this.scrollTimer = setTimeout(() => {
         this.storeLocation();
-      }, 20);
+      }, 200);
     },
 
     eventKeyDown(e) {

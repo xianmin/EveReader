@@ -45,7 +45,7 @@ class Ebook {
   }
 
   async loaded() {
-    await this.epub.ready.then(() => {
+    await this.epub.opened.then(() => {
         // get epub.key(), remove pre-identifier
         this.ebookID = this.epub.key().slice(11);
         this.storage = new Storage(this.ebookID);
