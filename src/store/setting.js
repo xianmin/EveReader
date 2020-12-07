@@ -1,4 +1,4 @@
-import datebase from '../datebase';
+import database from '../database';
 
 export default {
   namespaced: true,
@@ -25,30 +25,30 @@ export default {
     },
     'SET_EBOOK_FONTSIZE': (state, fontSize) => {
       state.fontSize = fontSize;
-      datebase.updateSettingToDB(state);
+      database.updateSettingToDB(state);
     },
     'SET_EBOOK_LINEHEIGHT': (state, lineHeight) => {
       state.lineHeight = lineHeight;
-      datebase.updateSettingToDB(state);
+      database.updateSettingToDB(state);
     },
     'SET_EBOOK_PAGEWIDTH': (state, pageWidth) => {
       state.pageWidth = pageWidth;
-      datebase.updateSettingToDB(state);
+      database.updateSettingToDB(state);
     },
     'SET_EBOOK_BACKGROUND': (state, backgroundColor) => {
       state.backgroundColor = backgroundColor;
-      datebase.updateSettingToDB(state);
+      database.updateSettingToDB(state);
     },
   },
 
   actions: {
     async initSetting({ commit, state }) {
-      let setting = await datebase.getSettingFromDB();
+      let setting = await database.getSettingFromDB();
 
       if (setting) {
         commit('SET_EBOOK_SETTING', setting);
       } else {
-        datebase.updateSettingToDB(state);
+        database.updateSettingToDB(state);
       }
     },
   },

@@ -1,6 +1,5 @@
 import { openDB } from 'idb';
 import Epub from './epubjs/book';
-import Storage from './storage.js';
 
 
 class Ebook {
@@ -8,7 +7,6 @@ class Ebook {
     this.ebookID = "";
     this.epub = null;
     this.rendition = null;
-    this.storage = null;
     this.fileName = "";
     this.toc = [];
 
@@ -36,10 +34,9 @@ class Ebook {
   async loaded() {
     await this.epub.opened.then(() => {
       this.ebookID = this.epub.key();
-      this.storage = new Storage(this.ebookID);
     })
 
-    await this.initAnnotationDB(this.ebookID);
+    // await this.initAnnotationDB(this.ebookID);
   }
 
   display(target) {

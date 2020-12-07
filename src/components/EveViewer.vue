@@ -41,18 +41,15 @@ export default {
       spineItems: null,
       section: null,
       sectionContent: null,
-      lastCfi: "",
       scrollTimer: null,
     }
   },
 
-  mounted() {
-    this.ebook.loaded().then(() => {
-      // this.isLoad = true;
-      this.spineItems = this.ebook.epub.spine.spineItems;
-      let lastCfi = this.ebook.storage.getEbookData("lastCfi");
-      this.display(lastCfi || 0);
-    })
+  async mounted() {
+    await this.ebook.loaded();
+    let lastCfi = await this.$store.dispatch('getLastCFI');
+    this.spineItems = this.ebook.epub.spine.spineItems;
+    this.display(lastCfi || 0);
 
     this.$bus.on('event-view-display', this.display);
 
@@ -103,8 +100,6 @@ export default {
         let newRange = new Range();
         let position;
 
-        console.log(position)
-
         if (range.startOffset < container.length) {
           newRange.setStart(container, range.startOffset);
           newRange.setEnd(container, range.startOffset + 2);
@@ -147,8 +142,7 @@ export default {
 
     storeLocation() {
       let location = this.currentLocation();
-      this.lastCfi = location.start;
-      this.ebook.storage.setEbookData('lastCfi', this.lastCfi);
+      this.$store.dispatch('setLastRead', location.start);
     },
 
     eventScroll() {
