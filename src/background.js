@@ -46,7 +46,7 @@ app.on('ready', async () => {
     }
   }
 
-  init();
+  await init();
 })
 
 

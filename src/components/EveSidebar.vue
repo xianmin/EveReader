@@ -159,13 +159,15 @@ export default {
 
     // Temporary change current fontSize, do not save to DB.
     increaseFontSize() {
-      const fontsize = this.ebook.currentFontsize + 2;
-      this.ebook.setFontSize(fontsize);
+      let fontSize = this.$store.state.setting.fontSize - -2;  // +2
+      this.$store.commit('setting/SET_EBOOK_FONTSIZE', fontSize);
     },
 
     decreaseFontSize() {
-      const fontsize = this.ebook.currentFontsize - 2;
-      this.ebook.setFontSize(fontsize);
+      let fontSize = this.$store.state.setting.fontSize - 2;
+      if (fontSize > 14) {
+        this.$store.commit('setting/SET_EBOOK_FONTSIZE', fontSize);
+      }
     },
 
     // resize sidebar width

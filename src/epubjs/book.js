@@ -714,7 +714,7 @@ class Book {
 	 */
 	key(identifier) {
 		var ident = identifier || this.packaging.metadata.identifier || this.url.filename;
-		return `epubjs:${EPUBJS_VERSION}:${ident}`;
+		return ident;
 	}
 
 	/**

@@ -37,6 +37,7 @@ import Ebook from '@/ebook'
 import EveSidebar from '@/components/EveSidebar';
 import EveViewer from '@/components/EveViewer';
 
+
 export default {
   name: 'reader',
 
@@ -51,9 +52,10 @@ export default {
     }
   },
 
-  created() {
+  async created() {
     this.ebook = new Ebook();
     this.$store.dispatch("setEbook", this.ebook);
+    this.$store.dispatch('setting/initSetting');
 
     if (this.$route.name === "view") {
       let book_id = this.$route.params.book_id;

@@ -1,7 +1,4 @@
 import { openDB } from 'idb';
-
-// because npm epubjs is not updatest, use epub.min.js instead.
-// import Epub from './assets/js/epub.min.js';
 import Epub from './epubjs/book';
 import Storage from './storage.js';
 
@@ -14,20 +11,12 @@ class Ebook {
     this.storage = null;
     this.fileName = "";
     this.toc = [];
-    this.currentFontsize;
+
     this.annotationColorList = ['#FFCAD7', '#FFDE70', '#FFFB78', '#D1FF61', '#B4FFEB',];
     this.annotationDB = null;
     this.allAnnotation = [];
-    this.defaultSetting = {
-      fontSize: 18,
-      lineHeight: 1.8,
-      pageWidth: '900px',
-      backgroundColor: '#FFFFFF',
-    };
-    this.generalSetting = {};
 
     this.init();
-    this.ready = this.initEveReaderDB();
   }
 
   init() {
@@ -46,9 +35,8 @@ class Ebook {
 
   async loaded() {
     await this.epub.opened.then(() => {
-        // get epub.key(), remove pre-identifier
-        this.ebookID = this.epub.key().slice(11);
-        this.storage = new Storage(this.ebookID);
+      this.ebookID = this.epub.key();
+      this.storage = new Storage(this.ebookID);
     })
 
     await this.initAnnotationDB(this.ebookID);
@@ -69,14 +57,6 @@ class Ebook {
   updateRenditionLayout(cfi) {
     this.rendition.manager.updateLayout();
     this.rendition.display(cfi);
-  }
-
-  setFontSize(fontsize) {
-    // when change fontsize, location will change, we need remember the location
-    let location = this.rendition.currentLocation();
-    this.currentFontsize = fontsize;
-    this.rendition.themes.fontSize(`${fontsize}px`);
-    this.updateRenditionLayout(location.start.cfi);
   }
 
   openFile() {
@@ -129,65 +109,7 @@ class Ebook {
     this.epub.open(url, "epub")
   }
 
-  getEbookID() {
-    return this.ebookID = this.epub.key().slice(11);
-  }
-
-
-  // EveReaderDB ----------------------------
-  async initEveReaderDB() {
-    this.eveReaderDB = await openDB('EveReader', 1, {
-      upgrade(db) {
-        db.createObjectStore('setting', {
-          keyPath: 'name',
-        })
-      }
-    })
-
-    await this.getSettingFromDB()
-  }
-
-  async getSettingFromDB() {
-    try {
-      let general = await this.eveReaderDB.get('setting', 'general');
-      let generalSetting = general.value;
-
-      if (!general) {
-        this.initGeneralSetting();
-      }
-      // when defaultSetting add a new item, add it to generalSetting
-      else if (Object.keys(generalSetting).length !== Object.keys(this.defaultSetting).length) {
-        for (let v in this.defaultSetting) {
-          if (generalSetting[v] === undefined) generalSetting[v] = this.defaultSetting[v];
-        }
-        this.updateGeneralSetting(generalSetting)
-      }
-      else {
-        this.generalSetting = generalSetting;
-      }
-
-      this.currentFontsize = parseInt(this.generalSetting.fontSize);
-    } catch {
-      this.updateGeneralSetting(this.defaultSetting);
-      return;
-    }
-  }
-
-  initGeneralSetting() {
-    let generalSetting = this.defaultSetting;
-    this.eveReaderDB.put('setting', { name: 'general', value: generalSetting });
-    this.generalSetting = generalSetting;
-  }
-
-  updateGeneralSetting(newVal) {
-    this.eveReaderDB.put('setting', { name: 'general', value: newVal });
-    this.generalSetting = newVal;
-    this.currentFontsize = newVal.fontSize;
-  }
-  // End EveReaderDB ---------------------------
-
   // Annotation ---------------------------
-
   async initAnnotationDB(ebookID) {
     this.annotationDB = await openDB(ebookID, 1, {
       upgrade(db) {

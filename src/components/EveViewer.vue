@@ -1,11 +1,14 @@
 <template>
-  <div id="eve-reader-view">
-
+  <div id="eve-reader-view" v-bind:style="{'background-color': this.backgroundColor}">
     <div id="viewSection"
       v-html="sectionContent"
       ref="viewSection"
+      v-bind:style="{
+        'fontSize': this.fontSize + 'px',
+        'line-height': this.lineHeight,
+        'max-width': this.pageWidth + 'px',
+      }"
       />
-
   </div>
 </template>
 
@@ -24,8 +27,10 @@ export default {
   computed: {
     ...mapGetters([
       'ebook',
-      'currentSectionIndex',
     ]),
+    ...mapGetters('setting', [
+      'fontSize', 'lineHeight', 'pageWidth', 'backgroundColor',
+    ])
   },
 
   components: {
@@ -165,7 +170,7 @@ export default {
         }
       }
 
-      if (window.scrollY + window.innerHeight === document.body.clientHeight) {
+      if (window.scrollY + window.innerHeight >= document.body.clientHeight) {
         // DOWN, PageDOWN, display next section;
         if (kc === 34 || kc === 40) {
           this.doNext()
@@ -179,7 +184,7 @@ export default {
           this.doPrev()
       }
 
-      if (window.scrollY + window.innerHeight === document.body.clientHeight
+      if (window.scrollY + window.innerHeight >= document.body.clientHeight
         && e.wheelDelta < 0) {
           this.doNext()
       }
@@ -189,7 +194,15 @@ export default {
 </script>
 
 <style lang="scss">
-#viewSection {
-  font-size: 30px;
+#eve-reader-view {
+  width: 100%;
+
+  #viewSection {
+    margin: 0 auto;
+  }
+}
+
+img {
+  max-width: 600px;
 }
 </style>
