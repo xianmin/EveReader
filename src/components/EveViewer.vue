@@ -9,11 +9,15 @@
         'max-width': this.pageWidth + 'px',
       }"
       />
+
+    <eve-annotator
+    />
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
+import EveAnnotator from './EveAnnotator.vue';
 // import epubContents from "../epubjs/contents";
 import epubMapping from "../epubjs/mapping";
 import epubCfi from "../epubjs/epubcfi";
@@ -34,6 +38,7 @@ export default {
   },
 
   components: {
+    EveAnnotator,
   },
 
   data() {
@@ -183,6 +188,7 @@ export default {
           this.doNext()
       }
     },
+
   },
 };
 </script>
