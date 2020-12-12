@@ -27,7 +27,6 @@ export default {
           left: 0,
         },
         cfiRange: '',
-        type: '',
         text: '',
       },
       selectRange: null,
@@ -115,9 +114,18 @@ export default {
     doAnnotatorHighlight(color) {
       let style = 'background:' + color + ';';
       highlighter.highlight(this.selectRange, style);
-      console.log(this.annotator.cfiRange);
+
+      let annotation = {};
+      annotation.type = 'highlight';
+      annotation.cfiRange = this.annotator.cfiRange;
+      annotation.color = color;
+      annotation.hash = encodeURI('highlight-' + annotation.cfiRange);
+      annotation.text = this.annotator.text;
+      annotation.sectionIndex = this.$parent.section.index;
+      annotation.date = new Date().toISOString();
 
       this.showAnnotator = false;
+      this.$store.dispatch('annotation/addAnnotation', annotation);
     },
 
     doAnnotatorDelete() {

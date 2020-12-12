@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import setting from './setting';
+import annotation from './annotation';
 import database from '../database';
 
 Vue.use(Vuex)
@@ -49,5 +50,6 @@ export default new Vuex.Store({
   },
   modules: {
     setting,
+    annotation,
   }
 })

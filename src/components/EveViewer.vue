@@ -52,6 +52,7 @@ export default {
 
   async mounted() {
     await this.ebook.loaded();
+    await this.$store.dispatch('annotation/initAnnotation');
     let lastCfi = await this.$store.dispatch('getLastCFI');
     this.spineItems = this.ebook.epub.spine.spineItems;
     this.display(lastCfi || 0);

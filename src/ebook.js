@@ -5,6 +5,7 @@ import Epub from './epubjs/book';
 class Ebook {
   constructor() {
     this.ebookID = "";
+    this.title = "";
     this.epub = null;
     this.rendition = null;
     this.fileName = "";
@@ -33,7 +34,8 @@ class Ebook {
 
   async loaded() {
     await this.epub.opened.then(() => {
-      this.ebookID = this.epub.key();
+      this.title = this.epub.packaging.metadata.title;
+      this.ebookID = this.title + ' - ' + this.epub.packaging.uniqueIdentifier
     })
 
     // await this.initAnnotationDB(this.ebookID);

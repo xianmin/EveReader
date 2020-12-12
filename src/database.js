@@ -2,6 +2,8 @@ import { openDB } from 'idb';
 
 let eveReaderDB;
 const eveReaderDB_version = 1;
+let eveAnnotationDB;
+const eveAnnotationDB_version = 1;
 
 export default {
   async getEveReaderDB() {
@@ -57,4 +59,36 @@ export default {
   updateLastReadToDB(newVal) {
     this.setToDB('lastRead', newVal);
   },
+
+  async getEveAnnotationDB(ebookID) {
+    eveAnnotationDB = await openDB(ebookID, eveAnnotationDB_version, {
+      upgrade(db) {
+        const store = db.createObjectStore('annotation', {
+          keyPath: 'hash',
+        })
+        store.createIndex('date', 'date');
+      },
+    })
+
+    return eveAnnotationDB;
+  },
+
+  async getAllAnnotation(ebookID) {
+    if (!eveAnnotationDB) await this.getEveAnnotationDB(ebookID);
+    try {
+      return await eveAnnotationDB.getAll('annotation');
+    } catch {
+      return;
+    }
+  },
+
+  async addAnnotationToDB(ebookID, annotation) {
+    if (!eveAnnotationDB) await this.getEveAnnotationDB(ebookID);
+    await eveAnnotationDB.put('annotation', annotation);
+  },
+
+  async deleteAnnotationFromDB(ebookID, hash) {
+    if (!eveAnnotationDB) await this.getEveAnnotationDB(ebookID);
+    await eveAnnotationDB.delete('annotation', hash);
+  }
 };
