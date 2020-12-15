@@ -43,20 +43,21 @@ export default {
   methods: {
     _onMouseUp(e) {
       e.preventDefault();
-
       const selection = window.getSelection();
-      this.selectRange = selection.getRangeAt(0);
-      const rect = this.selectRange.getBoundingClientRect();
-      this.setAnnotatorPosition(rect);
+      if (!selection.isCollapsed) {
+        this.selectRange = selection.getRangeAt(0);
+        const rect = this.selectRange.getBoundingClientRect();
+        this.setAnnotatorPosition(rect);
 
-      this.annotator.cfiRange = new epubCfi(this.selectRange, this.$parent.section.cfiBase).toString();
+        this.annotator.cfiRange = new epubCfi(this.selectRange, this.$parent.section.cfiBase).toString();
 
-      // if select, show EveAnnotatorPopover.vue
-      this.showAnnotator = !selection.isCollapsed;
-      this.showAnnotatorFromClick = false;
+        // if select, show EveAnnotatorPopover.vue
+        this.showAnnotator = true;
+        this.showAnnotatorFromClick = false;
 
-      // temporary store text to annotator
-      this.annotator.text = selection.toString();
+        // temporary store text to annotator
+        this.annotator.text = selection.toString();
+      }
     },
 
     _onMouseDown() {
@@ -98,23 +99,19 @@ export default {
       this.showAnnotatorFromClick = true;
 
       let rect = e.target.getBoundingClientRect();
-      // because rect is relative to the parent window, we need offset iframe
-      let iframeElement = document.getElementById('eve-reader-view');
-      let iframeRect = iframeElement.getBoundingClientRect();
-      this.setAnnotatorPosition(rect, iframeRect.top, iframeRect.left);
+      this.setAnnotatorPosition(rect);
 
-      // this.annotator.cfiRange = e.target.getAttribute('data-epubcfi');
-      // this.annotator.type = e.target.getAttribute('data-type');
-      // let hash = encodeURI(this.annotator.type + '-' + this.annotator.cfiRange);
-      // this.annotator.text = this.ebook.allAnnotation.find(e => e.hash === hash).text;
+      this.annotator.cfiRange = e.target.getAttribute('data-epubcfi');
+      this.annotator.type = e.target.getAttribute('data-type');
+      this.annotator.text = e.target.innerText;
+
+      let cfi = new epubCfi(this.annotator.cfiRange);
+      this.selectRange = cfi.toRange(this.$parent.$refs.viewSection.childNodes[0]);
 
       this.showAnnotator = true;
     },
 
     doAnnotatorHighlight(color) {
-      let style = 'background:' + color + ';';
-      highlighter.highlight(this.selectRange, style);
-
       let annotation = {};
       annotation.type = 'highlight';
       annotation.cfiRange = this.annotator.cfiRange;

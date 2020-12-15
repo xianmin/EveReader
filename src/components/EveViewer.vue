@@ -10,21 +10,18 @@
       }"
       />
 
-    <eve-annotator
-    />
+    <eve-annotator v-if='viewSectionReady' />
+    <eve-annotation-list v-if='viewSectionReady' />
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
 import EveAnnotator from './EveAnnotator.vue';
-// import epubContents from "../epubjs/contents";
+import EveAnnotationList from './EveAnnotationList';
 import epubMapping from "../epubjs/mapping";
 import epubCfi from "../epubjs/epubcfi";
 import { isNumber } from "../epubjs/utils/core";
-
-// import EveAnnotatorPopover from './EveAnnotatorPopover';
-// import { Event, EventListener } from '../event.js';
 // import Theme from '../theme.js';
 
 export default {
@@ -39,6 +36,7 @@ export default {
 
   components: {
     EveAnnotator,
+    EveAnnotationList,
   },
 
   data() {
@@ -47,6 +45,7 @@ export default {
       section: null,
       sectionContent: null,
       scrollTimer: null,
+      viewSectionReady: false,
     }
   },
 
@@ -72,36 +71,46 @@ export default {
   },
 
   watch: {
-    // sectionContent() {
-    //   this.storeLocation();
-    // },
   },
 
   methods: {
     async display(target) {
-      this.section = this.ebook.epub.spine.get(target);
+      this.viewSectionReady = false;
+      let sec = this.ebook.epub.spine.get(target);
+      this.$store.commit('SET_CURRENT_SECTION_INDEX', sec.index);
+
+      if (sec === this.section) {
+        await this.moveToTarget(target);
+        return;
+      }
+
+      this.section = sec;
       let request = this.ebook.epub.load.bind(this.ebook.epub);
       let result = await this.section.render(request);
       this.sectionContent = result.replace(/(<\s*\/?\s*)html(\s*([^>]*)?\s*>)/gi ,'$1eve-view-html$2')
                                   .replace(/(<\s*\/?\s*)head(\s*([^>]*)?\s*>)/gi ,'$1eve-view-head$2')
                                   .replace(/(<\s*\/?\s*)body(\s*([^>]*)?\s*>)/gi ,'$1eve-view-body$2')
-      // this.contents = new epubContents(section.document, section.contents,
-      //                                  section.cfiBase, section.index);
 
-      // if target is epubCfi, moving to
-      if (target === this.section.href) {
-        window.scroll(0, 0);
-      } else if (isNumber(target)) {
-        return;
-      } else {
-        this.moveToTarget(target);
-      }
+      this.$nextTick(() => {
+        this.$store.commit('SET_EBOOK_ROOT_NODE', this.$refs.viewSection.childNodes[0])
+
+        // if target is epubCfi, moving to
+        if (target === this.section.href) {
+          window.scroll(0, 0);
+        } else if (isNumber(target)) {
+          // return;
+        } else {
+          this.moveToTarget(target);
+        }
+
+        setTimeout(()=>{ this.viewSectionReady = true; }, 30)
+        // this.loadAnnotation();
+      })
     },
 
     moveToTarget(target) {
       setTimeout(()=>{
-        let rootNode = this.$refs.viewSection.childNodes[0]
-        let range = new epubCfi(target).toRange(rootNode);
+        let range = new epubCfi(target).toRange(this.$store.state.ebookRootNode);
         let container = range.startContainer;
         let newRange = new Range();
         let position;
@@ -181,21 +190,25 @@ export default {
 
     eventWheel(e) {
       if (window.scrollY === 0 && e.wheelDelta > 0) {
-          this.doPrev()
+        if(this.viewSectionReady) {
+          this.doPrev();
+        }
       }
 
       if (window.scrollY + window.innerHeight >= document.body.clientHeight
         && e.wheelDelta < 0) {
-          this.doNext()
+        if(this.viewSectionReady) {
+          this.doNext();
+        }
       }
     },
-
   },
 };
 </script>
 
 <style lang="scss">
 #eve-reader-view {
+  position: relative;
   width: 100%;
 
   #viewSection {

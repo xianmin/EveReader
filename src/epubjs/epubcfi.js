@@ -939,17 +939,17 @@ class EpubCFI {
 		// if (typeof(doc.createRange) !== "undefined") {
 			// range = doc.createRange();
 		// } else {
-			range = new RangeObject();
+		range = document.createRange();
 		// }
 		// console.log(cfi)
 
 		if (cfi.range) {
 			start = cfi.start;
 			startSteps = cfi.path.steps.concat(start.steps);
-			startContainer = this.findNode(startSteps, doc, needsIgnoring ? ignoreClass : null);
+			startContainer = this.findNode(startSteps, node, needsIgnoring ? ignoreClass : null);
 			end = cfi.end;
 			endSteps = cfi.path.steps.concat(end.steps);
-			endContainer = this.findNode(endSteps, doc, needsIgnoring ? ignoreClass : null);
+			endContainer = this.findNode(endSteps, node, needsIgnoring ? ignoreClass : null);
 		} else {
 			start = cfi.path;
 			startSteps = cfi.path.steps;
@@ -966,7 +966,7 @@ class EpubCFI {
 				}
 
 			} catch (e) {
-				missed = this.fixMiss(startSteps, start.terminal.offset, doc, needsIgnoring ? ignoreClass : null);
+				missed = this.fixMiss(startSteps, start.terminal.offset, node, needsIgnoring ? ignoreClass : null);
 				range.setStart(missed.container, missed.offset);
 			}
 		} else {

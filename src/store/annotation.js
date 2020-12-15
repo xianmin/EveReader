@@ -10,6 +10,12 @@ export default {
 
   getters: {
     annotationList: state => state.annotationList,
+    getBySectionIndex: (state, getters, rootState) => {
+      let index = rootState.currentSectionIndex
+      return state.annotationList.filter(annotation => {
+        return annotation.sectionIndex === index;
+      });
+    }
   },
 
   mutations: {

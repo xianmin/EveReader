@@ -9,18 +9,28 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     ebook: null,
+    ebookRootNode: null,
     lastCfi: 0,
+    currentSectionIndex: 0,
   },
   getters: {
     ebook: state => state.ebook,
+    ebookRootNode: state => state.ebookRootNode,
     lastCfi: state => state.lastCfi,
+    currentSectionIndex: state => state.currentSectionIndex,
   },
   mutations: {
     'SET_EBOOK': (state, ebook) => {
       state.ebook = ebook;
     },
+    'SET_EBOOK_ROOT_NODE': (state, ebookRootNode) => {
+      state.ebookRootNode = ebookRootNode;
+    },
     'SET_LASTCFI': (state, lastCfi) => {
       state.lastCfi = lastCfi;
+    },
+    'SET_CURRENT_SECTION_INDEX': (state, currentSectionIndex) => {
+      state.currentSectionIndex = currentSectionIndex;
     }
   },
   actions: {
