@@ -42,7 +42,6 @@ export default new Vuex.Store({
     setEbook: ({ commit }, ebook) => commit('SET_EBOOK', ebook),
 
     async refreshEbookViewReady({ commit }) {
-      console.log('here')
       await commit('SET_EBOOK_VIEW_READY', false);
       await commit('SET_EBOOK_VIEW_READY', true);
     },

@@ -43,13 +43,13 @@ export default {
   },
 
   methods: {
-    _onMouseUp(e) {
-      e.preventDefault();
+    _onMouseUp(evt) {
+      evt.preventDefault();
       const selection = window.getSelection();
       if (!selection.isCollapsed) {
         this.selectRange = selection.getRangeAt(0);
         const rect = this.selectRange.getBoundingClientRect();
-        this.setAnnotatorPosition(rect);
+        this.setAnnotatorPosition(rect, evt.clientX, evt.clientY);
 
         this.annotator.cfiRange = new epubCfi(this.selectRange, this.$parent.section.cfiBase).toString();
 
@@ -68,36 +68,45 @@ export default {
     },
 
     // rect is getBoundingClientRect()
-    // annotator position at bottom and center of selection
-    // position relative to the parent container eve-reader-container
     // annotator width = 130, height =65
-    setAnnotatorPosition(rect, offsetTop = 0, offsetLeft = 0) {
-      let tempTop = rect.bottom + window.scrollY + 5 - offsetTop;
-      let tempLeft = rect.left + rect.width / 2 - 65 - offsetLeft; // 65 is half width of annotator
-      let iframe = document.getElementById('eve-reader-view');
+    // annotator position is fixed
+    setAnnotatorPosition(rect, pointerX, pointerY) {
+      let tempTop = rect.bottom + 5;
+      let tempLeft = pointerX - 65; // 65 is half width of annotator
 
       // fix annotator left position
       if (tempLeft < 0) {
-        tempLeft = 10; 
+        tempLeft = pointerX; 
       }
 
       // fix annotator right position
-      if ((iframe.clientWidth + offsetLeft) - (tempLeft + 130) < 0) {
-        tempLeft = iframe.clientWidth + offsetLeft - 140;
+      if ((tempLeft + 130) > window.innerWidth) {
+        tempLeft = window.innerWidth - 140;
       }
 
-      // fix annotator top position
-      let screenBottom = window.scrollY + window.innerHeight;
-      let selectionBottom = rect.bottom - offsetTop;
-      if (screenBottom - selectionBottom < 70 || (tempTop + 70) > iframe.clientHeight ) {
-        tempTop = rect.top + window.scrollY - offsetTop - 70;
+      // fix annotator top position, there is multiple switch
+      const pointHigherRect = () => rect.bottom - pointerY > pointerY - rect.top + 20;
+      const topEnough = () => rect.top > 65;
+      const bottomEnough = () => window.innerHeight - rect.bottom > 65;
+      if (pointHigherRect()) {
+        if (topEnough()) {
+          tempTop = rect.top - 65;
+        } else if (!bottomEnough()) {
+          tempTop = pointerY + 5;
+        }
+      } else if (!bottomEnough()) {
+        if (topEnough()) {
+          tempTop = rect.top -65;
+        } else {
+          tempTop = pointerY - 65;
+        }
       }
 
       this.annotator.position.top = tempTop;
       this.annotator.position.left = tempLeft;
     },
 
-    onClickShowAnnotator(annotation) {
+    onClickShowAnnotator(evt, annotation) {
       this.showAnnotatorFromClick = true;
 
       this.annotator.cfiRange = annotation.cfiRange;
@@ -107,12 +116,16 @@ export default {
       let cfi = new epubCfi(this.annotator.cfiRange);
       this.selectRange = cfi.toRange(this.$store.state.ebookRootNode);
       let rect = this.selectRange.getBoundingClientRect();
-      this.setAnnotatorPosition(rect);
+      this.setAnnotatorPosition(rect, evt.clientX, evt.clientY);
 
       this.showAnnotator = true;
     },
 
     doAnnotatorHighlight(color) {
+      if (this.showAnnotatorFromClick) {
+        this.doAnnotatorDelete(); // delete first, than change color;
+      }
+
       let annotation = {};
       annotation.type = 'highlight';
       annotation.cfiRange = this.annotator.cfiRange;
@@ -128,6 +141,7 @@ export default {
 
     doAnnotatorDelete() {
       this.showAnnotator = false;
+      this.showAnnotatorFromClick = false;
       let cfiRange = this.annotator.cfiRange;
       let type = this.annotator.type;
       let hash = encodeURI(type + '-' + cfiRange);

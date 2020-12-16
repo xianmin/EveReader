@@ -7,7 +7,8 @@
 
 <template>
   <div id="eve-popover-wrapper"
-    :style="{top: + annotatorPosition.top + 'px',
+    :style="{position: 'fixed',
+             top: + annotatorPosition.top + 'px',
              left: + annotatorPosition.left + 'px'}">
 
     <div class="eve-popover-circle-list">

@@ -42,8 +42,8 @@ export default {
   },
 
   methods: {
-    clickAnnotation(e) {
-      this.$bus.emit('click-show-annotator', this.annotation);
+    clickAnnotation(evt) {
+      this.$bus.emit('click-show-annotator', evt, this.annotation);
     }
   }
 }
