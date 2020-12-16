@@ -1,10 +1,9 @@
 <template>
   <div class="home">
-    <el-container>
 
       <eve-sidebar class="eve-sidebar" @open-file="openFile" />
 
-      <router-view v-if='this.ebook.epub.isOpen'>
+      <router-view v-if='this.ebook.epub.isOpen' class="home-container">
         <eve-viewer></eve-viewer>
       </router-view>
 
@@ -28,7 +27,7 @@
         </div>
       </div>
 
-    </el-container>
+
   </div>
 </template>
 
@@ -149,6 +148,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.home {
+  display: flex;
+  flex-direction: row;
+}
+
+.eve-sidebar {
+  flex-shrink: 0;
+}
+
 .home-container {
   margin: 0 auto;
 

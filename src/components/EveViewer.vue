@@ -10,8 +10,8 @@
       }"
       />
 
-    <eve-annotator v-if='viewSectionReady' />
-    <eve-annotation-list v-if='viewSectionReady' />
+    <eve-annotator v-if='ebookViewReady' />
+    <eve-annotation-list v-if='ebookViewReady' />
   </div>
 </template>
 
@@ -27,7 +27,7 @@ import { isNumber } from "../epubjs/utils/core";
 export default {
   computed: {
     ...mapGetters([
-      'ebook',
+      'ebook', 'ebookViewReady',
     ]),
     ...mapGetters('setting', [
       'fontSize', 'lineHeight', 'pageWidth', 'backgroundColor',
@@ -45,7 +45,6 @@ export default {
       section: null,
       sectionContent: null,
       scrollTimer: null,
-      viewSectionReady: false,
     }
   },
 
@@ -75,7 +74,7 @@ export default {
 
   methods: {
     async display(target) {
-      this.viewSectionReady = false;
+      this.$store.commit('SET_EBOOK_VIEW_READY', false)
       let sec = this.ebook.epub.spine.get(target);
       this.$store.commit('SET_CURRENT_SECTION_INDEX', sec.index);
 
@@ -103,7 +102,7 @@ export default {
           this.moveToTarget(target);
         }
 
-        setTimeout(()=>{ this.viewSectionReady = true; }, 30)
+        setTimeout(()=>{ this.$store.commit('SET_EBOOK_VIEW_READY', true) }, 30)
         // this.loadAnnotation();
       })
     },
@@ -190,14 +189,14 @@ export default {
 
     eventWheel(e) {
       if (window.scrollY === 0 && e.wheelDelta > 0) {
-        if(this.viewSectionReady) {
+        if(this.ebookViewReady) {
           this.doPrev();
         }
       }
 
       if (window.scrollY + window.innerHeight >= document.body.clientHeight
         && e.wheelDelta < 0) {
-        if(this.viewSectionReady) {
+        if(this.ebookViewReady) {
           this.doNext();
         }
       }

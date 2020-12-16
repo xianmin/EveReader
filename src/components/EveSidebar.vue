@@ -1,5 +1,5 @@
 <template>
-  <el-aside :width="sidebarVisible ? 5 + sidebarWidth + 'vw' : 5 +'vw'">
+  <div :style="{width: sidebarVisible ? 5 + sidebarWidth + 'vw' : '5vw'}">
     <div id="activitybar">
       <!-- OPEN FILE -->
       <el-tooltip class="tooltip" effect="dark" content="Open File" placement="right">
@@ -75,7 +75,7 @@
     </div>
 
     <eve-setting-dialog ref="settingDialog"/>
-  </el-aside>
+  </div>
 </template>
 
 <script>
@@ -107,17 +107,16 @@ export default {
 
   watch: {
     // watch sidebar change, than refresh rendition
-    // maybe there is a better solution
     sidebarVisible(newVal, oldVal) {
       if (newVal === '' || oldVal === ''){
         setTimeout(() => {
-          this.ebook.rendition.resize();
+          this.$store.dispatch('refreshEbookViewReady');
         }, 1)
       }
     },
 
     sidebarWidth() {
-      this.ebook.rendition.resize();
+      this.$store.dispatch('refreshEbookViewReady');
     }
   },
 

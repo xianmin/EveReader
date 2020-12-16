@@ -10,12 +10,14 @@ export default new Vuex.Store({
   state: {
     ebook: null,
     ebookRootNode: null,
+    ebookViewReady: false,
     lastCfi: 0,
     currentSectionIndex: 0,
   },
   getters: {
     ebook: state => state.ebook,
     ebookRootNode: state => state.ebookRootNode,
+    ebookViewReady: state => state.ebookViewReady,
     lastCfi: state => state.lastCfi,
     currentSectionIndex: state => state.currentSectionIndex,
   },
@@ -26,6 +28,9 @@ export default new Vuex.Store({
     'SET_EBOOK_ROOT_NODE': (state, ebookRootNode) => {
       state.ebookRootNode = ebookRootNode;
     },
+    'SET_EBOOK_VIEW_READY': (state, ebookViewReady) => {
+      state.ebookViewReady = ebookViewReady;
+    },
     'SET_LASTCFI': (state, lastCfi) => {
       state.lastCfi = lastCfi;
     },
@@ -35,6 +40,12 @@ export default new Vuex.Store({
   },
   actions: {
     setEbook: ({ commit }, ebook) => commit('SET_EBOOK', ebook),
+
+    async refreshEbookViewReady({ commit }) {
+      console.log('here')
+      await commit('SET_EBOOK_VIEW_READY', false);
+      await commit('SET_EBOOK_VIEW_READY', true);
+    },
 
     async getLastCFI({ commit, state, dispatch }) {
       let lastRead = await database.getLastReadFromDB(state.ebook.ebookID);
