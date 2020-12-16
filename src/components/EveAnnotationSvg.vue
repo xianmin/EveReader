@@ -1,15 +1,20 @@
 <template>
-  <svg style='position: absolute; top: 0; left: 0; width: 100%; height: 100%' pointer-events='none'>
-  <g :fill="this.annotation.color" fill-opacity="0.3"> 
-    <rect v-for='(item, index) in rects' 
-      :key='index'
-      :x='item.left'
-      :y='item.top'
-      :height='item.height'
-      :width='item.width'
-      >
-    </rect>
-  </g>
+  <svg style='position: absolute; top: 0; left: 0; width: 100%; height: 100%' 
+    pointer-events='none'
+    >
+    <g :fill="this.annotation.color" fill-opacity="0.3"
+      pointer-events='visiblePainted'
+      @click='clickAnnotation'
+      ref='annotation'> 
+      <rect v-for='(item, index) in rects' 
+        :key='index'
+        :x='item.left'
+        :y='item.top'
+        :height='item.height'
+        :width='item.width'
+        >
+      </rect>
+    </g>
   </svg>
 </template>
 
@@ -35,9 +40,17 @@ export default {
     })
     this.rects = rects
   },
+
+  methods: {
+    clickAnnotation(e) {
+      this.$bus.emit('click-show-annotator', this.annotation);
+    }
+  }
 }
 </script>
 
 <style>
-
+g {
+  cursor: pointer;
+}
 </style>

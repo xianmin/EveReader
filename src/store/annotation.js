@@ -27,7 +27,10 @@ export default {
       state.annotationList.push(annotation)
     },
 
-    'DELETE_ANNOTATION': () => {},
+    'DELETE_ANNOTATION': (state, hash) => {
+      let index = state.annotationList.findIndex(annotation => annotation.hash === hash);
+      state.annotationList.splice(index, 1);
+    },
   },
 
   actions: {
@@ -39,8 +42,12 @@ export default {
 
     async addAnnotation({ commit, state, rootState }, annotation) {
       commit('ADD_ANNOTATION', annotation);
-      console.log(annotation);
       await database.addAnnotationToDB(rootState.ebook.ebookID, annotation);
     },
+
+    async deleteAnnotation({ commit, state, rootState }, hash) {
+      commit('DELETE_ANNOTATION', hash);
+      await database.deleteAnnotationFromDB(rootState.ebook.ebookID, hash);
+    }
   },
 }

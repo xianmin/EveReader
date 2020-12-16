@@ -38,6 +38,8 @@ export default {
     this.viewSectionElement = this.$parent.$refs.viewSection;
     this.viewSectionElement.addEventListener('mouseup', this._onMouseUp.bind(this));
     this.viewSectionElement.addEventListener('mousedown', this._onMouseDown.bind(this));
+
+    this.$bus.on('click-show-annotator', this.onClickShowAnnotator)
   },
 
   methods: {
@@ -95,18 +97,17 @@ export default {
       this.annotator.position.left = tempLeft;
     },
 
-    onClickShowAnnotator(e) {
+    onClickShowAnnotator(annotation) {
       this.showAnnotatorFromClick = true;
 
-      let rect = e.target.getBoundingClientRect();
-      this.setAnnotatorPosition(rect);
-
-      this.annotator.cfiRange = e.target.getAttribute('data-epubcfi');
-      this.annotator.type = e.target.getAttribute('data-type');
-      this.annotator.text = e.target.innerText;
+      this.annotator.cfiRange = annotation.cfiRange;
+      this.annotator.type = annotation.type;
+      this.annotator.text = annotation.text;
 
       let cfi = new epubCfi(this.annotator.cfiRange);
-      this.selectRange = cfi.toRange(this.$parent.$refs.viewSection.childNodes[0]);
+      this.selectRange = cfi.toRange(this.$store.state.ebookRootNode);
+      let rect = this.selectRange.getBoundingClientRect();
+      this.setAnnotatorPosition(rect);
 
       this.showAnnotator = true;
     },
@@ -126,13 +127,12 @@ export default {
     },
 
     doAnnotatorDelete() {
+      this.showAnnotator = false;
       let cfiRange = this.annotator.cfiRange;
       let type = this.annotator.type;
-      this.rendition.annotations.remove(cfiRange, type);
-      this.showAnnotator = false;
-
       let hash = encodeURI(type + '-' + cfiRange);
-      this.ebook.deleteAnnotationFromDB(hash);
+
+      this.$store.dispatch('annotation/deleteAnnotation', hash);
     },
   }
 
