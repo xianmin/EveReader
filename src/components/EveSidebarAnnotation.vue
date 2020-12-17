@@ -20,7 +20,7 @@
     </div>
     <div class="sidebar-main">
       <div class="eve-annotation-card"
-        v-for="item in allAnnotations" :key="item.hash"
+        v-for="item in annotationList" :key="item.hash"
         @click = "displayFromAnnotation(item.cfiRange)">
         <div class="eve-annotation-header">
           <div class="eve-annotation-date"> {{ formatDate(item.date) }} </div>
@@ -40,8 +40,8 @@ import Clickoutside from 'element-ui/src/utils/clickoutside';
 
 export default {
   computed: {
-    ...mapGetters([
-      'ebook',
+    ...mapGetters('annotation', [
+      'annotationList',
     ]),
   },
 
@@ -114,7 +114,7 @@ export default {
     },
 
     displayFromAnnotation(cfiRange) {
-      this.ebook.display(cfiRange);
+      this.$bus.emit('event-view-display', cfiRange);
     },
 
     formatDate(dateString) {
