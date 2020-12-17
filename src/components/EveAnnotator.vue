@@ -42,6 +42,12 @@ export default {
     this.$bus.on('click-show-annotator', this.onClickShowAnnotator)
   },
 
+  beforeDestroy() {
+    this.viewSectionElement.removeEventListener('mouseup', this._onMouseUp.bind(this));
+    this.viewSectionElement.removeEventListener('mousedown', this._onMouseDown.bind(this));
+    this.$bus.off('click-show-annotator');
+  },
+
   methods: {
     _onMouseUp(evt) {
       evt.preventDefault();
