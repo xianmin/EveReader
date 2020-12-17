@@ -64,6 +64,7 @@ export default {
   },
 
   beforeDestroy() {
+    this.$bus.off('event-view-display');
     window.removeEventListener('keydown', this.eventKeyDown);
     window.removeEventListener('wheel', this.eventWheel);
     window.removeEventListener('scroll', this.eventScroll);
@@ -76,6 +77,7 @@ export default {
     async display(target) {
       this.$store.commit('SET_EBOOK_VIEW_READY', false)
       let sec = this.ebook.epub.spine.get(target);
+
       if (sec.index === this.$store.state.currentSectionIndex) {
         await this.moveToTarget(target);
         return;
@@ -107,11 +109,29 @@ export default {
     },
 
     moveToTarget(target) {
+      let targetPos = this.locationOf(target);
       setTimeout(()=>{
+        if (window.scrollY > 0) {
+          window.scrollTo(0, targetPos.top + window.scrollY);
+        } else {
+          window.scrollTo(0, targetPos.top);
+        }
+
+        this.$store.commit('SET_EBOOK_VIEW_READY', true)
+      }, 20)
+    },
+
+    // Reference: epubjs contents.js,
+    // Get the location offset of a EpubCFI or an #id
+    locationOf(target) {
+      let position;
+      let targetPos = {"left": 0, "top": 0};
+      let epubcfi = new epubCfi();
+
+      if(epubcfi.isCfiString(target)) {
         let range = new epubCfi(target).toRange(this.$store.state.ebookRootNode);
         let container = range.startContainer;
         let newRange = new Range();
-        let position;
 
         if (range.startOffset < container.length) {
           newRange.setStart(container, range.startOffset);
@@ -121,14 +141,19 @@ export default {
           position = container.parentNode.getBoundingClientRect();
         }
 
-        if (window.scrollY > 0) {
-          window.scrollTo(0, position.top + window.scrollY);
-        } else {
-          window.scrollTo(0, position.top);
+      } else if (typeof target === "string" && target.indexOf("#") > -1) {
+        let id = target.substring(target.indexOf("#")+1);
+        let el = document.getElementById(id);
+        if(el) {
+          position = el.getBoundingClientRect();
         }
+      }
 
-        this.$store.commit('SET_EBOOK_VIEW_READY', true)
-      }, 20)
+      if (position) {
+        targetPos.left = position.left;
+        targetPos.top = position.top;
+      }
+      return targetPos;
     },
 
     currentLocation() {
@@ -136,7 +161,7 @@ export default {
       // let endPos = startPos + window.innerHeight;
       let mapping = new epubMapping();
       let location = mapping.page(this.$refs.viewSection, this.section.cfiBase, 0, window.innerHeight);
-      console.log(location);
+      // console.log(location);
       return location;
     },
 
