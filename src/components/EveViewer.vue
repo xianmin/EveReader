@@ -76,12 +76,12 @@ export default {
     async display(target) {
       this.$store.commit('SET_EBOOK_VIEW_READY', false)
       let sec = this.ebook.epub.spine.get(target);
-      this.$store.commit('SET_CURRENT_SECTION_INDEX', sec.index);
-
-      if (sec === this.section) {
+      if (sec.index === this.$store.state.currentSectionIndex) {
         await this.moveToTarget(target);
         return;
       }
+
+      this.$store.commit('SET_CURRENT_SECTION_INDEX', sec.index);
 
       this.section = sec;
       let request = this.ebook.epub.load.bind(this.ebook.epub);
@@ -103,7 +103,6 @@ export default {
         }
 
         setTimeout(()=>{ this.$store.commit('SET_EBOOK_VIEW_READY', true) }, 30)
-        // this.loadAnnotation();
       })
     },
 
@@ -121,8 +120,14 @@ export default {
         } else { // empty, return the parent element
           position = container.parentNode.getBoundingClientRect();
         }
-        // console.log(position);
-        window.scrollTo(0, position.top);
+
+        if (window.scrollY > 0) {
+          window.scrollTo(0, position.top + window.scrollY);
+        } else {
+          window.scrollTo(0, position.top);
+        }
+
+        this.$store.commit('SET_EBOOK_VIEW_READY', true)
       }, 20)
     },
 
@@ -131,6 +136,7 @@ export default {
       // let endPos = startPos + window.innerHeight;
       let mapping = new epubMapping();
       let location = mapping.page(this.$refs.viewSection, this.section.cfiBase, 0, window.innerHeight);
+      console.log(location);
       return location;
     },
 
