@@ -158,14 +158,14 @@ export default {
 
     // Temporary change current fontSize, do not save to DB.
     increaseFontSize() {
-      let fontSize = this.$store.state.setting.fontSize - -2;  // +2
-      this.$store.commit('setting/SET_EBOOK_FONTSIZE', fontSize);
+      let size = this.$store.state.setting.fontSize - -2;  // +2
+      this.$store.dispatch('setting/setEbookSetting', {fontSize: size});
     },
 
     decreaseFontSize() {
-      let fontSize = this.$store.state.setting.fontSize - 2;
-      if (fontSize > 14) {
-        this.$store.commit('setting/SET_EBOOK_FONTSIZE', fontSize);
+      let size = this.$store.state.setting.fontSize - 2;
+      if (size > 14) {
+        this.$store.dispatch('setting/setEbookSetting', {fontSize: size});
       }
     },
 

@@ -68,20 +68,20 @@ export default {
     },
 
     fontSize(newVal) {
-      if (newVal > 14) {
-        this.$store.commit('setting/SET_EBOOK_FONTSIZE', newVal);
+      if (newVal > 14 && newVal < 40) {
+        this.$store.dispatch('setting/setEbookSetting', { fontSize: newVal });
       }
     },
 
     lineHeight(newVal) {
       if (newVal > 1 && newVal < 3) {
-        this.$store.commit('setting/SET_EBOOK_LINEHEIGHT', newVal);
+        this.$store.dispatch('setting/setEbookSetting', { lineHeight: newVal });
       }
     },
 
     pageWidth(newVal) {
       if (newVal > 300) {
-        this.$store.commit('setting/SET_EBOOK_PAGEWIDTH', newVal);
+        this.$store.dispatch('setting/setEbookSetting', { pageWidth: newVal });
       }
     },
 

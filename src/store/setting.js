@@ -19,25 +19,9 @@ export default {
 
   mutations: {
     'SET_EBOOK_SETTING': (state, setting) => {
-      for (let i in state) {
+      for (let i in setting) {
         state[i] = setting[i];
       }
-    },
-    'SET_EBOOK_FONTSIZE': (state, fontSize) => {
-      state.fontSize = fontSize;
-      database.updateSettingToDB(state);
-    },
-    'SET_EBOOK_LINEHEIGHT': (state, lineHeight) => {
-      state.lineHeight = lineHeight;
-      database.updateSettingToDB(state);
-    },
-    'SET_EBOOK_PAGEWIDTH': (state, pageWidth) => {
-      state.pageWidth = pageWidth;
-      database.updateSettingToDB(state);
-    },
-    'SET_EBOOK_BACKGROUND': (state, backgroundColor) => {
-      state.backgroundColor = backgroundColor;
-      database.updateSettingToDB(state);
     },
   },
 
@@ -50,6 +34,12 @@ export default {
       } else {
         database.updateSettingToDB(state);
       }
+    },
+
+    setEbookSetting({ commit, state, dispatch }, setting) {
+      commit('SET_EBOOK_SETTING', setting);
+      dispatch('refreshEbookViewReady', null, { root: true });
+      database.updateSettingToDB(state);
     },
   },
 }

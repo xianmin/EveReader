@@ -39,8 +39,8 @@ export default {
     await eveReaderDB.put(store, newVal);
   },
 
-  getSettingFromDB() {
-    let setting = this.getFromDB('setting', 'user-setting');
+  async getSettingFromDB() {
+    let setting = await this.getFromDB('setting', 'user-setting');
     return setting ? setting.value : undefined;
   },
 
