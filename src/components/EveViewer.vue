@@ -94,6 +94,7 @@ export default {
 
       this.$nextTick(() => {
         this.$store.commit('SET_EBOOK_ROOT_NODE', this.$refs.viewSection.childNodes[0])
+        this.addLinkEvent();
 
         // if target is epubCfi, moving to
         if (target === this.section.href) {
@@ -232,6 +233,49 @@ export default {
         }
       }
     },
+
+    // fix viewSection link
+    addLinkEvent() {
+      let links = this.$store.state.ebookRootNode.querySelectorAll("a[href]");
+
+      for (let i = 0; i < links.length; i++) {
+        let link = links[i];
+
+        link.onclick = evt => { 
+          evt.preventDefault();
+          let target;
+          let href = link.getAttribute("href");
+
+          // TODO: use default application to open
+          if (href.indexOf("mailto:") === 0) return;
+
+          if (href.indexOf("://") > -1) {
+            console.log(href);
+            return;
+          }
+          
+          const findSpineHref = (href) => {
+            for (let i in this.ebook.epub.spine.spineByHref) {
+              if ( i.indexOf(href) > -1 ) {
+                return i
+              }
+            }
+          }
+
+          // find correct href, and than display
+          if ( href.indexOf("#") > -1) {
+            let id = href.substring(href.indexOf("#"));
+            let tempHref = href.substring(0, href.indexOf("#"));
+            target = findSpineHref(tempHref) + id;
+          } else {
+            target = findSpineHref(href);
+          }
+
+          if (target) this.display(target);
+        } 
+      }
+    },
+
   },
 };
 </script>
