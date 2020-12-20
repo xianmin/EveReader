@@ -68,6 +68,7 @@ export default {
     window.removeEventListener('keydown', this.eventKeyDown);
     window.removeEventListener('wheel', this.eventWheel);
     window.removeEventListener('scroll', this.eventScroll);
+    this.$store.commit('SET_EBOOK_VIEW_READY', false)
   },
 
   watch: {

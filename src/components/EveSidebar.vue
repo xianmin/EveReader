@@ -66,10 +66,7 @@
         </div>
       </div>
 
-      <eve-sidebar-annotation
-        v-show="sidebarVisible === 'annotation'"
-        :data="this.$store.state.ebook.allAnnotation">
-      </eve-sidebar-annotation>
+      <eve-sidebar-annotation v-show="sidebarVisible === 'annotation'" />
 
       <div class="sidebar-resizer" @mousedown="resizerMouseDown"></div>
     </div>

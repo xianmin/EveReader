@@ -20,7 +20,7 @@
     </div>
     <div class="sidebar-main">
       <div class="eve-annotation-card"
-        v-for="item in annotationList" :key="item.hash"
+        v-for="item in allAnnotation" :key="item.hash"
         @click = "displayFromAnnotation(item.cfiRange)">
         <div class="eve-annotation-header">
           <div class="eve-annotation-date"> {{ formatDate(item.date) }} </div>
@@ -49,20 +49,14 @@ export default {
 
   data() {
     return {
-      allAnnotations: null,
+      allAnnotation: null,
       showAnnotationMore: false,
     }
   },
 
-  props: {
-    data: {
-      type: Array,
-    },
-  },
-
   watch: {
-    data(newVal) {
-      this.setAllAnnotations(newVal);
+    annotationList(newVal) {
+      this.setAllAnnotation(newVal);
     }
   },
 
@@ -75,8 +69,9 @@ export default {
       const file = ev.target.files[0];
       const reader = new FileReader();
 
+      // TODO: electron not work here, but web is work.
       reader.onload = e => {
-        this.ebook.importAnnotationFromJson(e.target.result).then((result) => {
+        this.$store.dispatch('annotation/importAnnotation', e.target.result).then((result) => {
           switch(result) {
             case 'success':
               this.$message({
@@ -92,23 +87,24 @@ export default {
           }
         })
       };
+
       reader.readAsText(file);
       this.hideAnnotationMore();
     },
 
     exportAnnotation() {
-      this.ebook.exportAnnotationToJson();
+      this.$store.dispatch('annotation/exportAnnotation');
     },
 
-    setAllAnnotations(arrData) {
-      this.allAnnotations = [...arrData]; // clone array
-      this.sortAnnotations();
+    setAllAnnotation(arrData) {
+      this.allAnnotation = this.annotationList.slice(); // clone array
+      this.sortAnnotation();
     },
 
-    sortAnnotations(sortMethod = 'sortByDate') {
+    sortAnnotation(sortMethod = 'sortByDate') {
       switch(sortMethod) {
         case 'sortByDate':
-          this.allAnnotations.sort((a,b) => new Date(b.date) - new Date(a.date));
+          this.allAnnotation.sort((a,b) => new Date(b.date) - new Date(a.date));
           break;
       }
     },
@@ -128,8 +124,8 @@ export default {
     },
   },
 
-  created() {
-    this.setAllAnnotations(this.data);
+  mounted() {
+    this.setAllAnnotation(this.annotationList);
   },
 }
 </script>
