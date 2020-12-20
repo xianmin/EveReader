@@ -20,7 +20,9 @@ yarn-error.log*
 *.sln
 *.sw?
 
-#Electron-builder output
+# Electron-builder output
 /dist_electron
 
+# local backup files
+/bak
 *.bak
