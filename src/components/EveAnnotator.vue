@@ -5,13 +5,15 @@
     :annotatorPosition = "annotator.position"
     @do-annotator-highlight = 'doAnnotatorHighlight'
     @do-annotator-delete = 'doAnnotatorDelete'
+    @do-annotator-copy = 'doAnnotatorCopy'
+    @do-annotator-note = 'doAnnotatorNote'
   />
 </template>
 
 <script>
 import EveAnnotatorPopover from './EveAnnotatorPopover.vue';
 import epubCfi from '../epubjs/epubcfi';
-import highlighter from './highlighter';
+
 
 export default {
   components: { EveAnnotatorPopover },
@@ -34,7 +36,6 @@ export default {
   },
 
   mounted() {
-    // this.highlighter = new Highlighter();
     this.viewSectionElement = this.$parent.$refs.viewSection;
     this.viewSectionElement.addEventListener('mouseup', this._onMouseUp.bind(this));
     this.viewSectionElement.addEventListener('mousedown', this._onMouseDown.bind(this));
@@ -154,8 +155,17 @@ export default {
 
       this.$store.dispatch('annotation/deleteAnnotation', hash);
     },
-  }
 
+    doAnnotatorCopy() {
+      navigator.clipboard.writeText(this.annotator.text);
+      this.showAnnotator = false;
+    },
+
+    // TODO
+    doAnnotatorNote() {
+      this.showAnnotator = false;
+    }
+  }
 
 }
 </script>

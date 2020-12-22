@@ -21,33 +21,21 @@
     </div>
 
     <div class="eve-popover-tool-list">
-      <el-tooltip class="tooltip" effect="dark" content="Delete" placement="bottom">
-        <div class="eve-popover-tool tool-delete"
-          @click = "$emit('do-annotator-delete')"
-          v-show = 'showAnnotatorFromClick'>
-          <i class="el-icon-delete"></i>
-        </div>
-      </el-tooltip>
-      <el-tooltip class="tooltip" effect="dark" content="Note" placement="bottom">
-        <div class="eve-popover-tool tool-note">
-          <i class="el-icon-chat-line-square"></i>
-        </div>
-      </el-tooltip>
-      <el-tooltip class="tooltip" effect="dark" content="Copy" placement="bottom">
-        <div class="eve-popover-tool tool-copy">
-          <i class="el-icon-crop"></i>
-        </div>
-      </el-tooltip>
-      <el-tooltip class="tooltip" effect="dark" content="Search" placement="bottom">
-        <div class="eve-popover-tool tool-search">
-            <i class="el-icon-search"></i>
-        </div>
-      </el-tooltip>
-      <el-tooltip class="tooltip" effect="dark" content="Share" placement="bottom">
-        <div class="eve-popover-tool tool-share">
-          <i class="el-icon-share"></i>
-        </div>
-      </el-tooltip>
+      <div class="eve-popover-tool tool-delete"
+        @click = "$emit('do-annotator-delete')"
+        v-show = 'showAnnotatorFromClick'>
+        <i class="el-icon-delete"></i>
+      </div>
+
+      <div class="eve-popover-tool tool-note"
+        @click = "$emit('do-annotator-note')">
+        Note
+      </div>
+
+      <div class="eve-popover-tool tool-copy"
+        @click = "$emit('do-annotator-copy')">
+        Copy
+      </div>
     </div>
 
   </div>
@@ -108,17 +96,26 @@ export default {
 
   .eve-popover-tool-list {
     display: flex;
-    margin: 2px;
+    padding: 2px;
     justify-content: space-around;
+    border-top: 1px solid #c5c5c5;;
 
     .eve-popover-tool {
       cursor: pointer;
-      font-size: 20px;
+      font-size: 16px;
+      flex: 2;
+      text-align:center;
+    }
+
+    .tool-note {
+      border-right: 1px solid #c5c5c5;;
     }
 
     .tool-delete {
+      flex: 1;
       color: red;
       font-weight: bold;
+      border-right: 1px solid #c5c5c5;;
     }
   }
 }
