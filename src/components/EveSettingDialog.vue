@@ -6,36 +6,28 @@
     width="35%">
     <div class="setting-container">
 
-      <div class="setting-item">
-        <div class="setting-item-name">Font Size</div>
-        <div class="setting-item-input">
-          <el-input v-model="fontSize">
-            <template slot="append">px</template>
-          </el-input>
-        </div>
+      <div class="setting-item-name">Font Size</div>
+      <div class="setting-item-input">
+        <el-input v-model="fontSize">
+          <template slot="append">px</template>
+        </el-input>
       </div>
 
-      <div class="setting-item">
-        <div class="setting-item-name">Line Height</div>
-        <div class="setting-item-input">
-          <el-input v-model="lineHeight"></el-input>
-        </div>
+      <div class="setting-item-name">Line Height</div>
+      <div class="setting-item-input">
+        <el-input v-model="lineHeight"></el-input>
       </div>
 
-      <div class="setting-item">
-        <div class="setting-item-name">Page Width</div>
-        <div class="setting-item-input">
-          <el-input v-model="pageWidth">
-            <template slot="append">px</template>
-          </el-input>
-        </div>
+      <div class="setting-item-name">Page Width</div>
+      <div class="setting-item-input">
+        <el-input v-model="pageWidth">
+          <template slot="append">px</template>
+        </el-input>
       </div>
 
-      <div class="setting-item">
-        <div class="setting-item-name">Background Color</div>
-        <div class="setting-item-input">
-          <el-input v-model="backgroundColor"></el-input>
-        </div>
+      <div class="setting-item-name">Background Color</div>
+      <div class="setting-item-input">
+        <el-input v-model="backgroundColor"></el-input>
       </div>
 
     </div>
@@ -127,22 +119,20 @@ export default {
 
 <style lang="scss">
 .setting-container {
-  display: flex;
-  flex-direction: column;
-
-  .setting-item {
-    display: flex;
-    align-items: center;
+  display: grid;
+  grid-template-columns: 35% 65%;
+  align-items: center;
+  grid-row-gap: 20px;
+  // grid-template-areas: 'item-name item-input';
 
     .setting-item-name {
       font-size: 18px;
-      flex-grow: 1;
+      // grid-area: item-name;
     }
 
     .setting-item-input {
-      flex-grow: 2;
+      // grid-area: item-input;
     }
-  }
 }
 
 </style>
