@@ -49,23 +49,8 @@
     </div>
 
     <div id="sidebar" v-show="sidebarVisible" :style="{ width: sidebarWidth + 'vw' }">
-      <div id="sidebar-toc" v-show="sidebarVisible === 'toc'">
-        <div class="sidebar-header">
-          <div class="sidebar-header-text">Table Of Content</div>
-        </div>
-        <div class="sidebar-main">
-          <el-tree
-            :data="this.$store.state.ebook.toc"
-            empty-text="No Content"
-            node-key="id"
-            expand-on-click-node
-            highlight-current
-            ref = "tocTree"
-            @node-click="handleNodeClick">
-          </el-tree>
-        </div>
-      </div>
 
+      <eve-sidebar-toc v-show="sidebarVisible === 'toc'" />
       <eve-sidebar-annotation v-show="sidebarVisible === 'annotation'" />
 
       <div class="sidebar-resizer" @mousedown="resizerMouseDown"></div>
@@ -79,12 +64,14 @@
 import { mapGetters } from 'vuex';
 import { EventListener } from '../event.js';
 import EveSidebarAnnotation from './EveSidebarAnnotation.vue';
+import EveSidebarToc from './EveSidebarToc.vue';
 import EveSettingDialog from './EveSettingDialog.vue';
 
 export default {
   name: "EveSidebar",
 
   components: {
+    EveSidebarToc,
     EveSidebarAnnotation,
     EveSettingDialog,
   },
