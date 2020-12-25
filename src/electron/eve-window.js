@@ -8,13 +8,12 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 class eveWindow {
   constructor(eveApp, epubPath) {
     this.eveApp = eveApp;
+    this.epubPath = epubPath;
 
-    if (epubPath) {
-      this.epubPath = epubPath;
-      this.alreadyOpen(epubPath);
+    // if path already open, show that window
+    if (!this.alreadyOpen(epubPath)) {
+      this.open();
     }
-
-    this.open();
   }
 
   alreadyOpen(epubPath) {
