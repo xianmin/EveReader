@@ -96,7 +96,7 @@ export default {
       this.$store.dispatch('annotation/exportAnnotation');
     },
 
-    setAllAnnotation(arrData) {
+    setAllAnnotation() {
       this.allAnnotation = this.annotationList.slice(); // clone array
       this.sortAnnotation();
     },
