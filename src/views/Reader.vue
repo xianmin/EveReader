@@ -78,6 +78,10 @@ export default {
     this.$bus.on('bus-open-file', this.openFile);
   },
 
+  beforeDestroy() {
+    this.$bus.off('bus-open-file');
+  },
+
   methods: {
     openFile() {
       if ( window.ipcRenderer ) {
