@@ -12,7 +12,7 @@ export default new Vuex.Store({
     ebookRootNode: null,
     ebookViewReady: false,
     lastCfi: 0,
-    currentSectionIndex: 0,
+    currentSectionIndex: null,
   },
   getters: {
     ebook: state => state.ebook,
