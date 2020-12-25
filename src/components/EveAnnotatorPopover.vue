@@ -1,10 +1,3 @@
-<!--
-0. from rendition.hooks.content get selection range position
-1. when selected, show this popover component, & save cfiRange at EveViewer
-2. get highlight color list from ebook
-3. when click, emit 'do-annotator-highlight' to EveViewer
--->
-
 <template>
   <div id="eve-popover-wrapper"
     :style="{position: 'fixed',
@@ -13,7 +6,7 @@
 
     <div class="eve-popover-circle-list">
       <div class="eve-popover-circle"
-          v-for="(color, index) in annotationColorList" :key="color"
+          v-for="(color, index) in annotatorColorList" :key="color"
           :class="'eve-hl-' + index"
           :style="{background: color}"
           @click="$emit('do-annotator-highlight', color)">
@@ -46,21 +39,14 @@ import { mapGetters } from 'vuex';
 
 export default {
   computed: {
-    ...mapGetters([
-      'ebook',
+    ...mapGetters('setting',[
+      'annotatorColorList',
     ]),
   },
 
   props: ['showAnnotatorFromClick', 'annotatorPosition'],
 
-  data() {
-    return {
-      annotationColorList: [],
-    }
-  },
-
   mounted() {
-    this.annotationColorList = this.ebook.annotationColorList;
   },
 
   methods: {
@@ -91,6 +77,7 @@ export default {
       height: 20px;
       box-sizing: border-box;
       margin: 2px;
+      opacity: 0.7;
     }
   }
 

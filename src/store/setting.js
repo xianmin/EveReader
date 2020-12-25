@@ -8,6 +8,7 @@ export default {
     lineHeight: 1.8,
     pageWidth: 900,
     backgroundColor: '#FFFFFF',
+    annotatorColorList: ['red', 'orange', 'yellow', 'green', 'blue'],
   },
 
   getters: {
@@ -15,6 +16,7 @@ export default {
     lineHeight: state => state.lineHeight,
     pageWidth: state => state.pageWidth,
     backgroundColor: state => state.backgroundColor,
+    annotatorColorList: state => state.annotatorColorList,
   },
 
   mutations: {

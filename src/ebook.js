@@ -8,7 +8,6 @@ class Ebook {
     this.epub = null;
     this.fileName = "";
     this.toc = [];
-    this.annotationColorList = ['#FFCAD7', '#FFDE70', '#FFFB78', '#D1FF61', '#B4FFEB',];
 
     this.init();
   }
