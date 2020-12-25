@@ -137,7 +137,7 @@ export default {
     },
 
     openFile() {
-      this.$emit('open-file');
+      this.$bus.emit('bus-open-file');
     },
 
     // Temporary change current fontSize, do not save to DB.

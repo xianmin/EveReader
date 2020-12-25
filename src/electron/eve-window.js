@@ -4,19 +4,6 @@ import fs from 'fs';
 import windowStateKeeper from 'electron-window-state';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 
-function alreadyOpen(eveApp, epubPath) {
-  if (!epubPath || !eveApp) {
-    return;
-  }
-  var windows = eveApp.windows;
-  for (var i = 0; i < windows.length; i++) {
-    if (!windows[i]) continue;
-    if (windows[i].epubPath === epubPath) {
-      return windows[i];
-    }
-  }
-  return false;
-}
 
 class eveWindow {
   constructor(eveApp, epubPath) {
@@ -24,15 +11,30 @@ class eveWindow {
 
     if (epubPath) {
       this.epubPath = epubPath;
-      // Check if the called Epub is already open
-      var epubWin = alreadyOpen(eveApp, epubPath);
-      if (epubWin && epubWin.browserWindow) {
-        epubWin.browserWindow.show();
-        return;
-      }
+      this.alreadyOpen(epubPath);
     }
 
     this.open();
+  }
+
+  alreadyOpen(epubPath) {
+    // Check if the called Epub is already open
+    let win = null;
+    let windows = this.eveApp.windows;
+
+    for (let i = 0; i < windows.length; i++) {
+      if (!windows[i]) continue;
+      if (windows[i].epubPath === epubPath) {
+        win = windows[i];
+      }
+    }
+
+    if (win && win.browserWindow) {
+      win.browserWindow.show();
+      return true;
+    } else {
+      return false;
+    }
   }
 
   // Send and exec a command in window
@@ -127,13 +129,7 @@ class eveWindow {
 
     win.webContents.on("did-finish-load", () => {
       if (this.epubPath) {
-        let fileName = path.basename(this.epubPath);
-        fs.readFile(this.epubPath, (err, data) => {
-          if (err) {
-            console.log(err);
-          }
-          win.webContents.send('IPC::FILE-OPEN', data, fileName);
-        });
+        this.openFile(this.epubPath);
       }
     })
 
@@ -141,6 +137,23 @@ class eveWindow {
     // if (this.config.get("debug")) {
     //   win.openDevTools();
     // }
+  }
+
+  openFile(epubPath) {
+    let fileName = path.basename(epubPath);
+    fs.readFile(epubPath, (err, data) => {
+      if (err) {
+        console.log(err);
+      }
+      this.browserWindow.webContents.send('IPC::FILE-OPEN', data, fileName);
+    });
+  }
+
+  openFileFromDialog(epubPath) {
+    if (!this.alreadyOpen(epubPath)) {
+      this.eveApp.setWinPath(this.id, epubPath);
+      this.openFile(epubPath);
+    }
   }
 }
 

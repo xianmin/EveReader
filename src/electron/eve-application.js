@@ -1,8 +1,10 @@
 import {
-  BrowserWindow
+  BrowserWindow,
+  ipcMain,
 } from 'electron';
 import ipcServer from './ipc-server';
 import eveWindow from './eve-window';
+import eveDialog from './eve-dialog';
 
 class eveApplication {
   constructor() {
@@ -10,8 +12,12 @@ class eveApplication {
     this.windows = [];
     // IPC get & set
     this.ipcServer = new ipcServer(this);
+
+    this.dialog = new eveDialog(this);
     // Open Epub
     this.open(process.argv);
+
+    this.initIpcMain();
   }
 
   // Open Epub in argv if exist, otherwise open a new window
@@ -27,12 +33,18 @@ class eveApplication {
     }
   }
 
-  // trigger
-  setWinPath(path, winId) {
-    this.windows[winId].path = path;
+  initIpcMain() {
+    ipcMain.on('IPC::ASK-OPEN-FILE', () => {
+      this.dialog.askOpenFile();
+    });
   }
 
-  getFocusedAbrWindow(winId) {
+  // trigger
+  setWinPath(winId, epubPath) {
+    this.windows[winId].epubPath = epubPath;
+  }
+
+  getFocusedWindow(winId) {
     winId = winId || BrowserWindow.getFocusedWindow().id;
     return this.windows[winId];
   }

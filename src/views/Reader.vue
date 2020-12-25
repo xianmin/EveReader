@@ -1,7 +1,7 @@
 <template>
   <div class="home">
 
-      <eve-sidebar class="eve-sidebar" @open-file="openFile" />
+      <eve-sidebar class="eve-sidebar" />
 
       <router-view v-if='this.ebook.epub.isOpen' class="home-container">
         <eve-viewer></eve-viewer>
@@ -68,19 +68,25 @@ export default {
       window.ipcRenderer.on('IPC::FILE-OPEN', (event, data, fileName) => {
         this.ebook.openEpub(data).then(() => {
           this.ebook.fileName = fileName;
-            this.redirectRouter();
+          this.redirectRouter();
         });
       });
     } else {
       this.isElectron = false;
     }
+
+    this.$bus.on('bus-open-file', this.openFile);
   },
 
   methods: {
     openFile() {
-      this.ebook.openFile().then(() => {
-        this.redirectRouter();
-      })
+      if ( window.ipcRenderer ) {
+        window.ipcRenderer.send('IPC::ASK-OPEN-FILE');
+      } else {
+        this.ebook.openFile().then(() => {
+          this.redirectRouter();
+        })
+      }
     },
 
     openFileFromDrop(file) {
