@@ -9,6 +9,9 @@ export default {
     pageWidth: 900,
     backgroundColor: '#FFFFFF',
     annotatorColorList: ['red', 'orange', 'yellow', 'green', 'blue'],
+    // reader state keeper
+    sidebarVisible: '',
+    sidebarWidth: 25,
   },
 
   getters: {
@@ -17,6 +20,8 @@ export default {
     pageWidth: state => state.pageWidth,
     backgroundColor: state => state.backgroundColor,
     annotatorColorList: state => state.annotatorColorList,
+    sidebarVisible: state => state.sidebarVisible,
+    sidebarWidth: state => state.sidebarWidth,
   },
 
   mutations: {

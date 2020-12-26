@@ -77,16 +77,10 @@ export default {
   },
 
   computed: {
-    ...mapGetters([
-      'ebook',
+    ...mapGetters('setting', [
+      'sidebarVisible',
+      'sidebarWidth',
     ]),
-  },
-
-  data() {
-    return {
-      sidebarVisible: '',
-      sidebarWidth: 25,
-    }
   },
 
   watch: {
@@ -123,12 +117,12 @@ export default {
     },
 
     toogleSidebar(key) {
-      if (this.sidebarVisible === '') {
-        this.sidebarVisible = key;  // open
-      } else if (this.sidebarVisible === key) {
-        this.sidebarVisible = '';  // close
-      } else {
-        this.sidebarVisible = key;  // switch
+      if (this.sidebarVisible === '') { //open
+        this.$store.dispatch('setting/setEbookSetting', { sidebarVisible: key });
+      } else if (this.sidebarVisible === key) { //close
+        this.$store.dispatch('setting/setEbookSetting', { sidebarVisible: '' });
+      } else { //switch
+        this.$store.dispatch('setting/setEbookSetting', { sidebarVisible: key });
       }
     },
 
@@ -169,7 +163,7 @@ export default {
 
           // width range is (200px ~ 500px)
           if (newWidth >= 20 && newWidth <= 40) {
-            this.sidebarWidth = newWidth;
+            this.$store.dispatch('setting/setEbookSetting', {sidebarWidth: newWidth});
           } else {
             document.onmousemove = document.onmouseup = null;
           }
