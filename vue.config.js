@@ -26,6 +26,7 @@ module.exports = {
       builderOptions: {
         "productName": "Eve Reader",
         "appId": "com.example.yourapp",
+        "icon": "./public/icon.png",
         "fileAssociations": [{
           "ext": "epub",
           "name": "Epub",

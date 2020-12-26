@@ -53,6 +53,7 @@ class eveWindow {
     let win = new BrowserWindow({
       title: "Eve Reader",
       // icon: constants.path.icon,
+      icon: path.join(__static, 'icon.png'),
       minWidth: 100,
       minHeight: 100,
       x: mainWindowState.x,
