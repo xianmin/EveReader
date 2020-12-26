@@ -8,7 +8,7 @@
         'line-height': this.lineHeight,
         'max-width': this.pageWidth + 'px',
       }"
-      />
+    />
 
     <eve-annotator v-if='ebookViewReady' />
     <eve-annotation-list v-if='ebookViewReady' />
@@ -97,30 +97,32 @@ export default {
         this.$store.commit('SET_EBOOK_ROOT_NODE', this.$refs.viewSection.childNodes[0])
         this.addLinkEvent();
 
-        // if target is epubCfi, moving to
-        if (target === this.section.href) {
-          window.scroll(0, 0);
-        } else if (isNumber(target)) {
-          // return;
-        } else {
-          this.moveToTarget(target);
-        }
+        // waiting viewer finish render, include image
+        setTimeout(()=>{ 
+          this.$store.commit('SET_EBOOK_VIEW_READY', true) 
 
-        setTimeout(()=>{ this.$store.commit('SET_EBOOK_VIEW_READY', true) }, 30)
+          // if target is epubCfi, moving to
+          if (target === this.section.href) {
+            window.scroll(0, 0);
+          } else if (isNumber(target)) {
+            // return;
+          } else {
+            this.moveToTarget(target);
+          }
+        }, 30)
       })
     },
 
     moveToTarget(target) {
       let targetPos = this.locationOf(target);
-      setTimeout(()=>{
-        if (window.scrollY > 0) {
-          window.scrollTo(0, targetPos.top + window.scrollY);
-        } else {
-          window.scrollTo(0, targetPos.top);
-        }
 
-        this.$store.commit('SET_EBOOK_VIEW_READY', true)
-      }, 20)
+      if (window.scrollY > 0) {
+        window.scrollTo(0, targetPos.top + window.scrollY);
+      } else {
+        window.scrollTo(0, targetPos.top);
+      }
+      // at same section, reset ebook view ready
+      this.$store.commit('SET_EBOOK_VIEW_READY', true)
     },
 
     // Reference: epubjs contents.js,
@@ -132,17 +134,9 @@ export default {
 
       if(epubcfi.isCfiString(target)) {
         let range = new epubCfi(target).toRange(this.$store.state.ebookRootNode);
-        let container = range.startContainer;
-        let newRange = new Range();
-
-        if (range.startOffset < container.length) {
-          newRange.setStart(container, range.startOffset);
-          newRange.setEnd(container, range.startOffset + 2);
-          position = newRange.getBoundingClientRect();
-        } else { // empty, return the parent element
-          position = container.parentNode.getBoundingClientRect();
+        if (range) {
+          position = range.getBoundingClientRect();
         }
-
       } else if (typeof target === "string" && target.indexOf("#") > -1) {
         let id = target.substring(target.indexOf("#")+1);
         let el = document.getElementById(id);
@@ -155,6 +149,7 @@ export default {
         targetPos.left = position.left;
         targetPos.top = position.top;
       }
+
       return targetPos;
     },
 
