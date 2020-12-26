@@ -7,6 +7,7 @@ class Ebook {
     this.title = "";
     this.epub = null;
     this.fileName = "";
+    this.navigation = null;
     this.toc = [];
 
     this.init();
@@ -17,7 +18,8 @@ class Ebook {
 
     // get toc
     this.epub.loaded.navigation.then((nav) => {
-      this.toc = this.generateToc(nav.toc, []);
+      this.navigation = nav;
+      this.toc = nav.toc;
     });
   }
 
@@ -81,31 +83,6 @@ class Ebook {
 
   openEpubFromUrl(url) {
     this.epub.open(url, "epub")
-  }
-
-  generateToc(toc, parrent) {
-    for (let i = 0; i < toc.length; i++) {
-      let id = toc[i].id;
-      let label = toc[i].label.trim();
-      let href = toc[i].href;
-      let spineIndex = this.epub.spine.spineByHref[href];
-
-      parrent[i] = {
-        id: id,
-        label: label,
-        children: [],
-        href: href,
-        spineIndex: spineIndex,
-      };
-
-      // if toc has subitems recursively
-      // change "subitems" to "children", because element-ui Tree need it
-      if (toc[i].subitems) {
-        this.generateToc(toc[i].subitems, parrent[i].children);
-      }
-    }
-
-    return parrent;
   }
 }
 

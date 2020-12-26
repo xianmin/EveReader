@@ -68,8 +68,8 @@ class Navigation {
 
 			this.length++;
 
-			if (item.subitems.length) {
-				this.unpack(item.subitems);
+			if (item.children.length) {
+				this.unpack(item.children);
 			}
 		}
 
@@ -97,7 +97,7 @@ class Navigation {
 	}
 
 	/**
-	 * Get an item from navigation subitems recursively by index
+	 * Get an item from navigation children recursively by index
 	 * @param  {string} target
 	 * @param  {number} index
 	 * @param  {array} navItems
@@ -114,7 +114,7 @@ class Navigation {
 		} else {
 			let result;
 			for (let i = 0; i < navItems.length; ++i) {
-				result = this.getByIndex(target, index, navItems[i].subitems);
+				result = this.getByIndex(target, index, navItems[i].children);
 				if (result) {
 					break;
 				}
@@ -166,7 +166,7 @@ class Navigation {
 					list.push(item);
 				} else {
 					parent = toc[item.parent];
-					parent.subitems.push(item);
+					parent.children.push(item);
 				}
 			}
 		}
@@ -194,7 +194,7 @@ class Navigation {
 			id = src;
 		}
 		let text = content.textContent || "";
-		let subitems = [];
+		let children = [];
 		let parentItem = getParentByTagName(item, "li");
 		let parent;
 
@@ -221,7 +221,7 @@ class Navigation {
 			"id": id,
 			"href": src,
 			"label": text,
-			"subitems" : subitems,
+			"children" : children,
 			"parent" : parent
 		};
 	}
@@ -300,7 +300,7 @@ class Navigation {
 				list.push(item);
 			} else {
 				parent = toc[item.parent];
-				parent.subitems.push(item);
+				parent.children.push(item);
 			}
 		}
 
@@ -319,7 +319,7 @@ class Navigation {
 				src = content.getAttribute("src"),
 				navLabel = qs(item, "navLabel"),
 				text = navLabel.textContent ? navLabel.textContent : "",
-				subitems = [],
+				children = [],
 				parentNode = item.parentNode,
 				parent;
 
@@ -332,7 +332,7 @@ class Navigation {
 			"id": id,
 			"href": src,
 			"label": text,
-			"subitems" : subitems,
+			"children" : children,
 			"parent" : parent
 		};
 	}
@@ -345,7 +345,7 @@ class Navigation {
 	load(json) {
 		return json.map(item => {
 			item.label = item.title;
-			item.subitems = item.children ? this.load(item.children) : [];
+			item.children = item.children ? this.load(item.children) : [];
 			return item;
 		});
 	}
