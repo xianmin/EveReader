@@ -1,0 +1,52 @@
+productName: 'Eve Reader'
+appId: 'github.com/xianmin/EveReader'
+artifactName: ${name}-${version}-${os}-${arch}.${ext}
+icon: './public/icon.png'
+fileAssociations:
+- ext: 'epub'
+  name: 'Epub'
+  description: 'Epub Ebook'
+  role: 'Viewer'
+asar: true
+
+mac:
+  icon: './public/icon.png'
+  category: public.app-category.productivity
+  darkModeSupport: true
+  target:
+    - {target: dmg}
+
+dmg:
+  icon: './public/icon.png'
+  iconSize: 128
+  contents:
+    - {x: 380, y: 240, type: link, path: /Applications}
+    - {x: 122, y: 240, type: file}
+
+linux:
+  icon: './public/icon.png'
+  executableName: 'eve-reader'
+  description: 'An elegant open-source Epub Reader, focused on annotation.'
+  maintainer: 'Chen Xianmin'
+  category: 'Viewer;Office;Utility'
+  executableArgs:
+    - '%f'
+  mimeTypes:
+  - 'application/epub+zip'
+  target:
+    - target: 'AppImage'
+    - target: 'deb'
+
+win:
+  icon: './public/icon.png'
+  requestedExecutionLevel: 'asInvoker'
+  target:
+    - {target: nsis}
+
+nsis:
+  artifactName: ${name}-${version}-windows-${arch}-nsis-installer.${ext}
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  include: './scripts/electron-builder/installer.nsh'
+
