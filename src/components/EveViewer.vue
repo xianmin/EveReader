@@ -1,5 +1,5 @@
 <template>
-  <div id="eve-reader-view" v-bind:style="{'background-color': this.backgroundColor}">
+  <div id="eve-reader-view" :style="{'background-color': this.backgroundColor}">
     <div id="viewSection"
       v-html="sectionContent"
       ref="viewSection"
@@ -12,16 +12,20 @@
 
     <eve-annotator v-if='ebookViewReady' />
     <eve-annotation-list v-if='ebookViewReady' />
+    <loading-ring class='loading-ring' v-show = 'loadingTimeOut !== null' 
+      radius=30 :progress="loadingTimer" stroke=5
+    />
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
 import EveAnnotator from './EveAnnotator.vue';
-import EveAnnotationList from './EveAnnotationList';
+import EveAnnotationList from './EveAnnotationList.vue';
 import epubMapping from "../epubjs/mapping";
 import epubCfi from "../epubjs/epubcfi";
 import { isNumber } from "../epubjs/utils/core";
+import LoadingRing from './tool/LoadingRing.vue';
 // import Theme from '../theme.js';
 
 export default {
@@ -37,6 +41,7 @@ export default {
   components: {
     EveAnnotator,
     EveAnnotationList,
+    LoadingRing,
   },
 
   data() {
@@ -44,7 +49,9 @@ export default {
       spineItems: null,
       section: null,
       sectionContent: null,
-      scrollTimer: null,
+      scrollTimeOut: null,
+      loadingTimer: 0,
+      loadingTimeOut: null,
     }
   },
 
@@ -162,23 +169,19 @@ export default {
       return location;
     },
 
-    doPrev() {
+    async doPrev() {
       if (this.section.index > 0) {
-        this.display(this.section.index - 1);
-        setTimeout(() => {
-          window.scroll(0, document.body.clientHeight);
-          this.storeLocation();
-        }, 20)
+        await this.display(this.section.index - 1);
+        window.scroll(0, document.body.clientHeight);
+        this.storeLocation();
       }
     },
 
-    doNext() {
+    async doNext() {
       if (this.section.index < this.spineItems.length - 1) {
-        this.display(this.section.index + 1);
-        setTimeout(() => {
-          window.scroll(0, 0);
-          this.storeLocation();
-        }, 20)
+        await this.display(this.section.index + 1);
+        window.scroll(0, 0);
+        this.storeLocation();
       }
     },
 
@@ -188,10 +191,10 @@ export default {
     },
 
     eventScroll() {
-      if(this.scrollTimer !== null) {
-          clearTimeout(this.scrollTimer);
+      if(this.scrollTimeOut !== null) {
+        clearTimeout(this.scrollTimeOut);
       }
-      this.scrollTimer = setTimeout(() => {
+      this.scrollTimeOut = setTimeout(() => {
         this.storeLocation();
       }, 200);
     },
@@ -216,18 +219,33 @@ export default {
     },
 
     eventWheel(e) {
+      // at the top of page, do prev
       if (window.scrollY === 0 && e.wheelDelta > 0) {
-        if(this.ebookViewReady) {
+        this.loadingTimer += 5;
+        if (this.loadingTimer >= 100) {
           this.doPrev();
         }
+        this.loadingStop();
       }
 
+      // at the bottom of page, do next
       if (window.scrollY + window.innerHeight >= document.body.clientHeight
         && e.wheelDelta < 0) {
-        if(this.ebookViewReady) {
+        this.loadingTimer += 5;
+        if (this.loadingTimer >= 100) {
           this.doNext();
         }
+        this.loadingStop();
       }
+    },
+
+    loadingStop() {
+      if(this.loadingTimeOut !== null) {
+        clearTimeout(this.loadingTimeOut);
+      }
+      this.loadingTimeOut = setTimeout(() => {
+        this.loadingTimer = 0;
+      }, 100);
     },
 
     // fix viewSection link
@@ -288,5 +306,11 @@ export default {
 
 img {
   max-width: 600px;
+}
+
+.loading-ring {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
 }
 </style>
