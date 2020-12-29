@@ -1,19 +1,18 @@
 <template>
   <eve-annotator-popover
-    v-show = 'showAnnotator'
-    :showAnnotatorFromClick = 'showAnnotatorFromClick'
-    :annotatorPosition = "annotator.position"
-    @do-annotator-highlight = 'doAnnotatorHighlight'
-    @do-annotator-delete = 'doAnnotatorDelete'
-    @do-annotator-copy = 'doAnnotatorCopy'
-    @do-annotator-note = 'doAnnotatorNote'
+    v-show="showAnnotator"
+    :showAnnotatorFromClick="showAnnotatorFromClick"
+    :annotatorPosition="annotator.position"
+    @do-annotator-highlight="doAnnotatorHighlight"
+    @do-annotator-delete="doAnnotatorDelete"
+    @do-annotator-copy="doAnnotatorCopy"
+    @do-annotator-note="doAnnotatorNote"
   />
 </template>
 
 <script>
-import EveAnnotatorPopover from './EveAnnotatorPopover.vue';
-import epubCfi from '../epubjs/epubcfi';
-
+import EveAnnotatorPopover from "./EveAnnotatorPopover.vue";
+import epubCfi from "../epubjs/epubcfi";
 
 export default {
   components: { EveAnnotatorPopover },
@@ -25,28 +24,40 @@ export default {
       showAnnotatorFromClick: false,
       annotator: {
         position: {
-          top: 0, 
+          top: 0,
           left: 0,
         },
-        cfiRange: '',
-        text: '',
+        cfiRange: "",
+        text: "",
       },
       selectRange: null,
-    }
+    };
   },
 
   mounted() {
     this.viewSectionElement = this.$parent.$refs.viewSection;
-    this.viewSectionElement.addEventListener('mouseup', this._onMouseUp.bind(this));
-    this.viewSectionElement.addEventListener('mousedown', this._onMouseDown.bind(this));
+    this.viewSectionElement.addEventListener(
+      "mouseup",
+      this._onMouseUp.bind(this)
+    );
+    this.viewSectionElement.addEventListener(
+      "mousedown",
+      this._onMouseDown.bind(this)
+    );
 
-    this.$bus.on('click-show-annotator', this.onClickShowAnnotator)
+    this.$bus.on("click-show-annotator", this.onClickShowAnnotator);
   },
 
   beforeDestroy() {
-    this.viewSectionElement.removeEventListener('mouseup', this._onMouseUp.bind(this));
-    this.viewSectionElement.removeEventListener('mousedown', this._onMouseDown.bind(this));
-    this.$bus.off('click-show-annotator');
+    this.viewSectionElement.removeEventListener(
+      "mouseup",
+      this._onMouseUp.bind(this)
+    );
+    this.viewSectionElement.removeEventListener(
+      "mousedown",
+      this._onMouseDown.bind(this)
+    );
+    this.$bus.off("click-show-annotator");
   },
 
   methods: {
@@ -58,7 +69,10 @@ export default {
         const rect = this.selectRange.getBoundingClientRect();
         this.setAnnotatorPosition(rect, evt.clientX, evt.clientY);
 
-        this.annotator.cfiRange = new epubCfi(this.selectRange, this.$parent.section.cfiBase).toString();
+        this.annotator.cfiRange = new epubCfi(
+          this.selectRange,
+          this.$parent.section.cfiBase
+        ).toString();
 
         // if select, show EveAnnotatorPopover.vue
         this.showAnnotator = true;
@@ -83,16 +97,17 @@ export default {
 
       // fix annotator left position
       if (tempLeft < 0) {
-        tempLeft = pointerX; 
+        tempLeft = pointerX;
       }
 
       // fix annotator right position
-      if ((tempLeft + 130) > window.innerWidth) {
+      if (tempLeft + 130 > window.innerWidth) {
         tempLeft = window.innerWidth - 140;
       }
 
       // fix annotator top position, there is multiple switch
-      const pointHigherRect = () => rect.bottom - pointerY > pointerY - rect.top + 20;
+      const pointHigherRect = () =>
+        rect.bottom - pointerY > pointerY - rect.top + 20;
       const topEnough = () => rect.top > 65;
       const bottomEnough = () => window.innerHeight - rect.bottom > 65;
       if (pointHigherRect()) {
@@ -103,7 +118,7 @@ export default {
         }
       } else if (!bottomEnough()) {
         if (topEnough()) {
-          tempTop = rect.top -65;
+          tempTop = rect.top - 65;
         } else {
           tempTop = pointerY - 65;
         }
@@ -134,16 +149,16 @@ export default {
       }
 
       let annotation = {};
-      annotation.type = 'highlight';
+      annotation.type = "highlight";
       annotation.cfiRange = this.annotator.cfiRange;
       annotation.color = color;
-      annotation.hash = encodeURI('highlight-' + annotation.cfiRange);
+      annotation.hash = encodeURI("highlight-" + annotation.cfiRange);
       annotation.text = this.annotator.text;
       annotation.sectionIndex = this.$parent.section.index;
       annotation.date = new Date().toISOString();
 
       this.showAnnotator = false;
-      this.$store.dispatch('annotation/addAnnotation', annotation);
+      this.$store.dispatch("annotation/addAnnotation", annotation);
     },
 
     doAnnotatorDelete() {
@@ -151,9 +166,9 @@ export default {
       this.showAnnotatorFromClick = false;
       let cfiRange = this.annotator.cfiRange;
       let type = this.annotator.type;
-      let hash = encodeURI(type + '-' + cfiRange);
+      let hash = encodeURI(type + "-" + cfiRange);
 
-      this.$store.dispatch('annotation/deleteAnnotation', hash);
+      this.$store.dispatch("annotation/deleteAnnotation", hash);
     },
 
     doAnnotatorCopy() {
@@ -164,12 +179,9 @@ export default {
     // TODO
     doAnnotatorNote() {
       this.showAnnotator = false;
-    }
-  }
-
-}
+    },
+  },
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

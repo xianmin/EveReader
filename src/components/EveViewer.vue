@@ -1,41 +1,50 @@
 <template>
-  <div id="eve-reader-view" :style="{'background-color': this.backgroundColor}">
-    <div id="viewSection"
+  <div
+    id="eve-reader-view"
+    :style="{ 'background-color': this.backgroundColor }"
+  >
+    <div
+      id="viewSection"
       v-html="sectionContent"
       ref="viewSection"
       v-bind:style="{
-        'fontSize': this.fontSize + 'px',
+        fontSize: this.fontSize + 'px',
         'line-height': this.lineHeight,
         'max-width': this.pageWidth + 'px',
       }"
     />
 
-    <eve-annotator v-if='ebookViewReady' />
-    <eve-annotation-list v-if='ebookViewReady' />
-    <loading-ring class='loading-ring' v-show = 'loadingTimeOut !== null' 
-      radius=30 :progress="loadingTimer" stroke=5
+    <eve-annotator v-if="ebookViewReady" />
+    <eve-annotation-list v-if="ebookViewReady" />
+    <loading-ring
+      class="loading-ring"
+      v-show="loadingTimeOut !== null"
+      radius="30"
+      :progress="loadingTimer"
+      stroke="5"
     />
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import EveAnnotator from './EveAnnotator.vue';
-import EveAnnotationList from './EveAnnotationList.vue';
+import { mapGetters } from "vuex";
+import EveAnnotator from "./EveAnnotator.vue";
+import EveAnnotationList from "./EveAnnotationList.vue";
 import epubMapping from "../epubjs/mapping";
 import epubCfi from "../epubjs/epubcfi";
 import { isNumber } from "../epubjs/utils/core";
-import LoadingRing from './tool/LoadingRing.vue';
+import LoadingRing from "./tool/LoadingRing.vue";
 // import Theme from '../theme.js';
 
 export default {
   computed: {
-    ...mapGetters([
-      'ebook', 'ebookViewReady',
+    ...mapGetters(["ebook", "ebookViewReady"]),
+    ...mapGetters("setting", [
+      "fontSize",
+      "lineHeight",
+      "pageWidth",
+      "backgroundColor",
     ]),
-    ...mapGetters('setting', [
-      'fontSize', 'lineHeight', 'pageWidth', 'backgroundColor',
-    ])
   },
 
   components: {
@@ -52,38 +61,37 @@ export default {
       scrollTimeOut: null,
       loadingTimer: 0,
       loadingTimeOut: null,
-    }
+    };
   },
 
   async mounted() {
     await this.ebook.loaded();
-    await this.$store.dispatch('annotation/initAnnotation');
-    let lastCfi = await this.$store.dispatch('getLastCFI');
+    await this.$store.dispatch("annotation/initAnnotation");
+    let lastCfi = await this.$store.dispatch("getLastCFI");
     this.spineItems = this.ebook.epub.spine.spineItems;
     this.display(lastCfi || 0);
 
-    this.$bus.on('event-view-display', this.display);
+    this.$bus.on("event-view-display", this.display);
 
-    window.addEventListener('keydown', this.eventKeyDown);
-    window.addEventListener('wheel', this.eventWheel);
+    window.addEventListener("keydown", this.eventKeyDown);
+    window.addEventListener("wheel", this.eventWheel);
     // when scroll finish, store cfi
-    window.addEventListener('scroll', this.eventScroll);
+    window.addEventListener("scroll", this.eventScroll);
   },
 
   beforeDestroy() {
-    this.$bus.off('event-view-display');
-    window.removeEventListener('keydown', this.eventKeyDown);
-    window.removeEventListener('wheel', this.eventWheel);
-    window.removeEventListener('scroll', this.eventScroll);
-    this.$store.commit('SET_EBOOK_VIEW_READY', false)
+    this.$bus.off("event-view-display");
+    window.removeEventListener("keydown", this.eventKeyDown);
+    window.removeEventListener("wheel", this.eventWheel);
+    window.removeEventListener("scroll", this.eventScroll);
+    this.$store.commit("SET_EBOOK_VIEW_READY", false);
   },
 
-  watch: {
-  },
+  watch: {},
 
   methods: {
     async display(target) {
-      this.$store.commit('SET_EBOOK_VIEW_READY', false)
+      this.$store.commit("SET_EBOOK_VIEW_READY", false);
       let sec = this.ebook.epub.spine.get(target);
 
       if (sec.index === this.$store.state.currentSectionIndex) {
@@ -91,22 +99,26 @@ export default {
         return;
       }
 
-      this.$store.commit('SET_CURRENT_SECTION_INDEX', sec.index);
+      this.$store.commit("SET_CURRENT_SECTION_INDEX", sec.index);
 
       this.section = sec;
       let request = this.ebook.epub.load.bind(this.ebook.epub);
       let result = await this.section.render(request);
-      this.sectionContent = result.replace(/(<\s*\/?\s*)html(\s*([^>]*)?\s*>)/gi ,'$1eve-view-html$2')
-                                  .replace(/(<\s*\/?\s*)head(\s*([^>]*)?\s*>)/gi ,'$1eve-view-head$2')
-                                  .replace(/(<\s*\/?\s*)body(\s*([^>]*)?\s*>)/gi ,'$1eve-view-body$2')
+      this.sectionContent = result
+        .replace(/(<\s*\/?\s*)html(\s*([^>]*)?\s*>)/gi, "$1eve-view-html$2")
+        .replace(/(<\s*\/?\s*)head(\s*([^>]*)?\s*>)/gi, "$1eve-view-head$2")
+        .replace(/(<\s*\/?\s*)body(\s*([^>]*)?\s*>)/gi, "$1eve-view-body$2");
 
       this.$nextTick(() => {
-        this.$store.commit('SET_EBOOK_ROOT_NODE', this.$refs.viewSection.childNodes[0])
+        this.$store.commit(
+          "SET_EBOOK_ROOT_NODE",
+          this.$refs.viewSection.childNodes[0]
+        );
         this.addLinkEvent();
 
         // waiting viewer finish render, include image
-        setTimeout(()=>{ 
-          this.$store.commit('SET_EBOOK_VIEW_READY', true) 
+        setTimeout(() => {
+          this.$store.commit("SET_EBOOK_VIEW_READY", true);
 
           // if target is epubCfi, moving to
           if (target === this.section.href) {
@@ -116,8 +128,8 @@ export default {
           } else {
             this.moveToTarget(target);
           }
-        }, 30)
-      })
+        }, 30);
+      });
     },
 
     moveToTarget(target) {
@@ -129,25 +141,27 @@ export default {
         window.scrollTo(0, targetPos.top);
       }
       // at same section, reset ebook view ready
-      this.$store.commit('SET_EBOOK_VIEW_READY', true)
+      this.$store.commit("SET_EBOOK_VIEW_READY", true);
     },
 
     // Reference: epubjs contents.js,
     // Get the location offset of a EpubCFI or an #id
     locationOf(target) {
       let position;
-      let targetPos = {"left": 0, "top": 0};
+      let targetPos = { left: 0, top: 0 };
       let epubcfi = new epubCfi();
 
-      if(epubcfi.isCfiString(target)) {
-        let range = new epubCfi(target).toRange(this.$store.state.ebookRootNode);
+      if (epubcfi.isCfiString(target)) {
+        let range = new epubCfi(target).toRange(
+          this.$store.state.ebookRootNode
+        );
         if (range) {
           position = range.getBoundingClientRect();
         }
       } else if (typeof target === "string" && target.indexOf("#") > -1) {
-        let id = target.substring(target.indexOf("#")+1);
+        let id = target.substring(target.indexOf("#") + 1);
         let el = document.getElementById(id);
-        if(el) {
+        if (el) {
           position = el.getBoundingClientRect();
         }
       }
@@ -164,7 +178,12 @@ export default {
       // let startPos = window.scrollY;
       // let endPos = startPos + window.innerHeight;
       let mapping = new epubMapping();
-      let location = mapping.page(this.$refs.viewSection, this.section.cfiBase, 0, window.innerHeight);
+      let location = mapping.page(
+        this.$refs.viewSection,
+        this.section.cfiBase,
+        0,
+        window.innerHeight
+      );
       // console.log(location);
       return location;
     },
@@ -187,11 +206,11 @@ export default {
 
     storeLocation() {
       let location = this.currentLocation();
-      this.$store.dispatch('setLastRead', location.start);
+      this.$store.dispatch("setLastRead", location.start);
     },
 
     eventScroll() {
-      if(this.scrollTimeOut !== null) {
+      if (this.scrollTimeOut !== null) {
         clearTimeout(this.scrollTimeOut);
       }
       this.scrollTimeOut = setTimeout(() => {
@@ -204,7 +223,7 @@ export default {
       if (window.scrollY === 0) {
         // UP, PageUP, display prev section; here is a bug.
         if (kc === 33 || kc === 38) {
-          this.doPrev()
+          this.doPrev();
           e.preventDefault();
         }
       }
@@ -212,7 +231,7 @@ export default {
       if (window.scrollY + window.innerHeight >= document.body.clientHeight) {
         // DOWN, PageDOWN, display next section;
         if (kc === 34 || kc === 40) {
-          this.doNext()
+          this.doNext();
           e.preventDefault();
         }
       }
@@ -229,8 +248,10 @@ export default {
       }
 
       // at the bottom of page, do next
-      if (window.scrollY + window.innerHeight >= document.body.clientHeight
-        && e.wheelDelta < 0) {
+      if (
+        window.scrollY + window.innerHeight >= document.body.clientHeight &&
+        e.wheelDelta < 0
+      ) {
         this.loadingTimer += 5;
         if (this.loadingTimer >= 100) {
           this.doNext();
@@ -240,7 +261,7 @@ export default {
     },
 
     loadingStop() {
-      if(this.loadingTimeOut !== null) {
+      if (this.loadingTimeOut !== null) {
         clearTimeout(this.loadingTimeOut);
       }
       this.loadingTimeOut = setTimeout(() => {
@@ -255,7 +276,7 @@ export default {
       for (let i = 0; i < links.length; i++) {
         let link = links[i];
 
-        link.onclick = evt => { 
+        link.onclick = (evt) => {
           evt.preventDefault();
           let target;
           let href = link.getAttribute("href");
@@ -267,17 +288,17 @@ export default {
             console.log(href);
             return;
           }
-          
+
           const findSpineHref = (href) => {
             for (let i in this.ebook.epub.spine.spineByHref) {
-              if ( i.indexOf(href) > -1 ) {
-                return i
+              if (i.indexOf(href) > -1) {
+                return i;
               }
             }
-          }
+          };
 
           // find correct href, and than display
-          if ( href.indexOf("#") > -1) {
+          if (href.indexOf("#") > -1) {
             let id = href.substring(href.indexOf("#"));
             let tempHref = href.substring(0, href.indexOf("#"));
             target = findSpineHref(tempHref) + id;
@@ -286,10 +307,9 @@ export default {
           }
 
           if (target) this.display(target);
-        } 
+        };
       }
     },
-
   },
 };
 </script>

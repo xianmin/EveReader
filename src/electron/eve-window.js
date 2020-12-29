@@ -1,9 +1,8 @@
-import { BrowserWindow } from 'electron';
-import path from 'path';
-import fs from 'fs';
-import windowStateKeeper from 'electron-window-state';
-import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
-
+import { BrowserWindow } from "electron";
+import path from "path";
+import fs from "fs";
+import windowStateKeeper from "electron-window-state";
+import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 
 class eveWindow {
   constructor(eveApp, epubPath) {
@@ -45,15 +44,15 @@ class eveWindow {
   open() {
     // Create and open window
     const mainWindowState = windowStateKeeper({
-        // path: constants.path.userData,
-        defaultWidth: 800,
-        defaultHeight: 600
+      // path: constants.path.userData,
+      defaultWidth: 800,
+      defaultHeight: 600,
     });
-    
+
     let win = new BrowserWindow({
       title: "Eve Reader",
       // icon: constants.path.icon,
-      icon: path.join(__static, 'icon.png'),
+      icon: path.join(__static, "icon.png"),
       minWidth: 100,
       minHeight: 100,
       x: mainWindowState.x,
@@ -67,7 +66,7 @@ class eveWindow {
         // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
         // nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
         // webviewTag: true
-        preload: path.join(__dirname, 'preload.js'),
+        preload: path.join(__dirname, "preload.js"),
       },
     });
 
@@ -82,12 +81,12 @@ class eveWindow {
 
     // Prepare startup commands
     // var execStartupCommands = function() {
-      // var startupCommands = abrWin.config.get("startup-commands");
-      // for (var cmdName in startupCommands) {
-      //   if (startupCommands[cmdName]) {
-      //     this.execCommand(cmdName);
-      //   }
-      // }
+    // var startupCommands = abrWin.config.get("startup-commands");
+    // for (var cmdName in startupCommands) {
+    //   if (startupCommands[cmdName]) {
+    //     this.execCommand(cmdName);
+    //   }
+    // }
     // };
 
     // Set event handlers
@@ -114,24 +113,24 @@ class eveWindow {
     // Load window
     if (process.env.WEBPACK_DEV_SERVER_URL) {
       // Load the url of the dev server if in development mode
-      win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-      if (!process.env.IS_TEST) win.webContents.openDevTools()
+      win.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
+      if (!process.env.IS_TEST) win.webContents.openDevTools();
     } else {
-      createProtocol('app')
+      createProtocol("app");
       // Load the index.html when not in development
-      win.loadURL('app://./index.html')
+      win.loadURL("app://./index.html");
     }
 
     /* global __static */
-    if (process.env.NODE_ENV !== 'production') {
-      this.epubPath = path.join(__static, 'test.epub')
+    if (process.env.NODE_ENV !== "production") {
+      this.epubPath = path.join(__static, "test.epub");
     }
 
     win.webContents.on("did-finish-load", () => {
       if (this.epubPath) {
         this.openFile(this.epubPath);
       }
-    })
+    });
 
     // Open devtools on startup when --debug flag is used
     // if (this.config.get("debug")) {
@@ -145,7 +144,7 @@ class eveWindow {
       if (err) {
         console.log(err);
       }
-      this.browserWindow.webContents.send('IPC::FILE-OPEN', data, fileName);
+      this.browserWindow.webContents.send("IPC::FILE-OPEN", data, fileName);
     });
   }
 

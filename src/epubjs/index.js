@@ -6,10 +6,4 @@ import Layout from "./layout";
 import ePub from "./epub";
 
 export default ePub;
-export {
-	Book,
-	EpubCFI,
-	Rendition,
-	Contents,
-	Layout
-};
+export { Book, EpubCFI, Rendition, Contents, Layout };

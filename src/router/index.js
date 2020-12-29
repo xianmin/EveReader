@@ -1,49 +1,50 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-import Home from '../views/Home.vue';
-import EveViewer from '../components/EveViewer.vue';
+import Vue from "vue";
+import VueRouter from "vue-router";
+import Home from "../views/Home.vue";
+import EveViewer from "../components/EveViewer.vue";
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes = [
   {
-    path: '/',
-    name: 'Home',
+    path: "/",
+    name: "Home",
     component: Home,
     beforeEnter: (to, from, next) => {
       // if (!process.env.IS_ELECTRON) next('/reader/');
-      next('/reader/');
-    }
+      next("/reader/");
+    },
   },
   {
-    path: '/reader/',
-    name: 'Reader',
-    component: () => import('../views/Reader.vue'),
+    path: "/reader/",
+    name: "Reader",
+    component: () => import("../views/Reader.vue"),
     children: [
       {
-        path: '/reader/open/:fileName',
-        name: 'open',
+        path: "/reader/open/:fileName",
+        name: "open",
         component: EveViewer,
       },
       {
-        path: '/reader/view/:book_id',
-        name: 'view',
+        path: "/reader/view/:book_id",
+        name: "view",
         component: EveViewer,
-      }
-    ]
+      },
+    ],
   },
   {
-    path: '/about',
-    name: 'About',
+    path: "/about",
+    name: "About",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
-]
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/About.vue"),
+  },
+];
 
 const router = new VueRouter({
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;

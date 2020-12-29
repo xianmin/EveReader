@@ -1,48 +1,53 @@
 <template>
   <div id="sidebar-annotation">
     <div class="sidebar-header">
-      <div class="sidebar-header-text"> Annotation</div>
+      <div class="sidebar-header-text">Annotation</div>
       <div class="sidebar-empty-fix" style="flex-grow: 1"></div>
-      <div class="sidebar-header-icon annotation-header-more" 
+      <div
+        class="sidebar-header-icon annotation-header-more"
         @click="showAnnotationMore = !showAnnotationMore"
-        v-clickoutside="hideAnnotationMore">
+        v-clickoutside="hideAnnotationMore"
+      >
         <i class="el-icon-more"></i>
         <div class="annotation-header-more-items" v-show="showAnnotationMore">
           <div class="annotation-header-more-item">
             <label>
               Import
-              <input type="file" @change="importAnnotation">
+              <input type="file" @change="importAnnotation" />
             </label>
           </div>
-          <div class="annotation-header-more-item" @click="exportAnnotation">Export</div>
+          <div class="annotation-header-more-item" @click="exportAnnotation">
+            Export
+          </div>
         </div>
       </div>
     </div>
     <div class="sidebar-main">
-      <div class="eve-annotation-card"
-        v-for="item in allAnnotation" :key="item.hash"
-        @click = "displayFromAnnotation(item.cfiRange)">
+      <div
+        class="eve-annotation-card"
+        v-for="item in allAnnotation"
+        :key="item.hash"
+        @click="displayFromAnnotation(item.cfiRange)"
+      >
         <div class="eve-annotation-header">
-          <div class="eve-annotation-date"> {{ formatDate(item.date) }} </div>
+          <div class="eve-annotation-date">{{ formatDate(item.date) }}</div>
           <div class="eve-annotation-more">
             <i class="el-icon-more"></i>
           </div>
         </div>
-        <div class="eve-annotation-text"> {{ item.text }}</div>
+        <div class="eve-annotation-text">{{ item.text }}</div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import Clickoutside from 'element-ui/src/utils/clickoutside';
+import { mapGetters } from "vuex";
+import Clickoutside from "element-ui/src/utils/clickoutside";
 
 export default {
   computed: {
-    ...mapGetters('annotation', [
-      'annotationList',
-    ]),
+    ...mapGetters("annotation", ["annotationList"]),
   },
 
   directives: { Clickoutside },
@@ -51,13 +56,13 @@ export default {
     return {
       allAnnotation: null,
       showAnnotationMore: false,
-    }
+    };
   },
 
   watch: {
     annotationList(newVal) {
       this.setAllAnnotation(newVal);
-    }
+    },
   },
 
   methods: {
@@ -70,22 +75,24 @@ export default {
       const reader = new FileReader();
 
       // TODO: electron not work here, but web is work.
-      reader.onload = e => {
-        this.$store.dispatch('annotation/importAnnotation', e.target.result).then((result) => {
-          switch(result) {
-            case 'success':
-              this.$message({
-                message: 'Import Success!',
-                type: 'success'
-              });
-              break;
-            case 'error':
-              this.$message({
-                message: 'Import Failed!',
-                type: 'error'
-              });
-          }
-        })
+      reader.onload = (e) => {
+        this.$store
+          .dispatch("annotation/importAnnotation", e.target.result)
+          .then((result) => {
+            switch (result) {
+              case "success":
+                this.$message({
+                  message: "Import Success!",
+                  type: "success",
+                });
+                break;
+              case "error":
+                this.$message({
+                  message: "Import Failed!",
+                  type: "error",
+                });
+            }
+          });
       };
 
       reader.readAsText(file);
@@ -93,7 +100,7 @@ export default {
     },
 
     exportAnnotation() {
-      this.$store.dispatch('annotation/exportAnnotation');
+      this.$store.dispatch("annotation/exportAnnotation");
     },
 
     setAllAnnotation() {
@@ -101,33 +108,35 @@ export default {
       this.sortAnnotation();
     },
 
-    sortAnnotation(sortMethod = 'sortByDate') {
-      switch(sortMethod) {
-        case 'sortByDate':
-          this.allAnnotation.sort((a,b) => new Date(b.date) - new Date(a.date));
+    sortAnnotation(sortMethod = "sortByDate") {
+      switch (sortMethod) {
+        case "sortByDate":
+          this.allAnnotation.sort(
+            (a, b) => new Date(b.date) - new Date(a.date)
+          );
           break;
       }
     },
 
     displayFromAnnotation(cfiRange) {
-      this.$bus.emit('event-view-display', cfiRange);
+      this.$bus.emit("event-view-display", cfiRange);
     },
 
     formatDate(dateString) {
       let date = new Date(dateString);
       let y = date.getFullYear();
       let m = date.getMonth() + 1;
-      m = m < 10 ? '0' + m : m;
+      m = m < 10 ? "0" + m : m;
       let d = date.getDate();
-      d = d < 10 ? ('0' + d) : d;
-      return y + '-' + m + '-' + d;
+      d = d < 10 ? "0" + d : d;
+      return y + "-" + m + "-" + d;
     },
   },
 
   mounted() {
     this.setAllAnnotation(this.annotationList);
   },
-}
+};
 </script>
 
 <style lang="scss">

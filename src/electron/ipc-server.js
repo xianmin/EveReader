@@ -1,4 +1,4 @@
-import { ipcMain } from 'electron';
+import { ipcMain } from "electron";
 
 class IpcServer {
   constructor(eveApp) {
@@ -6,13 +6,13 @@ class IpcServer {
 
     // Set
     ipcMain.on("get", function (event, key, id, windowId) {
-      event.sender.send('get-reply', key, eveApp[key], id, windowId);
+      event.sender.send("get-reply", key, eveApp[key], id, windowId);
     });
 
     // Get
     ipcMain.on("set", function (event, key, value, id, windowId) {
       eveApp[key] = value;
-      event.sender.send('set-reply', key, value, id, windowId);
+      event.sender.send("set-reply", key, value, id, windowId);
     });
 
     /*
@@ -23,10 +23,9 @@ class IpcServer {
     ipcMain.on("trigger", function (event, key, args, id, windowId) {
       if (typeof eveApp[key] !== "function") {
         console.error(key + " is not a valid eveApp method");
-      }
-      else {
+      } else {
         eveApp[key](args, windowId, function (res) {
-          event.sender.send('trigger-reply', key, res, id, windowId);
+          event.sender.send("trigger-reply", key, res, id, windowId);
         });
       }
     });

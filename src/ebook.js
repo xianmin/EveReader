@@ -1,5 +1,4 @@
-import Epub from './epubjs/book';
-
+import Epub from "./epubjs/book";
 
 class Ebook {
   constructor() {
@@ -31,8 +30,8 @@ class Ebook {
   async loaded() {
     await this.epub.opened.then(() => {
       this.title = this.epub.packaging.metadata.title;
-      this.ebookID = this.title + ' - ' + this.epub.packaging.uniqueIdentifier
-    })
+      this.ebookID = this.title + " - " + this.epub.packaging.uniqueIdentifier;
+    });
   }
 
   openFile() {
@@ -43,15 +42,15 @@ class Ebook {
       fi.style.display = "none";
       fi.type = "file";
       fi.onchange = () => {
-        let file = fi.files[0];       // always choose the first file
+        let file = fi.files[0]; // always choose the first file
         resolve(this.readFile(file)); // resolve here
-      }
+      };
       document.body.appendChild(fi);
       fi.click();
       document.body.removeChild(fi);
     }).then((result) => {
       this.openEpub(result);
-    })
+    });
   }
 
   openFileFromDrop(file) {
@@ -59,7 +58,7 @@ class Ebook {
       resolve(this.readFile(file));
     }).then((result) => {
       this.openEpub(result);
-    })
+    });
   }
 
   readFile(file) {
@@ -67,10 +66,10 @@ class Ebook {
       let reader = new FileReader();
       reader.onload = () => {
         resolve(reader.result);
-      }
+      };
       reader.readAsArrayBuffer(file);
       this.fileName = file.name;
-    })
+    });
   }
 
   openEpub(data) {
@@ -78,11 +77,11 @@ class Ebook {
       if (this.epub.isOpen) this.reset();
       this.epub.open(data, "binary");
       resolve();
-    })
+    });
   }
 
   openEpubFromUrl(url) {
-    this.epub.open(url, "epub")
+    this.epub.open(url, "epub");
   }
 }
 

@@ -1,9 +1,6 @@
-import {
-  dialog,
-} from 'electron';
+import { dialog } from "electron";
 
-
-class eveDialog { 
+class eveDialog {
   constructor(eveApp) {
     this.eveApp = eveApp;
   }
@@ -11,20 +8,24 @@ class eveDialog {
   askOpenFile() {
     let win = this.eveApp.getFocusedWindow();
 
-    dialog.showOpenDialog(win, {
-      properties: ['openFile'],
-      filters: [{
-        name: 'Epub',
-        extensions: ['epub'],
-      }],
-    }).then( result => {
-      if (!result.canceled) {
-        let epubPath = result.filePaths[0];
-        win.openFileFromDialog(epubPath);
-      } else {
-        console.log("no file selected");
-      }
-    });
+    dialog
+      .showOpenDialog(win, {
+        properties: ["openFile"],
+        filters: [
+          {
+            name: "Epub",
+            extensions: ["epub"],
+          },
+        ],
+      })
+      .then((result) => {
+        if (!result.canceled) {
+          let epubPath = result.filePaths[0];
+          win.openFileFromDialog(epubPath);
+        } else {
+          console.log("no file selected");
+        }
+      });
   }
 }
 

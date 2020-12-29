@@ -10,21 +10,20 @@
         node-key="id"
         expand-on-click-node
         highlight-current
-        ref = "tocTree"
-        @node-click="handleNodeClick">
+        ref="tocTree"
+        @node-click="handleNodeClick"
+      >
       </el-tree>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters } from "vuex";
 
 export default {
   computed: {
-    ...mapGetters([
-      'ebook', 'currentSectionIndex',
-    ]),
+    ...mapGetters(["ebook", "currentSectionIndex"]),
   },
 
   watch: {
@@ -33,20 +32,20 @@ export default {
       // console.log(href, this.ebook.navigation.get(href))
       let navItem = this.ebook.navigation.get(href);
       if (navItem) {
-        this.$refs.tocTree.setCurrentKey(navItem.id)
+        this.$refs.tocTree.setCurrentKey(navItem.id);
       }
     },
   },
 
   methods: {
     handleNodeClick(item) {
-      this.$bus.emit('event-view-display', item.href);
+      this.$bus.emit("event-view-display", item.href);
     },
-  }
-}
+  },
+};
 </script>
 
-<style lang='scss'>
+<style lang="scss">
 .is-current {
   font-weight: bold;
 }

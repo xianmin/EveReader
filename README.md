@@ -3,10 +3,10 @@
 > Next generation Epub Reader
 
 ## First of all
+
 **This project is still under development.**
 
 Welcome all kinds of contributions!
-
 
 ## Basic technology
 
@@ -28,7 +28,7 @@ Obviously, standing on the shoulders of these giants makes our next development 
 
 ## Build Setup
 
-``` bash
+```bash
 # install dependencies
 npm install
 
@@ -44,4 +44,5 @@ npm run lint
 ```
 
 ## License
+
 This project is licensed under the AGPL-3.0 License.

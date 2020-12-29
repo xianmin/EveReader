@@ -1,38 +1,67 @@
 <template>
-  <div :style="{width: sidebarVisible ? 5 + sidebarWidth + 'vw' : '5vw'}">
+  <div :style="{ width: sidebarVisible ? 5 + sidebarWidth + 'vw' : '5vw' }">
     <div id="activitybar">
       <!-- OPEN FILE -->
-      <el-tooltip class="tooltip" effect="dark" content="Open File" placement="right">
+      <el-tooltip
+        class="tooltip"
+        effect="dark"
+        content="Open File"
+        placement="right"
+      >
         <div class="activitybar-icon" @click="openFile">
-          <img svg-inline src="@/assets/svg/openfile.svg"/>
+          <img svg-inline src="@/assets/svg/openfile.svg" />
         </div>
       </el-tooltip>
       <!-- Table Of Content -->
-      <el-tooltip class="tooltip" effect="dark" content="Table Of Content" placement="right">
-        <div class="activitybar-icon" 
-          :class="{'active': sidebarVisible === 'toc'}" 
-          @click="toogleSidebar('toc')">
-          <img svg-inline src="@/assets/svg/toc.svg"/>
+      <el-tooltip
+        class="tooltip"
+        effect="dark"
+        content="Table Of Content"
+        placement="right"
+      >
+        <div
+          class="activitybar-icon"
+          :class="{ active: sidebarVisible === 'toc' }"
+          @click="toogleSidebar('toc')"
+        >
+          <img svg-inline src="@/assets/svg/toc.svg" />
         </div>
       </el-tooltip>
       <!-- Annotation -->
-      <el-tooltip class="tooltip" effect="dark" content="Annotation" placement="right">
-        <div class="activitybar-icon" 
-          :class="{'active': sidebarVisible === 'annotation'}" 
-          @click="toogleSidebar('annotation')">
-          <img svg-inline src="@/assets/svg/annotation.svg"/>
+      <el-tooltip
+        class="tooltip"
+        effect="dark"
+        content="Annotation"
+        placement="right"
+      >
+        <div
+          class="activitybar-icon"
+          :class="{ active: sidebarVisible === 'annotation' }"
+          @click="toogleSidebar('annotation')"
+        >
+          <img svg-inline src="@/assets/svg/annotation.svg" />
         </div>
       </el-tooltip>
       <!-- Increase Font Size -->
-      <el-tooltip class="tooltip" effect="dark" content="Increase Font Size" placement="right">
+      <el-tooltip
+        class="tooltip"
+        effect="dark"
+        content="Increase Font Size"
+        placement="right"
+      >
         <div class="activitybar-icon" @click="increaseFontSize">
-          <img svg-inline src="@/assets/svg/font-size-up.svg"/>
+          <img svg-inline src="@/assets/svg/font-size-up.svg" />
         </div>
       </el-tooltip>
       <!-- Decrease Font Size -->
-      <el-tooltip class="tooltip" effect="dark" content="Decrease Font Size" placement="right">
+      <el-tooltip
+        class="tooltip"
+        effect="dark"
+        content="Decrease Font Size"
+        placement="right"
+      >
         <div class="activitybar-icon" @click="decreaseFontSize">
-          <img svg-inline src="@/assets/svg/font-size-down.svg"/>
+          <img svg-inline src="@/assets/svg/font-size-down.svg" />
         </div>
       </el-tooltip>
 
@@ -40,32 +69,42 @@
       <div class="activitybar-empty-fix" style="flex-grow: 1"></div>
 
       <!-- Setting -->
-      <el-tooltip class="tooltip" effect="dark" content="Setting" placement="right">
-        <div class="activitybar-icon activitybar-setting"
-          @click="$refs.settingDialog.openSettingDialog()">
-          <img svg-inline src="@/assets/svg/setting.svg"/>
+      <el-tooltip
+        class="tooltip"
+        effect="dark"
+        content="Setting"
+        placement="right"
+      >
+        <div
+          class="activitybar-icon activitybar-setting"
+          @click="$refs.settingDialog.openSettingDialog()"
+        >
+          <img svg-inline src="@/assets/svg/setting.svg" />
         </div>
       </el-tooltip>
     </div>
 
-    <div id="sidebar" v-show="sidebarVisible" :style="{ width: sidebarWidth + 'vw' }">
-
+    <div
+      id="sidebar"
+      v-show="sidebarVisible"
+      :style="{ width: sidebarWidth + 'vw' }"
+    >
       <eve-sidebar-toc v-show="sidebarVisible === 'toc'" />
       <eve-sidebar-annotation v-show="sidebarVisible === 'annotation'" />
 
       <div class="sidebar-resizer" @mousedown="resizerMouseDown"></div>
     </div>
 
-    <eve-setting-dialog ref="settingDialog"/>
+    <eve-setting-dialog ref="settingDialog" />
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import { EventListener } from '../event.js';
-import EveSidebarAnnotation from './EveSidebarAnnotation.vue';
-import EveSidebarToc from './EveSidebarToc.vue';
-import EveSettingDialog from './EveSettingDialog.vue';
+import { mapGetters } from "vuex";
+import { EventListener } from "../event.js";
+import EveSidebarAnnotation from "./EveSidebarAnnotation.vue";
+import EveSidebarToc from "./EveSidebarToc.vue";
+import EveSettingDialog from "./EveSettingDialog.vue";
 
 export default {
   name: "EveSidebar",
@@ -77,25 +116,22 @@ export default {
   },
 
   computed: {
-    ...mapGetters('setting', [
-      'sidebarVisible',
-      'sidebarWidth',
-    ]),
+    ...mapGetters("setting", ["sidebarVisible", "sidebarWidth"]),
   },
 
   watch: {
     // watch sidebar change, than refresh rendition
     sidebarVisible(newVal, oldVal) {
-      if (newVal === '' || oldVal === ''){
+      if (newVal === "" || oldVal === "") {
         setTimeout(() => {
-          this.$store.dispatch('refreshEbookViewReady');
-        }, 1)
+          this.$store.dispatch("refreshEbookViewReady");
+        }, 1);
       }
     },
 
     sidebarWidth() {
-      this.$store.dispatch('refreshEbookViewReady');
-    }
+      this.$store.dispatch("refreshEbookViewReady");
+    },
   },
 
   mounted() {
@@ -108,50 +144,57 @@ export default {
       } else {
         this.$refs.tocTree.setCurrentKey(null);
       }
-    })
+    });
   },
 
   methods: {
     showSidebarAnnotation() {
-      this.toogleSidebar('annotation');
+      this.toogleSidebar("annotation");
     },
 
     toogleSidebar(key) {
-      if (this.sidebarVisible === '') { //open
-        this.$store.dispatch('setting/setEbookSetting', { sidebarVisible: key });
-      } else if (this.sidebarVisible === key) { //close
-        this.$store.dispatch('setting/setEbookSetting', { sidebarVisible: '' });
-      } else { //switch
-        this.$store.dispatch('setting/setEbookSetting', { sidebarVisible: key });
+      if (this.sidebarVisible === "") {
+        //open
+        this.$store.dispatch("setting/setEbookSetting", {
+          sidebarVisible: key,
+        });
+      } else if (this.sidebarVisible === key) {
+        //close
+        this.$store.dispatch("setting/setEbookSetting", { sidebarVisible: "" });
+      } else {
+        //switch
+        this.$store.dispatch("setting/setEbookSetting", {
+          sidebarVisible: key,
+        });
       }
     },
 
     handleNodeClick(item) {
-      this.$bus.emit('event-view-display', item.href);
+      this.$bus.emit("event-view-display", item.href);
     },
 
     openFile() {
-      this.$bus.emit('bus-open-file');
+      this.$bus.emit("bus-open-file");
     },
 
     // Temporary change current fontSize, do not save to DB.
     increaseFontSize() {
-      let size = this.$store.state.setting.fontSize - -2;  // +2
-      this.$store.dispatch('setting/setEbookSetting', {fontSize: size});
+      let size = this.$store.state.setting.fontSize - -2; // +2
+      this.$store.dispatch("setting/setEbookSetting", { fontSize: size });
     },
 
     decreaseFontSize() {
       let size = this.$store.state.setting.fontSize - 2;
       if (size > 14) {
-        this.$store.dispatch('setting/setEbookSetting', {fontSize: size});
+        this.$store.dispatch("setting/setEbookSetting", { fontSize: size });
       }
     },
 
     // resize sidebar width
     resizerMouseDown(e) {
-      if (e.target.className && e.target.className.match('sidebar-resizer')) {
+      if (e.target.className && e.target.className.match("sidebar-resizer")) {
         let screenWidth = document.documentElement.clientWidth;
-        let oldWidth = this.sidebarWidth / 100 * screenWidth;  // vw to px
+        let oldWidth = (this.sidebarWidth / 100) * screenWidth; // vw to px
         let oldX = e.pageX;
         let offset = 0;
         let newWidth;
@@ -159,11 +202,13 @@ export default {
         document.onmousemove = (e) => {
           e.preventDefault(); // prevent sometimes mouseup, this event still active
           offset = e.pageX - oldX;
-          newWidth = 100 / screenWidth * (oldWidth + offset);  // px to vw
+          newWidth = (100 / screenWidth) * (oldWidth + offset); // px to vw
 
           // width range is (200px ~ 500px)
           if (newWidth >= 20 && newWidth <= 40) {
-            this.$store.dispatch('setting/setEbookSetting', {sidebarWidth: newWidth});
+            this.$store.dispatch("setting/setEbookSetting", {
+              sidebarWidth: newWidth,
+            });
           } else {
             document.onmousemove = document.onmouseup = null;
           }
@@ -176,9 +221,8 @@ export default {
       e.stopPropagation();
     },
     // End resizerMouseDown
-
   },
-}
+};
 </script>
 
 <style lang="scss">
@@ -197,15 +241,15 @@ export default {
     width: 3.5vw;
     height: 3.5vw;
     padding: 0.75vw 0.75vw 0 0.75vw;
-    fill: #AAAAAA;
+    fill: #aaaaaa;
     cursor: pointer;
 
     &:hover {
-      fill: #FFFFFF;
+      fill: #ffffff;
     }
 
     &.active {
-      fill: #FFFFFF;
+      fill: #ffffff;
     }
 
     svg {
@@ -226,7 +270,7 @@ export default {
   position: fixed;
 
   .el-tree {
-    background: #F3F3F3;
+    background: #f3f3f3;
     margin-bottom: 15px;
   }
 
@@ -243,12 +287,12 @@ export default {
 
 .sidebar-header {
   height: 5vh;
-  background-color: #DCDCDC;
+  background-color: #dcdcdc;
   display: flex;
   align-items: center;
   font-size: 18px;
 
-  .sidebar-header-text{
+  .sidebar-header-text {
     padding-left: 10px;
   }
 
@@ -260,6 +304,6 @@ export default {
 .sidebar-main {
   overflow: auto;
   height: 95vh;
-  background: #F3F3F3;
+  background: #f3f3f3;
 }
 </style>

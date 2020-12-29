@@ -1,40 +1,40 @@
 function EventBus(Vue) {
-  const bus = new Vue()
+  const bus = new Vue();
 
   Object.defineProperties(bus, {
     on: {
       get() {
-        return this.$on.bind(this)
-      }
+        return this.$on.bind(this);
+      },
     },
     once: {
       get() {
-        return this.$once.bind(this)
-      }
+        return this.$once.bind(this);
+      },
     },
     off: {
       get() {
-        return this.$off.bind(this)
-      }
+        return this.$off.bind(this);
+      },
     },
     emit: {
       get() {
-        return this.$emit.bind(this)
-      }
-    }
-  })
+        return this.$emit.bind(this);
+      },
+    },
+  });
 
-  Object.defineProperty(Vue, 'bus', {
+  Object.defineProperty(Vue, "bus", {
     get() {
-      return bus
-    }
-  })
+      return bus;
+    },
+  });
 
-  Object.defineProperty(Vue.prototype, '$bus', {
+  Object.defineProperty(Vue.prototype, "$bus", {
     get() {
-      return bus
-    }
-  })
+      return bus;
+    },
+  });
 }
 
-export default EventBus
+export default EventBus;

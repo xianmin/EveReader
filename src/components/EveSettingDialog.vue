@@ -2,10 +2,10 @@
   <el-dialog
     title="Setting"
     :visible.sync="settingVisible"
-    :modal-append-to-body=false
-    width="35%">
+    :modal-append-to-body="false"
+    width="35%"
+  >
     <div class="setting-container">
-
       <div class="setting-item-name">Font Size</div>
       <div class="setting-item-input">
         <el-input v-model="fontSize">
@@ -29,15 +29,13 @@
       <div class="setting-item-input">
         <el-input v-model="backgroundColor"></el-input>
       </div>
-
     </div>
   </el-dialog>
 </template>
 
 <script>
 export default {
-  computed: {
-  },
+  computed: {},
 
   data() {
     return {
@@ -45,8 +43,8 @@ export default {
       fontSize: 18,
       lineHeight: 1.8,
       pageWidth: 900,
-      backgroundColor: '#FFFFFF',
-    }
+      backgroundColor: "#FFFFFF",
+    };
   },
 
   mounted() {
@@ -61,24 +59,23 @@ export default {
 
     fontSize(newVal) {
       if (newVal > 14 && newVal < 40) {
-        this.$store.dispatch('setting/setEbookSetting', { fontSize: newVal });
+        this.$store.dispatch("setting/setEbookSetting", { fontSize: newVal });
       }
     },
 
     lineHeight(newVal) {
       if (newVal > 1 && newVal < 3) {
-        this.$store.dispatch('setting/setEbookSetting', { lineHeight: newVal });
+        this.$store.dispatch("setting/setEbookSetting", { lineHeight: newVal });
       }
     },
 
     pageWidth(newVal) {
       if (newVal > 300) {
-        this.$store.dispatch('setting/setEbookSetting', { pageWidth: newVal });
+        this.$store.dispatch("setting/setEbookSetting", { pageWidth: newVal });
       }
     },
 
-    backgroundColor() {
-    }
+    backgroundColor() {},
   },
 
   methods: {
@@ -114,7 +111,7 @@ export default {
     //   })
     // },
   },
-}
+};
 </script>
 
 <style lang="scss">
@@ -125,14 +122,13 @@ export default {
   grid-row-gap: 20px;
   // grid-template-areas: 'item-name item-input';
 
-    .setting-item-name {
-      font-size: 18px;
-      // grid-area: item-name;
-    }
+  .setting-item-name {
+    font-size: 18px;
+    // grid-area: item-name;
+  }
 
-    .setting-item-input {
-      // grid-area: item-input;
-    }
+  .setting-item-input {
+    // grid-area: item-input;
+  }
 }
-
 </style>

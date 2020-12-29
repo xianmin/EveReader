@@ -1,60 +1,66 @@
 <template>
-  <div id="eve-popover-wrapper"
-    :style="{position: 'fixed',
-             top: + annotatorPosition.top + 'px',
-             left: + annotatorPosition.left + 'px'}">
-
+  <div
+    id="eve-popover-wrapper"
+    :style="{
+      position: 'fixed',
+      top: +annotatorPosition.top + 'px',
+      left: +annotatorPosition.left + 'px',
+    }"
+  >
     <div class="eve-popover-circle-list">
-      <div class="eve-popover-circle"
-          v-for="(color, index) in annotatorColorList" :key="color"
-          :class="'eve-hl-' + index"
-          :style="{background: color}"
-          @click="$emit('do-annotator-highlight', color)">
-      </div>
+      <div
+        class="eve-popover-circle"
+        v-for="(color, index) in annotatorColorList"
+        :key="color"
+        :class="'eve-hl-' + index"
+        :style="{ background: color }"
+        @click="$emit('do-annotator-highlight', color)"
+      ></div>
     </div>
 
     <div class="eve-popover-tool-list">
-      <div class="eve-popover-tool tool-delete"
-        @click = "$emit('do-annotator-delete')"
-        v-show = 'showAnnotatorFromClick'>
+      <div
+        class="eve-popover-tool tool-delete"
+        @click="$emit('do-annotator-delete')"
+        v-show="showAnnotatorFromClick"
+      >
         <i class="el-icon-delete"></i>
       </div>
 
-      <div class="eve-popover-tool tool-note"
-        @click = "$emit('do-annotator-note')">
+      <div
+        class="eve-popover-tool tool-note"
+        @click="$emit('do-annotator-note')"
+      >
         Note
       </div>
 
-      <div class="eve-popover-tool tool-copy"
-        @click = "$emit('do-annotator-copy')">
+      <div
+        class="eve-popover-tool tool-copy"
+        @click="$emit('do-annotator-copy')"
+      >
         Copy
       </div>
     </div>
-
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters } from "vuex";
 
 export default {
   computed: {
-    ...mapGetters('setting',[
-      'annotatorColorList',
-    ]),
+    ...mapGetters("setting", ["annotatorColorList"]),
   },
 
-  props: ['showAnnotatorFromClick', 'annotatorPosition'],
+  props: ["showAnnotatorFromClick", "annotatorPosition"],
 
-  mounted() {
-  },
+  mounted() {},
 
-  methods: {
-  }
-}
+  methods: {},
+};
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
 #eve-popover-wrapper {
   z-index: 99;
   position: absolute;
@@ -85,24 +91,24 @@ export default {
     display: flex;
     padding: 2px;
     justify-content: space-around;
-    border-top: 1px solid #c5c5c5;;
+    border-top: 1px solid #c5c5c5;
 
     .eve-popover-tool {
       cursor: pointer;
       font-size: 16px;
       flex: 2;
-      text-align:center;
+      text-align: center;
     }
 
     .tool-note {
-      border-right: 1px solid #c5c5c5;;
+      border-right: 1px solid #c5c5c5;
     }
 
     .tool-delete {
       flex: 1;
       color: red;
       font-weight: bold;
-      border-right: 1px solid #c5c5c5;;
+      border-right: 1px solid #c5c5c5;
     }
   }
 }

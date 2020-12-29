@@ -1,8 +1,5 @@
 <template>
-  <svg
-    :height="radius * 2"
-    :width="radius * 2"
-  >
+  <svg :height="radius * 2" :width="radius * 2">
     <circle
       stroke="#409eff"
       fill="transparent"
@@ -18,7 +15,7 @@
 
 <script>
 export default {
-  props: ['radius', 'progress', 'stroke'],
+  props: ["radius", "progress", "stroke"],
 
   data() {
     const normalizedRadius = this.radius - this.stroke * 2;
@@ -26,17 +23,15 @@ export default {
 
     return {
       normalizedRadius,
-      circumference
+      circumference,
     };
   },
   computed: {
     strokeDashoffset() {
-      return this.circumference - this.progress / 100 * this.circumference;
-    }
-  }
-}
+      return this.circumference - (this.progress / 100) * this.circumference;
+    },
+  },
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

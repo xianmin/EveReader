@@ -1,10 +1,7 @@
-import {
-  BrowserWindow,
-  ipcMain,
-} from 'electron';
-import ipcServer from './ipc-server';
-import eveWindow from './eve-window';
-import eveDialog from './eve-dialog';
+import { BrowserWindow, ipcMain } from "electron";
+import ipcServer from "./ipc-server";
+import eveWindow from "./eve-window";
+import eveDialog from "./eve-dialog";
 
 class eveApplication {
   constructor() {
@@ -23,7 +20,7 @@ class eveApplication {
   // Open Epub in argv if exist, otherwise open a new window
   open(argv) {
     const argvPath = argv.filter((element) => {
-      return element.substring(element.length - 5) === '.epub';
+      return element.substring(element.length - 5) === ".epub";
     });
 
     if (argvPath.length > 0) {
@@ -34,7 +31,7 @@ class eveApplication {
   }
 
   initIpcMain() {
-    ipcMain.on('IPC::ASK-OPEN-FILE', () => {
+    ipcMain.on("IPC::ASK-OPEN-FILE", () => {
       this.dialog.askOpenFile();
     });
   }
