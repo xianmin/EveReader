@@ -36,6 +36,8 @@
     "electron-devtools-installer": "^3.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.1.2",
+    "husky": ">=4",
+    "lint-staged": ">=10",
     "node-sass": "^4.13.1",
     "prettier": "2.2.1",
     "sass-loader": "^8.0.2",
@@ -44,5 +46,14 @@
     "vue-template-compiler": "^2.6.11"
   },
   "homepage": "https://xianmin.github.io/EveReader/",
-  "license": "AGPL-3.0"
+  "license": "AGPL-3.0",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.{vue,js,css,md}": "prettier --write"
+  }
 }
