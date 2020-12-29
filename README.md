@@ -1,20 +1,44 @@
-<h2 align="center">Eve Reader</h2>
+<h2 align="center" style="">Eve Reader</h2>
 
-> Next generation Epub Reader
+<div align="center">
+  <strong>Epub Reader, focused on annotation.</strong></br>
+  <sub>Available for Web, Linux, Windows & macOS(coming soon).</sub>
+</div>
+
+<div align="center">
+  <h3>
+    <a href="https://xianmin.github.io/EveReader">
+      Demo
+    </a>
+    <span> | </span>
+    <a href="https://github.com/xianmin/EveReader/releases">
+      Downloads
+    </a>
+    <span> | </span>
+    <a href="https://github.com/xianmin/EveReader#Development">
+      Development
+    </a>
+  </h3>
+</div>
+
+## Screenshot
+
+![](./doc/screenshot.png)
 
 ## First of all
 
-**This project is still under development.**
+**This project is still under development. Currently, I don't have a development environment for mac, So there is no macOS version yet**
 
-Welcome all kinds of contributions!
+Recently, I will focus on the development of the mobile version.
+
+**Welcome all kinds of suggestions and contributions!**
 
 ## Basic technology
 
 - [epub.js](https://github.com/futurepress/epub.js/)
 - [Vue.js](https://vuejs.org/)
 - [element UI](https://github.com/ElemeFE/element)
-
-Obviously, standing on the shoulders of these giants makes our next development much simpler.
+- [Vue CLI Plugin Electron Builder](https://nklayman.github.io/vue-cli-plugin-electron-builder/)
 
 ## TODO Eve Reader 1.0.0
 
@@ -26,21 +50,23 @@ Obviously, standing on the shoulders of these giants makes our next development 
 - [ ] More Shortcuts
 - [ ] A better LOGO
 
-## Build Setup
+## Development
 
 ```bash
 # install dependencies
-npm install
+yarn install
 
-# Compiles and hot-reloads for development
-npm run dev
+# Compiles and hot-reloads for web development
+yarn run serve
 
 # Compiles and minifies for production
-npm run build
+yarn run build
 
-# Lints and fixes files
-npm run lint
+# for electron development
+yarn run electron:serve
 
+# electron build for linux and windows
+yarn run electron:build --linux deb --win nsis
 ```
 
 ## License
