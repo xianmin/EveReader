@@ -1,8 +1,10 @@
 {
   "name": "eve-reader",
-  "version": "0.1.0",
-  "description": "Reader for epub E-books",
+  "version": "0.2.0",
+  "description": "Epub Reader, focused on annotation.",
   "author": "Chen Xianmin <xianmin12@gmail.com>",
+  "homepage": "https://xianmin.github.io/EveReader/",
+  "license": "AGPL-3.0",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -45,8 +47,6 @@
     "vue-svg-inline-loader": "^1.4.6",
     "vue-template-compiler": "^2.6.11"
   },
-  "homepage": "https://xianmin.github.io/EveReader/",
-  "license": "AGPL-3.0",
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
