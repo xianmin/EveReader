@@ -8,6 +8,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    appIsMobile: false,
     ebook: null,
     ebookRootNode: null,
     ebookViewReady: false,
@@ -15,6 +16,7 @@ export default new Vuex.Store({
     currentSectionIndex: null,
   },
   getters: {
+    appIsMobile: (state) => state.appIsMobile,
     ebook: (state) => state.ebook,
     ebookRootNode: (state) => state.ebookRootNode,
     ebookViewReady: (state) => state.ebookViewReady,
@@ -22,6 +24,9 @@ export default new Vuex.Store({
     currentSectionIndex: (state) => state.currentSectionIndex,
   },
   mutations: {
+    SET_APP_IS_MOBILE: (state, appIsMobile) => {
+      state.appIsMobile = appIsMobile;
+    },
     SET_EBOOK: (state, ebook) => {
       state.ebook = ebook;
     },
