@@ -1,4 +1,5 @@
 <template>
+  <!-- let mousedown & mouseup event dont fire -->
   <div
     id="eve-popover-wrapper"
     :style="{
@@ -6,6 +7,8 @@
       top: +annotatorPosition.top + 'px',
       left: +annotatorPosition.left + 'px',
     }"
+    @mousedown.stop=""
+    @mouseup.stop=""
   >
     <div class="eve-popover-circle-list">
       <div
@@ -14,14 +17,14 @@
         :key="color"
         :class="'eve-hl-' + index"
         :style="{ background: color }"
-        @click="$emit('do-annotator-highlight', color)"
+        @click.stop="$emit('do-annotator-highlight', color)"
       ></div>
     </div>
 
     <div class="eve-popover-tool-list">
       <div
         class="eve-popover-tool tool-delete"
-        @click="$emit('do-annotator-delete')"
+        @click.stop="$emit('do-annotator-delete')"
         v-show="showAnnotatorFromClick"
       >
         <i class="el-icon-delete"></i>
@@ -29,14 +32,14 @@
 
       <div
         class="eve-popover-tool tool-note"
-        @click="$emit('do-annotator-note')"
+        @click.stop="$emit('do-annotator-note')"
       >
         Note
       </div>
 
       <div
         class="eve-popover-tool tool-copy"
-        @click="$emit('do-annotator-copy')"
+        @click.stop="$emit('do-annotator-copy')"
       >
         Copy
       </div>

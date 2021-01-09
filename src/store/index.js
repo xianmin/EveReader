@@ -14,7 +14,9 @@ export default new Vuex.Store({
     ebookViewReady: false,
     lastCfi: 0,
     currentSectionIndex: null,
+    showAnnotator: false,
   },
+
   getters: {
     appIsMobile: (state) => state.appIsMobile,
     ebook: (state) => state.ebook,
@@ -22,7 +24,9 @@ export default new Vuex.Store({
     ebookViewReady: (state) => state.ebookViewReady,
     lastCfi: (state) => state.lastCfi,
     currentSectionIndex: (state) => state.currentSectionIndex,
+    showAnnotator: (state) => state.showAnnotator,
   },
+
   mutations: {
     SET_APP_IS_MOBILE: (state, appIsMobile) => {
       state.appIsMobile = appIsMobile;
@@ -42,7 +46,11 @@ export default new Vuex.Store({
     SET_CURRENT_SECTION_INDEX: (state, currentSectionIndex) => {
       state.currentSectionIndex = currentSectionIndex;
     },
+    SET_SHOW_ANNOTATOR: (state, showAnnotator) => {
+      state.showAnnotator = showAnnotator;
+    },
   },
+
   actions: {
     setEbook: ({ commit }, ebook) => commit("SET_EBOOK", ebook),
 
@@ -73,6 +81,7 @@ export default new Vuex.Store({
       await database.updateLastReadToDB(lastRead);
     },
   },
+
   modules: {
     setting,
     annotation,

@@ -11,16 +11,20 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import EveAnnotatorPopover from "./EveAnnotatorPopover.vue";
 import epubCfi from "../epubjs/epubcfi";
 
 export default {
   components: { EveAnnotatorPopover },
 
+  computed: {
+    ...mapGetters(["showAnnotator"]),
+  },
+
   data() {
     return {
       viewSectionElement: null,
-      showAnnotator: false,
       showAnnotatorFromClick: false,
       annotator: {
         position: {
@@ -35,57 +39,42 @@ export default {
   },
 
   mounted() {
-    this.viewSectionElement = this.$parent.$refs.viewSection;
-    this.viewSectionElement.addEventListener(
-      "mouseup",
-      this._onMouseUp.bind(this)
+    this.$bus.on(
+      "show-annotator-from-selection",
+      this.onSelectionShowAnnotator
     );
-    this.viewSectionElement.addEventListener(
-      "mousedown",
-      this._onMouseDown.bind(this)
-    );
-
-    this.$bus.on("click-show-annotator", this.onClickShowAnnotator);
+    this.$bus.on("show-annotator-from-click", this.onClickShowAnnotator);
+    this.$bus.on("hide-annotator", this.hideAnnotator);
   },
 
   beforeDestroy() {
-    this.viewSectionElement.removeEventListener(
-      "mouseup",
-      this._onMouseUp.bind(this)
-    );
-    this.viewSectionElement.removeEventListener(
-      "mousedown",
-      this._onMouseDown.bind(this)
-    );
-    this.$bus.off("click-show-annotator");
+    this.$bus.off("show-annotator-from-selection");
+    this.$bus.off("show-annotator-from-click");
+    this.$bus.off("hide-annotator");
   },
 
   methods: {
-    _onMouseUp(evt) {
-      evt.preventDefault();
-      const selection = window.getSelection();
-      if (!selection.isCollapsed) {
-        this.selectRange = selection.getRangeAt(0);
-        const rect = this.selectRange.getBoundingClientRect();
-        this.setAnnotatorPosition(rect, evt.clientX, evt.clientY);
+    onSelectionShowAnnotator(evt, selection) {
+      this.selectRange = selection.getRangeAt(0);
+      const rect = this.selectRange.getBoundingClientRect();
+      this.setAnnotatorPosition(rect, evt.clientX, evt.clientY);
 
-        this.annotator.cfiRange = new epubCfi(
-          this.selectRange,
-          this.$parent.section.cfiBase
-        ).toString();
+      this.annotator.cfiRange = new epubCfi(
+        this.selectRange,
+        this.$parent.section.cfiBase
+      ).toString();
 
-        // if select, show EveAnnotatorPopover.vue
-        this.showAnnotator = true;
-        this.showAnnotatorFromClick = false;
+      // if select, show EveAnnotatorPopover.vue
+      this.$store.commit("SET_SHOW_ANNOTATOR", true);
+      this.showAnnotatorFromClick = false;
 
-        // temporary store text to annotator
-        this.annotator.text = selection.toString();
-      }
+      // temporary store text to annotator
+      this.annotator.text = selection.toString();
     },
 
-    _onMouseDown() {
-      this.showAnnotator = false;
+    hideAnnotator() {
       window.getSelection().removeAllRanges();
+      this.$store.commit("SET_SHOW_ANNOTATOR", false);
     },
 
     // rect is getBoundingClientRect()
@@ -140,7 +129,7 @@ export default {
       let rect = this.selectRange.getBoundingClientRect();
       this.setAnnotatorPosition(rect, evt.clientX, evt.clientY);
 
-      this.showAnnotator = true;
+      this.$store.commit("SET_SHOW_ANNOTATOR", true);
     },
 
     doAnnotatorHighlight(color) {
@@ -157,12 +146,12 @@ export default {
       annotation.sectionIndex = this.$parent.section.index;
       annotation.date = new Date().toISOString();
 
-      this.showAnnotator = false;
+      this.$store.commit("SET_SHOW_ANNOTATOR", false);
       this.$store.dispatch("annotation/addAnnotation", annotation);
     },
 
     doAnnotatorDelete() {
-      this.showAnnotator = false;
+      this.$store.commit("SET_SHOW_ANNOTATOR", false);
       this.showAnnotatorFromClick = false;
       let cfiRange = this.annotator.cfiRange;
       let type = this.annotator.type;
@@ -173,12 +162,12 @@ export default {
 
     doAnnotatorCopy() {
       navigator.clipboard.writeText(this.annotator.text);
-      this.showAnnotator = false;
+      this.$store.commit("SET_SHOW_ANNOTATOR", false);
     },
 
     // TODO
     doAnnotatorNote() {
-      this.showAnnotator = false;
+      this.$store.commit("SET_SHOW_ANNOTATOR", false);
     },
   },
 };

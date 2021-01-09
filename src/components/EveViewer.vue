@@ -2,6 +2,7 @@
   <div
     id="eve-reader-view"
     :style="{ 'background-color': this.backgroundColor }"
+    ref="eveReaderView"
   >
     <div
       id="viewSection"
@@ -38,7 +39,7 @@ import LoadingRing from "./tool/LoadingRing.vue";
 
 export default {
   computed: {
-    ...mapGetters(["ebook", "ebookViewReady"]),
+    ...mapGetters(["ebook", "ebookViewReady", "showAnnotator"]),
     ...mapGetters("setting", [
       "fontSize",
       "lineHeight",
@@ -74,16 +75,22 @@ export default {
     this.$bus.on("event-view-display", this.display);
 
     window.addEventListener("keydown", this.eventKeyDown);
-    window.addEventListener("wheel", this.eventWheel);
     // when scroll finish, store cfi
     window.addEventListener("scroll", this.eventScroll);
+
+    let viewElement = this.$refs.eveReaderView;
+    viewElement.addEventListener("wheel", this.eventWheel);
+    viewElement.addEventListener("mouseup", this.eventMouseUp);
   },
 
   beforeDestroy() {
     this.$bus.off("event-view-display");
     window.removeEventListener("keydown", this.eventKeyDown);
-    window.removeEventListener("wheel", this.eventWheel);
     window.removeEventListener("scroll", this.eventScroll);
+
+    let viewElement = this.$refs.eveReaderView;
+    viewElement.removeEventListener("wheel", this.eventWheel);
+    viewElement.removeEventListener("mouseup", this.eventMouseUp);
     this.$store.commit("SET_EBOOK_VIEW_READY", false);
   },
 
@@ -218,13 +225,13 @@ export default {
       }, 200);
     },
 
-    eventKeyDown(e) {
-      const kc = e.keyCode || e.which;
+    eventKeyDown(evt) {
+      const kc = evt.keyCode || evt.which;
       if (window.scrollY === 0) {
         // UP, PageUP, display prev section; here is a bug.
         if (kc === 33 || kc === 38) {
           this.doPrev();
-          e.preventDefault();
+          evt.preventDefault();
         }
       }
 
@@ -232,14 +239,14 @@ export default {
         // DOWN, PageDOWN, display next section;
         if (kc === 34 || kc === 40) {
           this.doNext();
-          e.preventDefault();
+          evt.preventDefault();
         }
       }
     },
 
-    eventWheel(e) {
+    eventWheel(evt) {
       // at the top of page, do prev
-      if (window.scrollY === 0 && e.wheelDelta > 0) {
+      if (window.scrollY === 0 && evt.wheelDelta > 0) {
         this.loadingTimer += 5;
         if (this.loadingTimer >= 100) {
           this.doPrev();
@@ -250,13 +257,29 @@ export default {
       // at the bottom of page, do next
       if (
         window.scrollY + window.innerHeight >= document.body.clientHeight &&
-        e.wheelDelta < 0
+        evt.wheelDelta < 0
       ) {
         this.loadingTimer += 5;
         if (this.loadingTimer >= 100) {
           this.doNext();
         }
         this.loadingStop();
+      }
+    },
+
+    eventMouseUp(evt) {
+      evt.preventDefault();
+
+      if (this.showAnnotator) {
+        this.$bus.emit("hide-annotator");
+        return;
+      }
+
+      const selection = window.getSelection();
+      if (!selection.isCollapsed) {
+        this.$bus.emit("show-annotator-from-selection", evt, selection);
+      } else {
+        console.log("no selection");
       }
     },
 

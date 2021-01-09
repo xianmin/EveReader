@@ -8,6 +8,7 @@
       fill-opacity="0.3"
       pointer-events="visiblePainted"
       @click="clickAnnotation"
+      @mouseup.stop=""
       ref="annotation"
     >
       <rect
@@ -47,7 +48,7 @@ export default {
 
   methods: {
     clickAnnotation(evt) {
-      this.$bus.emit("click-show-annotator", evt, this.annotation);
+      this.$bus.emit("show-annotator-from-click", evt, this.annotation);
     },
   },
 };
