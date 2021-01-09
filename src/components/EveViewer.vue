@@ -195,7 +195,7 @@ export default {
       return location;
     },
 
-    async doPrev() {
+    async doPrevSection() {
       if (this.section.index > 0) {
         await this.display(this.section.index - 1);
         window.scroll(0, document.body.clientHeight);
@@ -203,7 +203,7 @@ export default {
       }
     },
 
-    async doNext() {
+    async doNextSection() {
       if (this.section.index < this.spineItems.length - 1) {
         await this.display(this.section.index + 1);
         window.scroll(0, 0);
@@ -230,7 +230,7 @@ export default {
       if (window.scrollY === 0) {
         // UP, PageUP, display prev section; here is a bug.
         if (kc === 33 || kc === 38) {
-          this.doPrev();
+          this.doPrevSection();
           evt.preventDefault();
         }
       }
@@ -238,7 +238,7 @@ export default {
       if (window.scrollY + window.innerHeight >= document.body.clientHeight) {
         // DOWN, PageDOWN, display next section;
         if (kc === 34 || kc === 40) {
-          this.doNext();
+          this.doNextSection();
           evt.preventDefault();
         }
       }
@@ -249,7 +249,7 @@ export default {
       if (window.scrollY === 0 && evt.wheelDelta > 0) {
         this.loadingTimer += 5;
         if (this.loadingTimer >= 100) {
-          this.doPrev();
+          this.doPrevSection();
         }
         this.loadingStop();
       }
@@ -261,7 +261,7 @@ export default {
       ) {
         this.loadingTimer += 5;
         if (this.loadingTimer >= 100) {
-          this.doNext();
+          this.doNextSection();
         }
         this.loadingStop();
       }
@@ -279,8 +279,40 @@ export default {
       if (!selection.isCollapsed) {
         this.$bus.emit("show-annotator-from-selection", evt, selection);
       } else {
-        console.log("no selection");
+        this.doViewerAction(evt.offsetX);
       }
+    },
+
+    doViewerAction(offset) {
+      let viewerWidth = this.$refs.eveReaderView.clientWidth;
+      let oneThirdArea = viewerWidth / 3;
+      if (offset < oneThirdArea) {
+        this.doPrevPage();
+      } else if (oneThirdArea <= offset && offset <= oneThirdArea * 2) {
+        this.showMobileToolbar();
+      } else {
+        this.doNextPage();
+      }
+    },
+
+    doPrevPage() {
+      if (window.scrollY === 0) {
+        this.doPrevSection();
+      } else {
+        window.scrollBy(0, -window.innerHeight);
+      }
+    },
+
+    doNextPage() {
+      if (window.scrollY + window.innerHeight >= document.body.clientHeight) {
+        this.doNextSection();
+      } else {
+        window.scrollBy(0, window.innerHeight);
+      }
+    },
+
+    showMobileToolbar() {
+      console.log("haha");
     },
 
     loadingStop() {
