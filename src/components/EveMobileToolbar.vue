@@ -2,15 +2,19 @@
   <div>
     <transition name="slide-up">
       <div class="toolbar-wrapper" v-show="this.$store.state.showMobileToolbar">
-        <div class="toolbar-icon">
+        <!-- OPEN FILE -->
+        <div class="toolbar-icon" @click="openFile">
           <img svg-inline src="@/assets/svg/openfile.svg" />
         </div>
+        <!-- Annotation -->
         <div class="toolbar-icon">
           <img svg-inline src="@/assets/svg/annotation.svg" />
         </div>
+        <!-- Table Of Content -->
         <div class="toolbar-icon">
           <img svg-inline src="@/assets/svg/toc.svg" />
         </div>
+        <!-- Setting -->
         <div class="toolbar-icon">
           <img svg-inline src="@/assets/svg/setting.svg" />
         </div>
@@ -20,7 +24,13 @@
 </template>
 
 <script>
-export default {};
+export default {
+  methods: {
+    openFile() {
+      this.$bus.emit("bus-open-file");
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
