@@ -24,6 +24,7 @@
       :progress="loadingTimer"
       stroke="5"
     />
+    <eve-mobile-toolbar v-if="this.$store.state.appIsMobile" />
   </div>
 </template>
 
@@ -35,6 +36,7 @@ import epubMapping from "../epubjs/mapping";
 import epubCfi from "../epubjs/epubcfi";
 import { isNumber } from "../epubjs/utils/core";
 import LoadingRing from "./tool/LoadingRing.vue";
+import EveMobileToolbar from "./EveMobileToolbar.vue";
 // import Theme from '../theme.js';
 
 export default {
@@ -52,6 +54,7 @@ export default {
     EveAnnotator,
     EveAnnotationList,
     LoadingRing,
+    EveMobileToolbar,
   },
 
   data() {
@@ -277,6 +280,7 @@ export default {
 
       const selection = window.getSelection();
       if (!selection.isCollapsed) {
+        this.$store.commit("SET_SHOW_MOBILE_TOOLBAR", false);
         this.$bus.emit("show-annotator-from-selection", evt, selection);
       } else {
         this.doViewerAction(evt.offsetX);
@@ -284,12 +288,17 @@ export default {
     },
 
     doViewerAction(offset) {
+      if (this.$store.state.showMobileToolbar) {
+        this.$store.commit("SET_SHOW_MOBILE_TOOLBAR", false);
+        return;
+      }
+
       let viewerWidth = this.$refs.eveReaderView.clientWidth;
       let oneThirdArea = viewerWidth / 3;
       if (offset < oneThirdArea) {
         this.doPrevPage();
       } else if (oneThirdArea <= offset && offset <= oneThirdArea * 2) {
-        this.showMobileToolbar();
+        this.$store.commit("SET_SHOW_MOBILE_TOOLBAR", true);
       } else {
         this.doNextPage();
       }
@@ -309,10 +318,6 @@ export default {
       } else {
         window.scrollBy(0, window.innerHeight);
       }
-    },
-
-    showMobileToolbar() {
-      console.log("haha");
     },
 
     loadingStop() {

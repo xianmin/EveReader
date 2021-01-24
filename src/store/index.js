@@ -15,6 +15,7 @@ export default new Vuex.Store({
     lastCfi: 0,
     currentSectionIndex: null,
     showAnnotator: false,
+    showMobileToolbar: false,
   },
 
   getters: {
@@ -25,6 +26,7 @@ export default new Vuex.Store({
     lastCfi: (state) => state.lastCfi,
     currentSectionIndex: (state) => state.currentSectionIndex,
     showAnnotator: (state) => state.showAnnotator,
+    showMobileToolbar: (state) => state.showMobileToolbar,
   },
 
   mutations: {
@@ -48,6 +50,9 @@ export default new Vuex.Store({
     },
     SET_SHOW_ANNOTATOR: (state, showAnnotator) => {
       state.showAnnotator = showAnnotator;
+    },
+    SET_SHOW_MOBILE_TOOLBAR: (state, showMobileToolbar) => {
+      state.showMobileToolbar = showMobileToolbar;
     },
   },
 
