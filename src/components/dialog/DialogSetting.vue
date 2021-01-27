@@ -1,45 +1,35 @@
 <template>
-  <el-dialog
-    title="Setting"
-    :visible.sync="settingVisible"
-    :modal-append-to-body="false"
-    width="35%"
-  >
-    <div class="setting-container">
-      <div class="setting-item-name">Font Size</div>
-      <div class="setting-item-input">
-        <el-input v-model="fontSize">
-          <template slot="append">px</template>
-        </el-input>
-      </div>
-
-      <div class="setting-item-name">Line Height</div>
-      <div class="setting-item-input">
-        <el-input v-model="lineHeight"></el-input>
-      </div>
-
-      <div class="setting-item-name">Page Width</div>
-      <div class="setting-item-input">
-        <el-input v-model="pageWidth">
-          <template slot="append">px</template>
-        </el-input>
-      </div>
-
-      <div class="setting-item-name">Background Color</div>
-      <div class="setting-item-input">
-        <el-input v-model="backgroundColor"></el-input>
-      </div>
+  <div class="setting-container">
+    <div class="setting-item-name">Font Size</div>
+    <div class="setting-item-input">
+      <el-input v-model="fontSize">
+        <template slot="append">px</template>
+      </el-input>
     </div>
-  </el-dialog>
+
+    <div class="setting-item-name">Line Height</div>
+    <div class="setting-item-input">
+      <el-input v-model="lineHeight"></el-input>
+    </div>
+
+    <div class="setting-item-name">Page Width</div>
+    <div class="setting-item-input">
+      <el-input v-model="pageWidth">
+        <template slot="append">px</template>
+      </el-input>
+    </div>
+
+    <div class="setting-item-name">Background Color</div>
+    <div class="setting-item-input">
+      <el-input v-model="backgroundColor"></el-input>
+    </div>
+  </div>
 </template>
 
 <script>
 export default {
-  computed: {},
-
   data() {
     return {
-      settingVisible: false,
       fontSize: 18,
       lineHeight: 1.8,
       pageWidth: 900,
@@ -51,12 +41,12 @@ export default {
     this.updateSetting();
   },
 
-  watch: {
-    settingVisible() {
-      // when dialog close, maybe data is illegal value, reset.
-      this.updateSetting();
-    },
+  beforeDestroy() {
+    // when dialog close, maybe data is illegal value, reset.
+    this.updateSetting();
+  },
 
+  watch: {
     fontSize(newVal) {
       if (newVal > 14 && newVal < 40) {
         this.$store.dispatch("setting/setEbookSetting", { fontSize: newVal });
@@ -86,10 +76,6 @@ export default {
       this.backgroundColor = this.$store.state.setting.backgroundColor;
     },
 
-    openSettingDialog() {
-      this.settingVisible = true;
-    },
-
     // saveSetting() {
     //   // validate setting value first
     //   this.$refs.settingForm.validate((valid) => {
@@ -114,7 +100,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .setting-container {
   display: grid;
   grid-template-columns: 35% 65%;
@@ -125,10 +111,6 @@ export default {
   .setting-item-name {
     font-size: 18px;
     // grid-area: item-name;
-  }
-
-  .setting-item-input {
-    // grid-area: item-input;
   }
 }
 </style>

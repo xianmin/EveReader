@@ -77,7 +77,7 @@
       >
         <div
           class="activitybar-icon activitybar-setting"
-          @click="$refs.settingDialog.openSettingDialog()"
+          @click="$refs.webDialog.openSettingDialog()"
         >
           <img svg-inline src="@/assets/svg/setting.svg" />
         </div>
@@ -95,7 +95,7 @@
       <div class="sidebar-resizer" @mousedown="resizerMouseDown"></div>
     </div>
 
-    <eve-setting-dialog ref="settingDialog" />
+    <eve-web-dialog ref="webDialog" />
   </div>
 </template>
 
@@ -104,7 +104,7 @@ import { mapGetters } from "vuex";
 import { EventListener } from "../event.js";
 import EveSidebarAnnotation from "./EveSidebarAnnotation.vue";
 import EveSidebarToc from "./EveSidebarToc.vue";
-import EveSettingDialog from "./EveSettingDialog.vue";
+import EveWebDialog from "./EveWebDialog.vue";
 
 export default {
   name: "EveSidebar",
@@ -112,7 +112,7 @@ export default {
   components: {
     EveSidebarToc,
     EveSidebarAnnotation,
-    EveSettingDialog,
+    EveWebDialog,
   },
 
   computed: {
