@@ -7,7 +7,10 @@
           <img svg-inline src="@/assets/svg/openfile.svg" />
         </div>
         <!-- Annotation -->
-        <div class="toolbar-icon">
+        <div
+          class="toolbar-icon"
+          @click="$refs.mobileDialog.openDialog('annotation')"
+        >
           <img svg-inline src="@/assets/svg/annotation.svg" />
         </div>
         <!-- Table Of Content -->
