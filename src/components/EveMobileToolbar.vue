@@ -11,11 +11,14 @@
           <img svg-inline src="@/assets/svg/annotation.svg" />
         </div>
         <!-- Table Of Content -->
-        <div class="toolbar-icon">
+        <div class="toolbar-icon" @click="$refs.mobileDialog.openDialog('toc')">
           <img svg-inline src="@/assets/svg/toc.svg" />
         </div>
         <!-- Setting -->
-        <div class="toolbar-icon" @click="$refs.mobileDialog.openDialog()">
+        <div
+          class="toolbar-icon"
+          @click="$refs.mobileDialog.openDialog('setting')"
+        >
           <img svg-inline src="@/assets/svg/setting.svg" />
         </div>
       </div>
