@@ -24,7 +24,6 @@
       :progress="loadingTimer"
       stroke="5"
     />
-    <eve-mobile-toolbar v-if="this.$store.state.appIsMobile" />
   </div>
 </template>
 
@@ -36,7 +35,6 @@ import epubMapping from "../epubjs/mapping";
 import epubCfi from "../epubjs/epubcfi";
 import { isNumber } from "../epubjs/utils/core";
 import LoadingRing from "./tool/LoadingRing.vue";
-import EveMobileToolbar from "./EveMobileToolbar.vue";
 // import Theme from '../theme.js';
 
 export default {
@@ -54,7 +52,6 @@ export default {
     EveAnnotator,
     EveAnnotationList,
     LoadingRing,
-    EveMobileToolbar,
   },
 
   data() {

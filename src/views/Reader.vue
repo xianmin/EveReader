@@ -1,6 +1,7 @@
 <template>
   <div class="home">
     <eve-sidebar class="eve-sidebar" v-if="!this.$store.state.appIsMobile" />
+    <eve-mobile-toolbar v-if="this.$store.state.appIsMobile" />
 
     <router-view v-if="this.ebook.epub.isOpen" class="home-container">
       <eve-viewer></eve-viewer>
@@ -30,6 +31,7 @@
 <script>
 import Ebook from "@/ebook";
 import EveSidebar from "@/components/EveSidebar";
+import EveMobileToolbar from "@/components/EveMobileToolbar.vue";
 import EveViewer from "@/components/EveViewer";
 
 export default {
@@ -38,6 +40,7 @@ export default {
   components: {
     EveSidebar,
     EveViewer,
+    EveMobileToolbar,
   },
 
   data() {

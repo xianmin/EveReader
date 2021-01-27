@@ -15,16 +15,21 @@
           <img svg-inline src="@/assets/svg/toc.svg" />
         </div>
         <!-- Setting -->
-        <div class="toolbar-icon">
+        <div class="toolbar-icon" @click="$refs.mobileDialog.openDialog()">
           <img svg-inline src="@/assets/svg/setting.svg" />
         </div>
       </div>
     </transition>
+
+    <eve-mobile-dialog ref="mobileDialog" />
   </div>
 </template>
 
 <script>
+import EveMobileDialog from "./EveMobileDialog.vue";
+
 export default {
+  components: { EveMobileDialog },
   methods: {
     openFile() {
       this.$bus.emit("bus-open-file");
