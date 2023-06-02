@@ -14,8 +14,6 @@
       }"
     />
 
-    <eve-annotator v-if="ebookViewReady" />
-    <eve-annotation-list v-if="ebookViewReady" />
     <loading-ring
       class="loading-ring"
       v-show="loadingTimeOut !== null"
