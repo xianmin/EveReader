@@ -13,6 +13,7 @@ module.exports = {
     "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
     "no-unused-vars": "warn",
     "no-use-before-define": "warn",
+    "vue/no-unused-components": "off",
   },
   ignorePatterns: ["/src/epubjs/**"],
 };
