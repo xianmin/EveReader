@@ -8,15 +8,13 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/checkout@v2
 
       - name: Install and Build
-        run: |
-          npm install
-          npm run build
+        run: npm run install && npm run build
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v2
