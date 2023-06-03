@@ -18,9 +18,6 @@ jobs:
         with:
           node-version: 14
 
-      - name: Install and Build
-        run: npm install && npm run build
-
       - name: buildAndDeploy
         uses: JamesIves/github-pages-deploy-action@master
         env:
