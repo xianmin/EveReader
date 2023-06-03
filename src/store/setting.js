@@ -4,7 +4,7 @@ export default {
   namespaced: true,
 
   state: {
-    fontSize: 18,
+    fontSize: 26,
     lineHeight: 1.8,
     pageWidth: 900,
     backgroundColor: "#FFFFFF",

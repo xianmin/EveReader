@@ -13,21 +13,11 @@
         'max-width': this.pageWidth + 'px',
       }"
     />
-
-    <loading-ring
-      class="loading-ring"
-      v-show="loadingTimeOut !== null"
-      radius="30"
-      :progress="loadingTimer"
-      stroke="5"
-    />
   </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
-import EveAnnotator from "./EveAnnotator.vue";
-import EveAnnotationList from "./EveAnnotationList.vue";
 import epubMapping from "../epubjs/mapping";
 import epubCfi from "../epubjs/epubcfi";
 import { isNumber } from "../epubjs/utils/core";
@@ -46,8 +36,6 @@ export default {
   },
 
   components: {
-    EveAnnotator,
-    EveAnnotationList,
     LoadingRing,
   },
 
@@ -75,6 +63,29 @@ export default {
     window.addEventListener("wheel", this.eventWheel);
     // when scroll finish, store cfi
     window.addEventListener("scroll", this.eventScroll);
+
+    const homeContainer = document.querySelector(".home-container");
+
+    function hideRt(e) {
+      if (e.ctrlKey) {
+        const rt = homeContainer.querySelectorAll("rt");
+        Array.from(rt).forEach((element) => {
+          element.style.visibility = "hidden";
+        });
+      }
+    }
+
+    function displayRt() {
+      const rt = homeContainer.querySelectorAll("rt");
+      Array.from(rt).forEach((element) => {
+        if (element.style.visibility === "hidden") {
+          element.style.visibility = "visible";
+        }
+      });
+    }
+
+    window.addEventListener("mousedown", hideRt);
+    window.addEventListener("mouseup", displayRt);
   },
 
   beforeDestroy() {
@@ -316,6 +327,7 @@ export default {
 #eve-reader-view {
   position: relative;
   width: 100%;
+  padding: 0 30px;
 
   #viewSection {
     margin: 0 auto;

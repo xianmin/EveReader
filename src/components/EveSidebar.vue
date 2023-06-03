@@ -27,21 +27,6 @@
           <img svg-inline src="@/assets/svg/toc.svg" />
         </div>
       </el-tooltip>
-      <!-- Annotation -->
-      <el-tooltip
-        class="tooltip"
-        effect="dark"
-        content="Annotation"
-        placement="right"
-      >
-        <div
-          class="activitybar-icon"
-          :class="{ active: sidebarVisible === 'annotation' }"
-          @click="toogleSidebar('annotation')"
-        >
-          <img svg-inline src="@/assets/svg/annotation.svg" />
-        </div>
-      </el-tooltip>
       <!-- Increase Font Size -->
       <el-tooltip
         class="tooltip"
