@@ -19,10 +19,12 @@ jobs:
           node-version: 14
 
       - name: Install and Build
-        run: npm install && npm install xmldom && npm run build
+        run: npm install && npm run build
 
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: Build
-          path: dist
+      - name: buildAndDeploy
+        uses: JamesIves/github-pages-deploy-action@master
+        env:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: dist
+          BUILD_SCRIPT: npm install && npm run build
