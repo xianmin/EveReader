@@ -17,11 +17,13 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 14
-
-      - name: buildAndDeploy
-        uses: JamesIves/github-pages-deploy-action@master
+          
+      - name: Build
+        run: npm run install && npm run build
+        
+      - name: Deploy to Github Pages
+        uses: JamesIves/github-pages-deploy-action@v4
         env:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           BRANCH: gh-pages
           FOLDER: dist
-          BUILD_SCRIPT: npm install && npm run build
