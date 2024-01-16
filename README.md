@@ -1,3 +1,10 @@
+## Updata 更新
+This project is no longer maintained. If you are interested in my new reader project, please visit https://github.com/EvoReader/EvoReader.
+
+此项目已不再维护。如果您对我的新阅读器项目感兴趣，请移步至 https://github.com/EvoReader/EvoReader 。
+
+
+
 <h2 align="center" style="">Eve Reader</h2>
 
 <div align="center">
